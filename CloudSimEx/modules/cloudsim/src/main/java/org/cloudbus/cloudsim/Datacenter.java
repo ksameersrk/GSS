@@ -1057,6 +1057,8 @@ public class Datacenter extends SimEntity {
 
 		// send the registration to CIS
 		sendNow(gisID, CloudSimTags.REGISTER_RESOURCE, getId());
+        // for pause at periodic interval
+        send(gisID, 5, CloudSimTags.PAUSE_SIMULATION_EVENT);
 		// Below method is for a child class to override
 		registerOtherEntity();
 	}

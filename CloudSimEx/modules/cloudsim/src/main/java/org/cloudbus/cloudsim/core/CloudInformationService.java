@@ -126,12 +126,25 @@ public class CloudInformationService extends SimEntity {
 				super.send(id, 0L, ev.getTag(), arList);
 				break;
 
+			case CloudSimTags.PAUSE_SIMULATION_EVENT:
+				processPauseSimulationEvent(ev);
+				break;
+
+
 			default:
 				processOtherEvent(ev);
 				break;
 		}
 	}
+	protected void processPauseSimulationEvent(SimEvent ev)
+	{
+        int delay = 30;
+		System.out.println("Paused at " + CloudSim.clock());
+        //if(CloudSim.clock() + delay < )
+		send(getId(), delay,CloudSimTags.PAUSE_SIMULATION_EVENT);
 
+
+	}
 	@Override
 	public void shutdownEntity() {
 		notifyAllEntity();

@@ -272,6 +272,8 @@ public class CloudSimTags {
 
 	public static final int NextCycle = BASE + 48;
 
+	public static final int PAUSE_SIMULATION_EVENT = BASE + 49;
+
 	/** Private Constructor. */
 	private CloudSimTags() {
 		throw new UnsupportedOperationException("CloudSimTags cannot be instantiated");

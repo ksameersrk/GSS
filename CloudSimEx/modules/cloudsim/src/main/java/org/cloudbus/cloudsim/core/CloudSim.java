@@ -909,6 +909,15 @@ public class CloudSim {
 					e.printStackTrace();
 				}
 			}
+
+			// TODO : remove this sleep once internal event knows when to stop periodic pause
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+
 		}
 
 		double clock = clock();
