@@ -36,11 +36,13 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 
 /**
  * A simple example showing how to submit and destroy VMs and cloudlets with a delay.
+ * while trying to pause simulation every 30 seconds
  */
 public class PauseTest0{
 
     public static void main(String[] args) throws Exception {
 
+        // IF THESE 2 VARIABLES ARE NOT INITIALIZED THEN SIMULATION WONT BE PAUSED
         CloudSim.lifeLength = 1000;
         CloudSim.pauseInterval = 30;
 
