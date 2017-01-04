@@ -136,15 +136,15 @@ public class CloudInformationService extends SimEntity {
 				break;
 		}
 	}
+
 	protected void processPauseSimulationEvent(SimEvent ev)
 	{
-        int delay = 30;
 		System.out.println("Paused at " + CloudSim.clock());
-        //if(CloudSim.clock() + delay < )
-		send(getId(), delay,CloudSimTags.PAUSE_SIMULATION_EVENT);
-
-
+        if(CloudSim.clock() + CloudSim.pauseInterval <= CloudSim.lifeLength ) {
+			send(getId(), CloudSim.pauseInterval, CloudSimTags.PAUSE_SIMULATION_EVENT);
+		}
 	}
+
 	@Override
 	public void shutdownEntity() {
 		notifyAllEntity();
