@@ -125,7 +125,7 @@ public class MiniGSS_0{
 
         // Step 5: Create a Cloudlet
         // Cloudlet properties
-        cloudletList = createCloudlet(brokerId, 1, 0); // creating 10 cloudlets
+        cloudletList = createCloudlet(brokerId, 10, 0); // creating 10 cloudlets
 
         // submit cloudlet list to the broker with 10 sec Delay
         broker.submitCloudletList(cloudletList, 10);

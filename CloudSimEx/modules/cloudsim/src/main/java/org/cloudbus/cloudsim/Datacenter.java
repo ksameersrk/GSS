@@ -429,11 +429,11 @@ public class Datacenter extends SimEntity {
 	/**
 	 * Process the event for an User/Broker who wants to create a VM in this Datacenter. This
 	 * Datacenter will then send the status back to the User/Broker.
-	 * 
+	 *
 	 * @param ev information about the event just happened
-	 * @param ack indicates if the event's sender expects to receive 
+	 * @param ack indicates if the event's sender expects to receive
          * an acknowledge message when the event finishes to be processed
-         * 
+         *
 	 * @pre ev != null
 	 * @post $none
 	 */
@@ -1058,8 +1058,13 @@ public class Datacenter extends SimEntity {
 		// send the registration to CIS
 		sendNow(gisID, CloudSimTags.REGISTER_RESOURCE, getId());
         // for pause at periodic interval
-		if(CloudSim.pauseInterval > 0 && CloudSim.lifeLength > 0 )
-        	send(gisID, CloudSim.pauseInterval, CloudSimTags.PAUSE_SIMULATION_EVENT);
+		if(CloudSim.pauseInterval > 0 && CloudSim.lifeLength > 0 ) {
+			int count =0;
+			while(CloudSim.pauseInterval*count <= CloudSim.lifeLength) {
+				send(gisID, CloudSim.pauseInterval * count, CloudSimTags.PAUSE_SIMULATION_EVENT);
+				count += 1;
+			}
+		}
 		// Below method is for a child class to override
 		registerOtherEntity();
 	}
