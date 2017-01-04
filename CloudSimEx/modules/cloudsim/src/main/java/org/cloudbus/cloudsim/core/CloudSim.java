@@ -912,12 +912,12 @@ public class CloudSim {
 				}
 			}
 
-			// TODO : remove this sleep once internal event knows when to stop periodic pause
+			/*// TODO : remove this sleep once internal event knows when to stop periodic pause
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}*/
 
 
 		}

@@ -139,7 +139,8 @@ public class CloudInformationService extends SimEntity {
 
 	protected void processPauseSimulationEvent(SimEvent ev)
 	{
-		System.out.println("Paused at " + CloudSim.clock());
+        CloudSim.pauseSimulation();
+		System.out.println("In CIS, Paused at " + CloudSim.clock());
         if(CloudSim.clock() + CloudSim.pauseInterval <= CloudSim.lifeLength ) {
 			send(getId(), CloudSim.pauseInterval, CloudSimTags.PAUSE_SIMULATION_EVENT);
 		}
