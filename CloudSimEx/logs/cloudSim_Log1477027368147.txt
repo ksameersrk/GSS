@@ -1,0 +1,320 @@
+
+Starting simulation "Basic Example 3"
+
+OBSERVATION>> Hard disk drive "hdd1" is now in Idle mode.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 0
+OBSERVATION>> Hard disk drive "hdd2" is now in Idle mode.
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 0
+OBSERVATION>> Hard disk drive "hdd3" is now in Idle mode.
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 0
+OBSERVATION>> Initial persistent storage 
+1/3 hdd1
+	Capacity        ->    6000000 MB
+	UsedSpace       ->          0 MB
+	FreeSpave       ->    6000000 MB
+	Latency         ->   0.004160 s
+	avgSeekTime     ->   0.008500 s
+	maxTransferRate ->    216.000 MB/s
+OBSERVATION>> Initial persistent storage 
+2/3 hdd2
+	Capacity        ->    6000000 MB
+	UsedSpace       ->          0 MB
+	FreeSpave       ->    6000000 MB
+	Latency         ->   0.004160 s
+	avgSeekTime     ->   0.008500 s
+	maxTransferRate ->    216.000 MB/s
+OBSERVATION>> Initial persistent storage 
+3/3 hdd3
+	Capacity        ->    6000000 MB
+	UsedSpace       ->          0 MB
+	FreeSpave       ->    6000000 MB
+	Latency         ->   0.004160 s
+	avgSeekTime     ->   0.008500 s
+	maxTransferRate ->    216.000 MB/s
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = RESOURCE_CHARACTERISTICS_REQUEST; source = Broker; destination = Broker; Time= 0.0; endwaiting time = 0.0
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = REGISTER_RESOURCE; source = datacenter; destination = CloudInformationService; Time= 0.0; endwaiting time = 0.0; data = 3
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = RESOURCE_CHARACTERISTICS; source = Broker; destination = datacenter; Time= 0.0; endwaiting time = 0.0; data = 2
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = RESOURCE_CHARACTERISTICS; source = datacenter; destination = Broker; Time= 0.0; endwaiting time = 0.0; data = org.cloudbus.cloudsim.DatacenterCharacteristics@a67c67e
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_CREATE_ACK; source = Broker; destination = datacenter; Time= 0.0; endwaiting time = 0.0; data = org.cloudbus.cloudsim.power.PowerVm@3327bd23
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_CREATE_ACK; source = datacenter; destination = Broker; Time= 0.1; endwaiting time = 0.0; data = [I@4e1d422d
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = Broker; destination = datacenter; Time= 0.1; endwaiting time = 0.0; data = org.cloudbus.cloudsimdisk.MyCloudlet@1d16f93d
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = Broker; destination = datacenter; Time= 0.2; endwaiting time = 0.0; data = org.cloudbus.cloudsimdisk.MyCloudlet@47ef968d
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = Broker; destination = datacenter; Time= 0.3; endwaiting time = 0.0; data = org.cloudbus.cloudsimdisk.MyCloudlet@578486a3
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = Broker; destination = datacenter; Time= 0.4; endwaiting time = 0.0; data = org.cloudbus.cloudsimdisk.MyCloudlet@3a883ce7
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = Broker; destination = datacenter; Time= 0.5; endwaiting time = 0.0; data = org.cloudbus.cloudsimdisk.MyCloudlet@72b6cbcc
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = Broker; destination = datacenter; Time= 0.6; endwaiting time = 0.0; data = org.cloudbus.cloudsimdisk.MyCloudlet@67205a84
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = Broker; destination = datacenter; Time= 0.7; endwaiting time = 0.0; data = org.cloudbus.cloudsimdisk.MyCloudlet@131276c2
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = Broker; destination = datacenter; Time= 0.8; endwaiting time = 0.0; data = org.cloudbus.cloudsimdisk.MyCloudlet@1b68ddbd
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = Broker; destination = datacenter; Time= 0.81; endwaiting time = 0.0; data = org.cloudbus.cloudsimdisk.MyCloudlet@57e1b0c
+
+
+OBSERVATION>> Writting "FileA" on "hdd1" will take:
+              0.012664 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.005515 second(s) for rotation Latency;
+              0.059846 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd1" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 1
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = Cloudlet_Files_Done; source = datacenter; destination = datacenter; Time= 0.15984594128253177; endwaiting time = 0.0; data = [Ljava.lang.Object;@69a3d1d
+
+
+OBSERVATION>> Reading "FileA" on "hdd1" will take:
+              0.002719 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.001424 second(s) for rotation Latency;
+              0.045809 second(s) in TOTAL.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 2
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = Cloudlet_Files_Done; source = datacenter; destination = datacenter; Time= 0.20565537999817377; endwaiting time = 0.0; data = [Ljava.lang.Object;@37d31475
+
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 1
+OBSERVATION>> Writting "FileB" on "hdd2" will take:
+              0.024389 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.000330 second(s) for rotation Latency;
+              0.066386 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd2" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 1
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = Cloudlet_Files_Done; source = datacenter; destination = datacenter; Time= 0.26638602398388067; endwaiting time = 0.0; data = [Ljava.lang.Object;@4d3167f4
+
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 0
+OBSERVATION>> Hard disk drive "hdd1" is now in Idle mode.
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 0
+OBSERVATION>> Hard disk drive "hdd2" is now in Idle mode.
+
+OBSERVATION>> Writting "FileC" on "hdd3" will take:
+              0.024369 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.004716 second(s) for rotation Latency;
+              0.070752 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd3" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 1
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = Cloudlet_Files_Done; source = datacenter; destination = datacenter; Time= 0.37075169240394634; endwaiting time = 0.0; data = [Ljava.lang.Object;@3578436e
+
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 0
+OBSERVATION>> Hard disk drive "hdd3" is now in Idle mode.
+
+OBSERVATION>> Writting "FileD" on "hdd1" will take:
+              0.023176 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.006157 second(s) for rotation Latency;
+              0.071000 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd1" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 1
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = Cloudlet_Files_Done; source = datacenter; destination = datacenter; Time= 0.4709997061461052; endwaiting time = 0.0; data = [Ljava.lang.Object;@4516af24
+
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 0
+OBSERVATION>> Hard disk drive "hdd1" is now in Idle mode.
+
+OBSERVATION>> Writting "FileE" on "hdd2" will take:
+              0.007020 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.003864 second(s) for rotation Latency;
+              0.052550 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd2" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 1
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = Cloudlet_Files_Done; source = datacenter; destination = datacenter; Time= 0.5525503372833804; endwaiting time = 0.0; data = [Ljava.lang.Object;@140e5a13
+
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 0
+OBSERVATION>> Hard disk drive "hdd2" is now in Idle mode.
+
+OBSERVATION>> Writting "FileF" on "hdd3" will take:
+              0.003038 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.007073 second(s) for rotation Latency;
+              0.051778 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd3" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 1
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = Cloudlet_Files_Done; source = datacenter; destination = datacenter; Time= 0.6517778014020028; endwaiting time = 0.0; data = [Ljava.lang.Object;@33cb5951
+
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 0
+OBSERVATION>> Hard disk drive "hdd3" is now in Idle mode.
+
+OBSERVATION>> Writting "FileG" on "hdd1" will take:
+              0.007530 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.000916 second(s) for rotation Latency;
+              0.050112 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd1" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 1
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = Cloudlet_Files_Done; source = datacenter; destination = datacenter; Time= 0.7501122953686146; endwaiting time = 0.0; data = [Ljava.lang.Object;@15d9bc04
+
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 0
+OBSERVATION>> Hard disk drive "hdd1" is now in Idle mode.
+
+OBSERVATION>> Writting "FileH" on "hdd2" will take:
+              0.004465 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.003009 second(s) for rotation Latency;
+              0.049140 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd2" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 1
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = Cloudlet_Files_Done; source = datacenter; destination = datacenter; Time= 0.849140458600252; endwaiting time = 0.0; data = [Ljava.lang.Object;@176d53b2
+
+
+OBSERVATION>> Writting "FileI" on "hdd3" will take:
+              0.000734 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.000108 second(s) for rotation Latency;
+              0.042508 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd3" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 1
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = Cloudlet_Files_Done; source = datacenter; destination = datacenter; Time= 0.8525084562423917; endwaiting time = 0.0; data = [Ljava.lang.Object;@6328d34a
+
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 0
+OBSERVATION>> Hard disk drive "hdd2" is now in Idle mode.
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 0
+OBSERVATION>> Hard disk drive "hdd3" is now in Idle mode.
+
+
+
+*************************** RESULTS ***************************
+
+
+TIME SPENT IN IDLE/ACTIVE MODE FOR EACH STORAGE
+Storage "hdd1"
+        Idle intervale:     0.100 second(s)
+        Idle intervale:     0.194 second(s)
+        Idle intervale:     0.229 second(s)
+
+
+        Time in    Idle   mode:     0.626 second(s)
+        Time in   Active  mode:     0.227 second(s)
+        Time of the simulation:     0.853 second(s)
+
+
+        Energy consumed in  Idle   mode:     3.611 Joule(s)
+        Energy consumed in Active  mode:     2.556 Joule(s)
+        Energy consumed in  total      :     6.167 Joule(s)
+
+
+        Maximum Queue size    :          2 operation(s)
+
+
+Storage "hdd2"
+        Idle intervale:     0.200 second(s)
+        Idle intervale:     0.234 second(s)
+        Idle intervale:     0.247 second(s)
+
+
+        Time in    Idle   mode:     0.684 second(s)
+        Time in   Active  mode:     0.168 second(s)
+        Time of the simulation:     0.853 second(s)
+
+
+        Energy consumed in  Idle   mode:     4.699 Joule(s)
+        Energy consumed in Active  mode:     1.894 Joule(s)
+        Energy consumed in  total      :     6.594 Joule(s)
+
+
+        Maximum Queue size    :          1 operation(s)
+
+
+Storage "hdd3"
+        Idle intervale:     0.300 second(s)
+        Idle intervale:     0.229 second(s)
+        Idle intervale:     0.158 second(s)
+
+
+        Time in    Idle   mode:     0.687 second(s)
+        Time in   Active  mode:     0.165 second(s)
+        Time of the simulation:     0.853 second(s)
+
+
+        Energy consumed in  Idle   mode:     4.744 Joule(s)
+        Energy consumed in Active  mode:     1.860 Joule(s)
+        Energy consumed in  total      :     6.604 Joule(s)
+
+
+        Maximum Queue size    :          1 operation(s)
+
+
+
+
+Energy consumed by Persistent Storage: 19.364 Joule(s)
+

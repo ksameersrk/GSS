@@ -1,0 +1,80 @@
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = REGISTER_RESOURCE; source = MyDatacenter; destination = CloudInformationService; Time= 0.0; endwaiting time = 0.0; data = 2
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = RESOURCE_CHARACTERISTICS_REQUEST; source = MyBroker; destination = MyBroker; Time= 0.0; endwaiting time = 0.0
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = RESOURCE_CHARACTERISTICS; source = MyBroker; destination = MyDatacenter; Time= 0.0; endwaiting time = 0.0; data = 3
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = RESOURCE_CHARACTERISTICS; source = MyDatacenter; destination = MyBroker; Time= 0.0; endwaiting time = 0.0; data = org.cloudbus.cloudsim.DatacenterCharacteristics@29453f44
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_CREATE_ACK; source = MyBroker; destination = MyDatacenter; Time= 0.0; endwaiting time = 0.0; data = org.cloudbus.cloudsim.Vm@5cad8086
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_CREATE_ACK; source = MyBroker; destination = MyDatacenter; Time= 0.0; endwaiting time = 0.0; data = org.cloudbus.cloudsim.Vm@6e0be858
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_CREATE_ACK; source = MyDatacenter; destination = MyBroker; Time= 0.1; endwaiting time = 0.0; data = [I@61bbe9ba
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_CREATE_ACK; source = MyDatacenter; destination = MyBroker; Time= 0.1; endwaiting time = 0.0; data = [I@610455d6
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = MyBroker; destination = MyDatacenter; Time= 1000.1; endwaiting time = 0.0; data = org.cloudbus.cloudsim.Cloudlet@511d50c0
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = MyBroker; destination = MyDatacenter; Time= 1000.1; endwaiting time = 0.0; data = org.cloudbus.cloudsim.Cloudlet@60e53b93
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_SUBMIT; source = MyBroker; destination = MyDatacenter; Time= 90000.1; endwaiting time = 0.0; data = org.cloudbus.cloudsim.Cloudlet@5e2de80c
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_DATACENTER_EVENT; source = MyDatacenter; destination = MyDatacenter; Time= 2160.2; endwaiting time = 0.0
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_DATACENTER_EVENT; source = MyDatacenter; destination = MyDatacenter; Time= 2160.2; endwaiting time = 0.0
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_RETURN; source = MyDatacenter; destination = MyBroker; Time= 2160.2; endwaiting time = 0.0; data = org.cloudbus.cloudsim.Cloudlet@511d50c0
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_RETURN; source = MyDatacenter; destination = MyBroker; Time= 2160.2; endwaiting time = 0.0; data = org.cloudbus.cloudsim.Cloudlet@60e53b93
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_DATACENTER_EVENT; source = MyDatacenter; destination = MyDatacenter; Time= 180160.2; endwaiting time = 0.0
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = CLOUDLET_RETURN; source = MyDatacenter; destination = MyBroker; Time= 180160.2; endwaiting time = 0.0; data = org.cloudbus.cloudsim.Cloudlet@5e2de80c
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_DESTROY; source = MyBroker; destination = MyDatacenter; Time= 180160.2; endwaiting time = 0.0; data = org.cloudbus.cloudsim.Vm@5cad8086
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = VM_DESTROY; source = MyBroker; destination = MyDatacenter; Time= 180160.2; endwaiting time = 0.0; data = org.cloudbus.cloudsim.Vm@6e0be858
+
+
+CloudSim(future queue event added)
+: -->Event Type = SEND;Event tag = END_OF_SIMULATION; source = MyBroker; destination = MyBroker; Time= 180160.2; endwaiting time = 0.0
+
