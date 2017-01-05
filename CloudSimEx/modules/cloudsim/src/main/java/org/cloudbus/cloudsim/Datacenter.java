@@ -51,7 +51,7 @@ public class Datacenter extends SimEntity {
 	private double lastProcessTime;
 
 	/** The storage list. */
-	private List<Storage> storageList;
+	protected List<? extends Storage>	storageList;		// Type changed by Baptiste Louis
 
 	/** The vm list. */
 	private List<? extends Vm> vmList;
@@ -84,7 +84,7 @@ public class Datacenter extends SimEntity {
 			String name,
 			DatacenterCharacteristics characteristics,
 			VmAllocationPolicy vmAllocationPolicy,
-			List<Storage> storageList,
+			List<? extends Storage> storageList,
 			double schedulingInterval) throws Exception {
 		super(name);
 
@@ -791,7 +791,7 @@ public class Datacenter extends SimEntity {
 				Storage tempStorage = getStorageList().get(i);
 				File tempFile = tempStorage.getFile(fileName);
 				if (tempFile != null) {
-					time += tempFile.getSize() / tempStorage.getMaxTransferRate();
+					time += tempFile.getSize() / tempStorage.getMaxInternalDataTransferRate();
 					break;
 				}
 			}
@@ -966,7 +966,7 @@ public class Datacenter extends SimEntity {
 
 		for (int i = 0; i < getStorageList().size(); i++) {
 			tempStorage = getStorageList().get(i);
-			if (tempStorage.getAvailableSpace() >= file.getSize()) {
+			if (tempStorage.getFreeSpace() >= file.getSize()) {
 				tempStorage.addFile(file);
 				msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
 				break;
@@ -1158,8 +1158,8 @@ public class Datacenter extends SimEntity {
 	 * 
 	 * @return the storage list
 	 */
-	protected List<Storage> getStorageList() {
-		return storageList;
+	public <T extends Storage> List<T> getStorageList() { // Type and Access Modifiers changed by Baptiste Louis
+		return (List<T>) storageList;
 	}
 
 	/**
@@ -1167,7 +1167,8 @@ public class Datacenter extends SimEntity {
 	 * 
 	 * @param storageList the new storage list
 	 */
-	protected void setStorageList(List<Storage> storageList) {
+	protected void setStorageList(List<? extends Storage> storageList) { // Type changed by Baptiste
+		// Louis
 		this.storageList = storageList;
 	}
 

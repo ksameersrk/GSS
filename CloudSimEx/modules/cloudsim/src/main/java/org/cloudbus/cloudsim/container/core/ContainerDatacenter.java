@@ -893,7 +893,7 @@ public class ContainerDatacenter extends SimEntity {
                 Storage tempStorage = getStorageList().get(i);
                 File tempFile = tempStorage.getFile(fileName);
                 if (tempFile != null) {
-                    time += tempFile.getSize() / tempStorage.getMaxTransferRate();
+                    time += tempFile.getSize() / tempStorage.getMaxInternalDataTransferRate();
                     break;
                 }
             }
@@ -1064,7 +1064,7 @@ public class ContainerDatacenter extends SimEntity {
 
         for (int i = 0; i < getStorageList().size(); i++) {
             tempStorage = getStorageList().get(i);
-            if (tempStorage.getAvailableSpace() >= file.getSize()) {
+            if (tempStorage.getFreeSpace() >= file.getSize()) {
                 tempStorage.addFile(file);
                 msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
                 break;
