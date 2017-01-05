@@ -1057,7 +1057,7 @@ public class Datacenter extends SimEntity {
 
 		// send the registration to CIS
 		sendNow(gisID, CloudSimTags.REGISTER_RESOURCE, getId());
-        // for pause at periodic interval
+        // to create all pause events in beginning
 		if(CloudSim.pauseInterval > 0 && CloudSim.lifeLength > 0 ) {
 			int count =1;
 			while(CloudSim.pauseInterval*count <= CloudSim.lifeLength) {
@@ -1065,7 +1065,8 @@ public class Datacenter extends SimEntity {
 				count += 1;
 			}
 		}
-		//send(gisID, CloudSim.pauseInterval, CloudSimTags.PAUSE_SIMULATION_EVENT);
+		/*// to create pause events periodically
+		send(gisID, CloudSim.pauseInterval, CloudSimTags.PAUSE_SIMULATION_EVENT);*/
 		// Below method is for a child class to override
 		registerOtherEntity();
 	}

@@ -37,6 +37,7 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 
 /**
  * A simple example showing how to submit and destroy VMs and cloudlets with a delay.
+ * also pause the simulation at regular intervals and add cloudlets dynamically when paused
  */
 public class MiniGSS_0{
 
@@ -175,7 +176,7 @@ public class MiniGSS_0{
         CloudSim.stopSimulation();
         printCloudletList(newList);
 
-        Log.printLine("CloudSimExample7 finished!");
+        Log.printLine("MiniGSS_0 finished!");
     }
 
     private static void printCloudletList(List<Cloudlet> list) {
