@@ -125,25 +125,32 @@ public class MiniGSS_0{
 
         // Step 5: Create a Cloudlet
         // Cloudlet properties
-        cloudletList = createCloudlet(brokerId, 10, 0); // creating 10 cloudlets
+        cloudletList = createCloudlet(brokerId, 5, 0); // creating 10 cloudlets
 
         // submit cloudlet list to the broker with 10 sec Delay
         broker.submitCloudletList(cloudletList, 10);
+
+        cloudletList = createCloudlet(brokerId,5 ,500 );
+        broker.submitCloudletList(cloudletList, 600);
 
         // A thread that will create a new broker at 200 clock time
         Runnable monitor = new Runnable() {
             @Override
             public void run() {
                 int counter = 100;
+                int maxLimit = counter + 5;
                 while (CloudSim.clock() <= CloudSim.lifeLength ) {
                     if (CloudSim.isPaused())
                     {
                         double clock = CloudSim.clock();
-                        System.out.println("In main method; paused Simulation resumed at " + clock);
+                        if(counter <= maxLimit) { // limiting ourselves to add cloudlets only in first 5 iterations
+                            // so that all cloudlets get exeecuted before end of simulation
+                            //adding dynamic cloudlet
+                            cloudletList = createCloudlet(brokerId, 1, counter);
+                            broker.submitCloudletList(cloudletList, 0); // submit with zero delay i.e immediately
+                        }
 
-                        //adding dynamic cloudlet
-                        cloudletList = createCloudlet(brokerId, 1, counter);
-                        broker.submitCloudletList(cloudletList, 0); // submit with zero delay i.e immediately
+                        System.out.println("In main method; paused Simulation resumed at " + clock);
                         CloudSim.resumeSimulation();
                         counter += 1;
                     }
