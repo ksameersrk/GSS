@@ -1,0 +1,212 @@
+
+Starting simulation "My Example with Pause"
+
+OBSERVATION>> Hard disk drive "hdd1" is now in Idle mode.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 0
+OBSERVATION>> Hard disk drive "hdd2" is now in Idle mode.
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 0
+OBSERVATION>> Hard disk drive "hdd3" is now in Idle mode.
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 0
+OBSERVATION>> Initial persistent storage 
+1/3 hdd1
+	Capacity        ->    6000000 MB
+	UsedSpace       ->          0 MB
+	FreeSpave       ->    6000000 MB
+	Latency         ->   0.004160 s
+	avgSeekTime     ->   0.008500 s
+	maxTransferRate ->    216.000 MB/s
+OBSERVATION>> Initial persistent storage 
+2/3 hdd2
+	Capacity        ->    6000000 MB
+	UsedSpace       ->          0 MB
+	FreeSpave       ->    6000000 MB
+	Latency         ->   0.004160 s
+	avgSeekTime     ->   0.008500 s
+	maxTransferRate ->    216.000 MB/s
+OBSERVATION>> Initial persistent storage 
+3/3 hdd3
+	Capacity        ->    6000000 MB
+	UsedSpace       ->          0 MB
+	FreeSpave       ->    6000000 MB
+	Latency         ->   0.004160 s
+	avgSeekTime     ->   0.008500 s
+	maxTransferRate ->    216.000 MB/s
+
+OBSERVATION>> Writting "FileA" on "hdd1" will take:
+              0.013469 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.000966 second(s) for rotation Latency;
+              0.056101 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd1" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 1
+OBSERVATION>> #QueueLenght <hdd1> is now => 0
+OBSERVATION>> Hard disk drive "hdd1" is now in Idle mode.
+
+OBSERVATION>> Writting "FileD" on "hdd2" will take:
+              0.014191 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.000084 second(s) for rotation Latency;
+              0.055942 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd2" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 1
+OBSERVATION>> #QueueLenght <hdd2> is now => 0
+OBSERVATION>> Hard disk drive "hdd2" is now in Idle mode.
+
+OBSERVATION>> Writting "FileE" on "hdd3" will take:
+              0.024840 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.004549 second(s) for rotation Latency;
+              0.071055 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd3" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 1
+OBSERVATION>> #QueueLenght <hdd3> is now => 0
+OBSERVATION>> Hard disk drive "hdd3" is now in Idle mode.
+
+OBSERVATION>> Writting "FileB" on "hdd1" will take:
+              0.001235 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.003364 second(s) for rotation Latency;
+              0.046266 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd1" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 1
+OBSERVATION>> #QueueLenght <hdd1> is now => 0
+OBSERVATION>> Hard disk drive "hdd1" is now in Idle mode.
+
+OBSERVATION>> Writting "FileC" on "hdd2" will take:
+              0.000359 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.005630 second(s) for rotation Latency;
+              0.047656 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd2" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 1
+OBSERVATION>> #QueueLenght <hdd2> is now => 0
+OBSERVATION>> Hard disk drive "hdd2" is now in Idle mode.
+
+OBSERVATION>> Writting "FileF" on "hdd3" will take:
+              0.002460 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.006743 second(s) for rotation Latency;
+              0.050870 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd3" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 1
+OBSERVATION>> #QueueLenght <hdd3> is now => 0
+OBSERVATION>> Hard disk drive "hdd3" is now in Idle mode.
+
+OBSERVATION>> Writting "FileG" on "hdd1" will take:
+              0.016561 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.006477 second(s) for rotation Latency;
+              0.064705 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd1" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 1
+OBSERVATION>> #QueueLenght <hdd1> is now => 0
+OBSERVATION>> Hard disk drive "hdd1" is now in Idle mode.
+
+OBSERVATION>> Writting "FileH" on "hdd2" will take:
+              0.021921 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.001447 second(s) for rotation Latency;
+              0.065034 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd2" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd2> is now => 1
+OBSERVATION>> #QueueLenght <hdd2> is now => 0
+OBSERVATION>> Hard disk drive "hdd2" is now in Idle mode.
+
+OBSERVATION>> Writting "FileI" on "hdd3" will take:
+              0.003316 second(s) for SeekTime;
+              0.041667 second(s) for TransferTime;
+              0.000565 second(s) for rotation Latency;
+              0.045547 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd3" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd3> is now => 1
+OBSERVATION>> #QueueLenght <hdd3> is now => 0
+OBSERVATION>> Hard disk drive "hdd3" is now in Idle mode.
+
+
+
+*************************** RESULTS ***************************
+
+
+TIME SPENT IN IDLE/ACTIVE MODE FOR EACH STORAGE
+Storage "hdd1"
+        Idle intervale:    10.000 second(s)
+        Idle intervale:    29.944 second(s)
+        Idle intervale:    29.954 second(s)
+
+
+        Time in    Idle   mode:    89.833 second(s)
+        Time in   Active  mode:     0.167 second(s)
+        Time of the simulation:    90.000 second(s)
+
+
+        Energy consumed in  Idle   mode:   482.294 Joule(s)
+        Energy consumed in Active  mode:     1.883 Joule(s)
+        Energy consumed in  total      :   484.177 Joule(s)
+
+
+        Maximum Queue size    :          1 operation(s)
+
+
+Storage "hdd2"
+        Idle intervale:    20.000 second(s)
+        Idle intervale:    29.944 second(s)
+        Idle intervale:    29.952 second(s)
+
+
+        Time in    Idle   mode:    89.831 second(s)
+        Time in   Active  mode:     0.169 second(s)
+        Time of the simulation:    90.000 second(s)
+
+
+        Energy consumed in  Idle   mode:   551.285 Joule(s)
+        Energy consumed in Active  mode:     1.900 Joule(s)
+        Energy consumed in  total      :   553.186 Joule(s)
+
+
+        Maximum Queue size    :          1 operation(s)
+
+
+Storage "hdd3"
+        Idle intervale:    30.000 second(s)
+        Idle intervale:    29.929 second(s)
+        Idle intervale:    20.949 second(s)
+
+
+        Time in    Idle   mode:    89.833 second(s)
+        Time in   Active  mode:     0.167 second(s)
+        Time of the simulation:    90.000 second(s)
+
+
+        Energy consumed in  Idle   mode:   558.059 Joule(s)
+        Energy consumed in Active  mode:     1.887 Joule(s)
+        Energy consumed in  total      :   559.946 Joule(s)
+
+
+        Maximum Queue size    :          1 operation(s)
+
+
+
+
+Energy consumed by Persistent Storage: 1597.308 Joule(s)
+

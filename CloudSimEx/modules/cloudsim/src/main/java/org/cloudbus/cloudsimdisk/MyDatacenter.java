@@ -27,6 +27,7 @@ import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.cloudbus.cloudsim.ex.DatacenterEX;
 import org.cloudbus.cloudsimdisk.core.MyCloudSimTags;
 import org.cloudbus.cloudsimdisk.power.MyPowerHarddriveStorage;
 import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
@@ -38,7 +39,7 @@ import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
  * @author Baptiste Louis
  * 
  */
-public class MyDatacenter extends Datacenter {
+public class MyDatacenter extends DatacenterEX {
 
 	/** Round Robin Algorithm temp variable */
 	private int	tempRR	= -1;
