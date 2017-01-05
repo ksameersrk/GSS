@@ -128,14 +128,14 @@ public class MiniGSS_0{
         cloudletList = createCloudlet(brokerId, 10, 0); // creating 10 cloudlets
 
         // submit cloudlet list to the broker with 10 sec Delay
-        //broker.submitCloudletList(cloudletList, 10);
+        broker.submitCloudletList(cloudletList, 10);
 
         // A thread that will create a new broker at 200 clock time
         Runnable monitor = new Runnable() {
             @Override
             public void run() {
 
-                while (CloudSim.clock() < CloudSim.lifeLength ) {
+                while (CloudSim.clock() <= CloudSim.lifeLength ) {
                     if (CloudSim.isPaused())
                     {
                         double clock = CloudSim.clock();
