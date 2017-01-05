@@ -134,14 +134,18 @@ public class MiniGSS_0{
         Runnable monitor = new Runnable() {
             @Override
             public void run() {
-
+                int counter = 100;
                 while (CloudSim.clock() <= CloudSim.lifeLength ) {
                     if (CloudSim.isPaused())
                     {
                         double clock = CloudSim.clock();
                         System.out.println("In main method; paused Simulation resumed at " + clock);
 
+                        //adding dynamic cloudlet
+                        cloudletList = createCloudlet(brokerId, 1, counter);
+                        broker.submitCloudletList(cloudletList, 0); // submit with zero delay i.e immediately
                         CloudSim.resumeSimulation();
+                        counter += 1;
                     }
                     try {
                         Thread.sleep(10);
