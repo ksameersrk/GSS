@@ -7,6 +7,11 @@ import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 /**
  * Created by ksameersrk on 6/1/17.
  */
+
+/**
+ * a simple example demonstrating features of CloudSimDisk and that pause feature
+ * from CloudSimEX
+ */
 public class MyExampleWithPause {
     public static void main(String[] args) throws Exception {
 
