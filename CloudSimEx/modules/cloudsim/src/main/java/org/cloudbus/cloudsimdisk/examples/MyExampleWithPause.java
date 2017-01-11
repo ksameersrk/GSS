@@ -31,7 +31,7 @@ public class MyExampleWithPause {
                         CloudSim.resumeSimulation();
                     }
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -47,7 +47,7 @@ public class MyExampleWithPause {
         String nameOfTheSimulation = "My Example with Pause"; // name of the simulation
         String requestArrivalRateType = "basic"; // type of the workload
         String requestArrivalTimesSource = "basic/exampleWithPause/ex1RequestArrivalDistri.txt"; // time distribution
-        int numberOfRequest = 9; // Number of requests (MAX: 9)
+        int numberOfRequest = 10; // Number of requests
         String requiredFiles = ""; // No files required
         String dataFiles = "basic/exampleWithPause/ex1DataFiles.txt"; // dataFiles Names and Sizes
         String startingFilesList = ""; // No files to start

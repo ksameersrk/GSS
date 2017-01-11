@@ -1,6 +1,7 @@
 package org.cloudbus.cloudsimdisk.examples;
 
 import org.apache.commons.io.FileUtils;
+import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHddHGSTUltrastarHUC109090CSS600;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHddSeagateEnterpriseST6000VN0001;
@@ -21,9 +22,15 @@ import static org.cloudbus.cloudsimdisk.examples.Ring.buildRing;
 
 
 
-public class MySimulation1 {
-    public static void main(String[] args) throws Exception {
-        Ring ring = getRing("sources/org/cloudbus/cloudsimdisk/examples/rings.in");
+public class MySimulation1
+{
+    public static void main(String[] args) throws Exception
+    {
+        // IF THESE 2 VARIABLES ARE NOT INITIALIZED THEN SIMULATION WONT BE PAUSED
+        CloudSim.lifeLength = 100;
+        CloudSim.pauseInterval = 30;
+
+        Ring ring = getRing("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/rings.in");
         HashMap<Node, Tasks> simulation = new HashMap<>();
         String inputLog = "files/basic/MySimulation1/idealInputLog.txt";
         try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
@@ -116,10 +123,44 @@ public class MySimulation1 {
         Node n = task.getNode();
         String nameOfTheSimulation = "My Swift Example 0"; // name of the simulation
         String requestArrivalRateType = "basic"; // type of the workload
-        String requestArrivalTimesSource = "basic/MySimulation1/arrival.txt"; // time distribution
+        String requestArrivalTimesSource = "files/basic/MySimulation1/arrival.txt"; // time distribution
         int numberOfRequest = 1; // Number of requests
-        String reqdFiles = "basic/MySimulation1/reqdFile.txt";
-        String dataFiles = "basic/MySimulation1/dataFile.txt"; // dataFile Name and Size
+        String reqdFiles = "files/basic/MySimulation1/reqdFile.txt";
+        String dataFiles = "files/basic/MySimulation1/dataFile.txt"; // dataFile Name and Size
+        String startingFilesList = ""; // No files to start
+        int numberOfDisk = 1; // Number of disk in the persistent storage
+        StorageModelHdd hddModel = n.getStorageModel(); // model of disks in the persistent storage
+        PowerModelHdd hddPowerModel = n.getPowerModel(); // power model of disks
+
+        FileUtils.writeStringToFile(new File(requestArrivalTimesSource), task.getArrivalFile());
+        FileUtils.writeStringToFile(new File(dataFiles), task.getDataFile());
+        FileUtils.writeStringToFile(new File(reqdFiles), task.getReqdFile());
+
+        String tmp = task.getArrivalFile();
+        //int no_of_req = tmp.split("\n").length + 1;
+        if(tmp.contains("\n")) {
+            numberOfRequest = tmp.split("\n").length ;
+        }
+        // Execution
+        MyRunner simulation = new MyRunner(nameOfTheSimulation, requestArrivalRateType, numberOfRequest, requestArrivalTimesSource,
+                reqdFiles, dataFiles, startingFilesList, numberOfDisk, hddModel, hddPowerModel);
+
+        System.out.println(n + " : Energy Consumed : "+simulation.getTotalStorageEnergyConsumed() + " Joules()");
+        return simulation.getTotalStorageEnergyConsumed();
+    }
+
+    public static double putOperationWithPause(ArrayList<Tasks> tasks) throws Exception
+    {
+        // Temporary, to build. Just Calculating for First Node from the list.
+        Tasks task = tasks.get(0);
+
+        Node n = task.getNode();
+        String nameOfTheSimulation = "My Swift Example 0"; // name of the simulation
+        String requestArrivalRateType = "basic"; // type of the workload
+        String requestArrivalTimesSource = "basic/MySimulation1/arrival.txt"+"_"+n.getID(); // time distribution
+        int numberOfRequest = 1; // Number of requests
+        String reqdFiles = "basic/MySimulation1/reqdFile.txt"+"_"+n.getID();
+        String dataFiles = "basic/MySimulation1/dataFile.txt"+"_"+n.getID(); // dataFile Name and Size
         String startingFilesList = ""; // No files to start
         int numberOfDisk = 1; // Number of disk in the persistent storage
         StorageModelHdd hddModel = n.getStorageModel(); // model of disks in the persistent storage
@@ -134,11 +175,28 @@ public class MySimulation1 {
         if(tmp.contains("\n")) {
             numberOfRequest = tmp.split("\n").length ;
         }
+
+        Runnable monitor = new Runnable() {
+            @Override
+            public void run() {
+                while (CloudSim.clock() <= CloudSim.lifeLength ) {
+                    if (CloudSim.isPaused())
+                    {
+                        double clock = CloudSim.clock();
+                        System.out.println("Simulation Paused. Now resuming at " + clock);
+                        CloudSim.resumeSimulation();
+                    }
+                }
+            }
+        };
+        Thread resumingThread = new Thread(monitor);
+        resumingThread.setDaemon(true);
+        resumingThread.start();
+
         // Execution
         MyRunner simulation = new MyRunner(nameOfTheSimulation, requestArrivalRateType, numberOfRequest, requestArrivalTimesSource,
                 reqdFiles, dataFiles, startingFilesList, numberOfDisk, hddModel, hddPowerModel);
 
-        System.out.println(n + " : Energy Consumed : "+simulation.getTotalStorageEnergyConsumed() + " Joules()");
         return simulation.getTotalStorageEnergyConsumed();
     }
 }

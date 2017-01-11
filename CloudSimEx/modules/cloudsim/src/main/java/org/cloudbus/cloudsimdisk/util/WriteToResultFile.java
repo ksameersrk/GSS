@@ -9,7 +9,7 @@
  * Website: http://baptistelouis.weebly.com/projects.html
  *
  * Licence: GPL - http://www.gnu.org/copyleft/gpl.html
- * Copyright (c) 2015, Luleå University of Technology, Sweden.
+ * Copyright (c) 2015, Luleï¿½ University of Technology, Sweden.
  *******************************************************************************/
 
 package org.cloudbus.cloudsimdisk.util;
@@ -85,7 +85,7 @@ public class WriteToResultFile {
 
 		// Create a font
 		HSSFFont font = workbook.createFont();
-		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		font.setBold(true);
 
 		// Create a style
 		HSSFCellStyle style = workbook.createCellStyle();

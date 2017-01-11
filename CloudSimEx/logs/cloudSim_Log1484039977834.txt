@@ -1,0 +1,24 @@
+
+Starting simulation "My Swift Example 0"
+
+OBSERVATION>> Hard disk drive "hdd1" is now in Idle mode.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 0
+OBSERVATION>> Initial persistent storage 
+1/1 hdd1
+	Capacity        ->    5000000 MB
+	UsedSpace       ->          0 MB
+	FreeSpave       ->    5000000 MB
+	Latency         ->   0.004170 s
+	avgSeekTime     ->   0.009000 s
+	maxTransferRate ->    215.000 MB/s
+
+OBSERVATION>> Writting "Acct4/Container1/FileG" on "hdd1" will take:
+              0.014271 second(s) for SeekTime;
+              0.041860 second(s) for TransferTime;
+              0.003798 second(s) for rotation Latency;
+              0.059929 second(s) in TOTAL.
+
+OBSERVATION>> Hard disk drive "hdd1" is now in Active mode.
+
+OBSERVATION>> #QueueLenght <hdd1> is now => 1
