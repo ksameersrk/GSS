@@ -315,7 +315,9 @@ public class Helper {
 					MyConstants.CLOUDLET_UTILIZATION_MODEL_CPU, MyConstants.CLOUDLET_UTILIZATION_MODEL_RAM,
 					MyConstants.CLOUDLET_UTILIZATION_MODEL_BW, tempRequiredFilesList, tempDataFilesList));
 			cloudletList.get(i - 1).setUserId(broker.getId());
+			//bind cloudlet to vm
 			cloudletList.get(i - 1).setVmId(vmlist.get(0).getId());
+            //cloudletList.get(i - 1).setVmId(vmlist.get((i - 1)%2).getId());
 		}
 
 		// submit the list to the broker

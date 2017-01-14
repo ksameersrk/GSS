@@ -9,20 +9,14 @@
  * Website: http://baptistelouis.weebly.com/projects.html
  *
  * Licence: GPL - http://www.gnu.org/copyleft/gpl.html
- * Copyright (c) 2015, Luleå University of Technology, Sweden.
+ * Copyright (c) 2015, Luleï¿½ University of Technology, Sweden.
  *******************************************************************************/
 package org.cloudbus.cloudsimdisk.examples;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.cloudbus.cloudsim.CloudletScheduler;
-import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.UtilizationModel;
-import org.cloudbus.cloudsim.UtilizationModelFull;
-import org.cloudbus.cloudsim.VmScheduler;
-import org.cloudbus.cloudsim.VmSchedulerTimeShared;
+import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.power.models.PowerModel;
 import org.cloudbus.cloudsim.power.models.PowerModelSpecPowerHpProLiantMl110G4Xeon3040;
 import org.cloudbus.cloudsim.provisioners.BwProvisioner;
@@ -63,7 +57,7 @@ public class MyConstants {
 	public final static long VM_SIZE = 10000;
 	public final static int VM_PRIORITY = 1;
 	public final static String VM_VMM = "Xen";
-	public final static CloudletScheduler VM_CLOUDLET_SCHEDULER = new CloudletSchedulerTimeShared();
+	public final static CloudletScheduler VM_CLOUDLET_SCHEDULER = new CloudletSchedulerSpaceShared();
 	public final static double VM_SCHEDULING_INTERVVAL = 1;
 	
 	// Default Host parameters
