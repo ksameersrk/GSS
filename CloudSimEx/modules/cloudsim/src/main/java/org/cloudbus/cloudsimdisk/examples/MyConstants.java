@@ -57,7 +57,7 @@ public class MyConstants {
 	public final static long VM_SIZE = 10000;
 	public final static int VM_PRIORITY = 1;
 	public final static String VM_VMM = "Xen";
-	public final static CloudletScheduler VM_CLOUDLET_SCHEDULER = new CloudletSchedulerSpaceShared();
+	public final static CloudletScheduler VM_CLOUDLET_SCHEDULER = new CloudletSchedulerTimeShared();
 	public final static double VM_SCHEDULING_INTERVVAL = 1;
 	
 	// Default Host parameters

@@ -123,10 +123,10 @@ public class MySimulation1
         Node n = task.getNode();
         String nameOfTheSimulation = "My Swift Example 0"; // name of the simulation
         String requestArrivalRateType = "basic"; // type of the workload
-        String requestArrivalTimesSource = "files/basic/MySimulation1/arrival.txt"; // time distribution
+        String requestArrivalTimesSource = "basic/MySimulation1/arrival.txt"; // time distribution
         int numberOfRequest = 1; // Number of requests
-        String reqdFiles = "files/basic/MySimulation1/reqdFile.txt";
-        String dataFiles = "files/basic/MySimulation1/dataFile.txt"; // dataFile Name and Size
+        String reqdFiles = "basic/MySimulation1/reqdFile.txt";
+        String dataFiles = "basic/MySimulation1/dataFile.txt"; // dataFile Name and Size
         String startingFilesList = ""; // No files to start
         int numberOfDisk = 1; // Number of disk in the persistent storage
         StorageModelHdd hddModel = n.getStorageModel(); // model of disks in the persistent storage

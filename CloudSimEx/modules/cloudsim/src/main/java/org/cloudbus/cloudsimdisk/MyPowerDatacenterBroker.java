@@ -9,7 +9,7 @@
  * Website: http://baptistelouis.weebly.com/projects.html
  *
  * Licence: GPL - http://www.gnu.org/copyleft/gpl.html
- * Copyright (c) 2015, Luleå University of Technology, Sweden.
+ * Copyright (c) 2015, Luleï¿½ University of Technology, Sweden.
  *******************************************************************************/
 
 package org.cloudbus.cloudsimdisk;
@@ -152,6 +152,7 @@ public class MyPowerDatacenterBroker extends PowerDatacenterBroker {
 				distri = new UniformDistr(0, 10); // arbitrary parameters
 				break;
 			case "basic":
+
 				distri = new MyBasicDistr(source);
 				break;
 			case "wiki":

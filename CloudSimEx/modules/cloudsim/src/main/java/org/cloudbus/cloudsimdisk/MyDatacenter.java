@@ -14,6 +14,7 @@
 package org.cloudbus.cloudsimdisk;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,7 +30,9 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.ex.DatacenterEX;
 import org.cloudbus.cloudsimdisk.core.MyCloudSimTags;
+import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.MyPowerHarddriveStorage;
+import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
 
 /**
@@ -40,6 +43,9 @@ import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
  * 
  */
 public class MyDatacenter extends DatacenterEX {
+
+	public static HashMap<Cloudlet, StorageModelHdd> csmap = null;
+	public static Cloudlet curr = null;
 
 	/** Round Robin Algorithm temp variable */
 	private int	tempRR	= -1;
@@ -121,6 +127,7 @@ public class MyDatacenter extends DatacenterEX {
 				File tempFile = iter.next();
 
 				// Might need to move this in Datacenter.java
+                curr = cl;
 				int answerTag = this.addFile(tempFile);
 
 				// test if tempFile has been added
@@ -286,9 +293,11 @@ public class MyDatacenter extends DatacenterEX {
 		}
 
 		// test if the File is already stored
+        /*
 		if (contains(file.getName())) {
 			return DataCloudTags.FILE_ADD_ERROR_EXIST_READ_ONLY;
 		}
+		*/
 
 		// test if some persistent storage is available
 		if (getStorageList().size() <= 0) {
@@ -350,6 +359,19 @@ public class MyDatacenter extends DatacenterEX {
 
 				// ****************************************************************
 				break;
+
+            case 3:
+                tempStorage = (Storage)csmap.get(curr);
+                if (tempStorage.getFreeSpace() >= file.getSize()) {
+                    tempStorage.addFile(file);
+                    msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
+                }
+                else
+                {
+                    msg = DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
+                }
+                // ****************************************************************
+                break;
 
 			/*--------------------------------------------------------------------------------------
 			 |SCALABILITY: write your own algorithm to manage request to the persistent storage

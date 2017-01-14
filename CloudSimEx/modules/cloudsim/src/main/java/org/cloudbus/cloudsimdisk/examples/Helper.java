@@ -16,19 +16,9 @@ package org.cloudbus.cloudsimdisk.examples;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import org.cloudbus.cloudsim.DatacenterCharacteristics;
-import org.cloudbus.cloudsim.File;
-import org.cloudbus.cloudsim.Log;
-import org.cloudbus.cloudsim.ParameterException;
-import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.VmSchedulerTimeSharedOverSubscription;
+import java.util.*;
+
+import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.power.PowerHost;
 import org.cloudbus.cloudsim.power.PowerVm;
@@ -36,6 +26,7 @@ import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 import org.cloudbus.cloudsimdisk.MyCloudlet;
+import org.cloudbus.cloudsimdisk.MyDatacenter;
 import org.cloudbus.cloudsimdisk.MyPowerDatacenterBroker;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.MyPowerDatacenter;
@@ -135,6 +126,19 @@ public class Helper {
 		}
 	}
 
+    /**
+     * get Pe List.
+     *
+     * @param PesNumber
+     */
+    public ArrayList<Pe> getPeList(int PesNumber, int seed) {
+        ArrayList<Pe> tmp = new ArrayList<>();
+        for (int i = 1; i <= PesNumber; i++) {
+            tmp.add(new Pe(seed+i, new PeProvisionerSimple(MyConstants.HOST_MIPS)));
+        }
+        return tmp;
+    }
+
 	/**
 	 * Creates the host list.
 	 * 
@@ -175,6 +179,38 @@ public class Helper {
 		for (int i = 1; i <= storageNumber; i++) {
 			storageList.add(new MyPowerHarddriveStorage(i, "hdd" + i, hddModel, hddPowerModel));
 		}
+	}
+
+    public void createPersistentStorage(Set<Node> nodes) throws ParameterException {
+        for (Node n : nodes) {
+            storageList.add(new MyPowerHarddriveStorage(n.getID(), "Node HDD" + n.getID(), n.getStorageModel(), n.getPowerModel()));
+        }
+    }
+
+    /**
+     *  Create a Node
+     *      1 host
+     *      1 VM
+     *      1 PE
+     *      N HDD's
+     */
+    public void createNode(int zone_count)
+    {
+        for (int i = 1; i <= zone_count; i++) {
+            hostList.add(new PowerHost(i, new RamProvisionerSimple(MyConstants.HOST_RAM), new BwProvisionerSimple(
+                    MyConstants.HOST_BW), MyConstants.HOST_STORAGE, getPeList(1, i*100), new VmSchedulerTimeSharedOverSubscription(
+                    peList), MyConstants.HOST_POWER_MODEL));
+        }
+    }
+
+	/**
+	 *  Create a setup for DataCenter of Nodes
+	 */
+	public void createDataCenterNodes(int node_count, int zone_count, HashMap<Node, Tasks> simulation)
+	{
+        this.createHostList(zone_count);
+        this.createPeList(zone_count);
+        this.createVmList(zone_count);
 	}
 
 	/**
@@ -275,11 +311,11 @@ public class Helper {
 	 */
 	public void createCloudletList(int CloudlerNumber) throws ParameterException {
 
-		// local variable
-		ArrayList<String> tempRequiredFilesList = null;
-		ArrayList<File> tempDataFilesList = null;
+        // local variable
+        ArrayList<String> tempRequiredFilesList = null;
+        ArrayList<File> tempDataFilesList = null;
 
-		for (int i = 1; i <= CloudlerNumber; i++) {
+        for (int i = 1; i <= CloudlerNumber; i++) {
 
 			/*
 				// handle dataFiles
@@ -297,32 +333,74 @@ public class Helper {
 				}
 			*/
 
-			if (i <= dataFiles.size()) {
-				tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(i - 1)));
-				tempRequiredFilesList = null;
-			}
-			else if (i > dataFiles.size() && i <= (requiredFiles.size() + dataFiles.size())) {
-				tempRequiredFilesList = new ArrayList<String>(Arrays.asList(requiredFiles.get(i - dataFiles.size() - 1)));
-				tempDataFilesList = null;
-			} else {
-				tempRequiredFilesList = null;
-				tempDataFilesList = null;
-			}
+            if (i <= dataFiles.size()) {
+                tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(i - 1)));
+                tempRequiredFilesList = null;
+            }
+            else if (i > dataFiles.size() && i <= (requiredFiles.size() + dataFiles.size())) {
+                tempRequiredFilesList = new ArrayList<String>(Arrays.asList(requiredFiles.get(i - dataFiles.size() - 1)));
+                tempDataFilesList = null;
+            } else {
+                tempRequiredFilesList = null;
+                tempDataFilesList = null;
+            }
 
-			// create cloudlet
-			cloudletList.add(new MyCloudlet(i, MyConstants.CLOUDLET_LENGHT, MyConstants.CLOUDLET_PES_NUMBER,
-					MyConstants.CLOUDLET_FILE_SIZE, MyConstants.CLOUDLET_OUTPUT_SIZE,
-					MyConstants.CLOUDLET_UTILIZATION_MODEL_CPU, MyConstants.CLOUDLET_UTILIZATION_MODEL_RAM,
-					MyConstants.CLOUDLET_UTILIZATION_MODEL_BW, tempRequiredFilesList, tempDataFilesList));
-			cloudletList.get(i - 1).setUserId(broker.getId());
-			//bind cloudlet to vm
-			cloudletList.get(i - 1).setVmId(vmlist.get(0).getId());
-            //cloudletList.get(i - 1).setVmId(vmlist.get((i - 1)%2).getId());
-		}
+            // create cloudlet
+            cloudletList.add(new MyCloudlet(i, MyConstants.CLOUDLET_LENGHT, MyConstants.CLOUDLET_PES_NUMBER,
+                    MyConstants.CLOUDLET_FILE_SIZE, MyConstants.CLOUDLET_OUTPUT_SIZE,
+                    MyConstants.CLOUDLET_UTILIZATION_MODEL_CPU, MyConstants.CLOUDLET_UTILIZATION_MODEL_RAM,
+                    MyConstants.CLOUDLET_UTILIZATION_MODEL_BW, tempRequiredFilesList, tempDataFilesList));
+            cloudletList.get(i - 1).setUserId(broker.getId());
+            //bind cloudlet to vm
+            cloudletList.get(i - 1).setVmId(vmlist.get(0).getId());
+            // cloudletList.get(i - 1).setVmId(vmlist.get((i - 1)%2).getId());
+        }
 
-		// submit the list to the broker
-		broker.submitCloudletList(cloudletList);
-	}
+        // submit the list to the broker
+        broker.submitCloudletList(cloudletList);
+    }
+
+
+    public void createCloudletList(HashMap<Node, Tasks> simulation, ArrayList<Node> seq) throws ParameterException {
+
+        // local variable
+        ArrayList<String> tempRequiredFilesList = null;
+        ArrayList<File> tempDataFilesList = null;
+
+        HashMap<Cloudlet, StorageModelHdd> myMap = new HashMap<>();
+
+        for (int i = 1; i <= seq.size(); i++) {
+
+            if (i <= dataFiles.size()) {
+                tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(i - 1)));
+                tempRequiredFilesList = null;
+            }
+            else if (i > dataFiles.size() && i <= (requiredFiles.size() + dataFiles.size())) {
+                tempRequiredFilesList = new ArrayList<String>(Arrays.asList(requiredFiles.get(i - dataFiles.size() - 1)));
+                tempDataFilesList = null;
+            } else {
+                tempRequiredFilesList = null;
+                tempDataFilesList = null;
+            }
+
+            // create cloudlet
+            cloudletList.add(new MyCloudlet(i, MyConstants.CLOUDLET_LENGHT, MyConstants.CLOUDLET_PES_NUMBER,
+                    MyConstants.CLOUDLET_FILE_SIZE, MyConstants.CLOUDLET_OUTPUT_SIZE,
+                    MyConstants.CLOUDLET_UTILIZATION_MODEL_CPU, MyConstants.CLOUDLET_UTILIZATION_MODEL_RAM,
+                    MyConstants.CLOUDLET_UTILIZATION_MODEL_BW, tempRequiredFilesList, tempDataFilesList));
+            cloudletList.get(i - 1).setUserId(broker.getId());
+            //bind cloudlet to vm
+            cloudletList.get(i - 1).setVmId(vmlist.get(0).getId());
+            // cloudletList.get(i - 1).setVmId(vmlist.get((i - 1)%2).getId());
+
+            myMap.put(cloudletList.get(i-1), seq.get(i-1).getStorageModel());
+        }
+
+        MyDatacenter.csmap = myMap;
+
+        // submit the list to the broker
+        broker.submitCloudletList(cloudletList);
+    }
 
 	/**
 	 * @param startingFilesList

@@ -51,7 +51,7 @@ public class MyExampleWithPause {
         String requiredFiles = ""; // No files required
         String dataFiles = "basic/exampleWithPause/ex1DataFiles.txt"; // dataFiles Names and Sizes
         String startingFilesList = ""; // No files to start
-        int numberOfDisk = 2; // 1 HDD
+        int numberOfDisk = 5; // 1 HDD
         StorageModelHdd hddModel = MyConstants.STORAGE_MODEL_HDD; // model of disks in the persistent storage
         PowerModelHdd hddPowerModel = MyConstants.STORAGE_POWER_MODEL_HDD; // power model of disks
 

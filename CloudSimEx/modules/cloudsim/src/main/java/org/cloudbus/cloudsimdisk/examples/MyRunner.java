@@ -20,6 +20,9 @@ import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
 import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * A Runner to run storage examples.
  * 
@@ -37,6 +40,19 @@ public class MyRunner {
 	 * End Time of the simulation.
 	 */
 	public double	endTimeSimulation	= 0.0;
+
+	/**
+	 * Number of processing units [Host, VM, PE]
+	 */
+	public static int numberOfProcessingUnits = 1;
+
+	/**
+	 * set numberOfProcessingUnits
+	 */
+	public static void setNumberOfProcessingUnits(int num)
+	{
+		MyRunner.numberOfProcessingUnits = num;
+	}
 
 	/**
 	 * Create a Runner to run a MyExampleX scenario.
@@ -72,6 +88,42 @@ public class MyRunner {
 		// END
 	}
 
+	public MyRunner(HashMap<Node, Tasks> simulation, String arrivalFile, String dataFile, ArrayList<Node> seq) throws Exception
+    {
+        Log.printLine("Starting simulation \n");
+        WriteToLogFile.AddtoFile("Starting simulation \n");
+        WriteToResultFile.init();
+
+        //-----------------INIT-----------------//
+        helper.initCloudSim();
+        helper.createBroker("basic", arrivalFile);
+        helper.createPeList(numberOfProcessingUnits);
+        helper.createHostList(numberOfProcessingUnits);
+        helper.createVmList(numberOfProcessingUnits);
+        helper.createPersistentStorage(simulation.keySet());
+        helper.createDatacenterCharacteristics();
+        helper.createDatacenter();
+
+        // Files
+        helper.addFiles("");
+        helper.createRequiredFilesList("");
+        helper.createDataFilesList(dataFile);
+
+        // Cloudlets
+        helper.createCloudletList(simulation, seq);
+
+        // Logs
+        helper.printPersistenStorageDetails();
+        //--------------INIT END----------------//
+
+
+        start();
+        print();
+
+        WriteToResultFile.end();
+        Log.printLine("END !");
+    }
+
 	/**
 	 * Initialize the simulation.
 	 * 
@@ -96,9 +148,9 @@ public class MyRunner {
 		// Entities
 		helper.initCloudSim();
 		helper.createBroker(type, RequestArrivalDistri);
-		helper.createPeList(1);
-		helper.createHostList(1);
-		helper.createVmList(1);
+		helper.createPeList(numberOfProcessingUnits);
+		helper.createHostList(numberOfProcessingUnits);
+		helper.createVmList(numberOfProcessingUnits);
 		helper.createPersistentStorage(NumberOfDisk, hddModel, hddPowerModel);
 		helper.createDatacenterCharacteristics();
 		helper.createDatacenter();
