@@ -188,6 +188,8 @@ public class Helper {
         for (Node n : nodes) {
         	tmp = new MyPowerHarddriveStorage(n.getID(), "Node HDD" + n.getID(), n.getStorageModel(), n.getPowerModel());
             storageList.add(tmp);
+
+            // creating a hashmap where key is node and value is Disk, so assigning a disk to each node
             nmmap.put(n, tmp);
         }
     }
@@ -398,10 +400,13 @@ public class Helper {
             cloudletList.get(i - 1).setVmId(vmlist.get(0).getId());
             // cloudletList.get(i - 1).setVmId(vmlist.get((i - 1)%2).getId());
 
+			// creating a hashmap where key is cloudlet and value is Disk, so assigning a disk to each cloudlet
             myMap.put(cloudletList.get(i-1), nmmap.get(seq.get(i-1)));
         }
 
-        MyDatacenter.csmap = myMap;
+        // passing all the mappings to MyDatacenter.java
+        //MyDatacenter.csmap = myMap;
+        MyDatacenter.csmap.putAll(myMap);
 
         // submit the list to the broker
         broker.submitCloudletList(cloudletList);

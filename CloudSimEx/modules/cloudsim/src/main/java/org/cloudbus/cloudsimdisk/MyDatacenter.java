@@ -44,7 +44,7 @@ import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
  */
 public class MyDatacenter extends DatacenterEX {
 
-	public static HashMap<Cloudlet, MyPowerHarddriveStorage> csmap = null;
+	public static HashMap<Cloudlet, MyPowerHarddriveStorage> csmap = new HashMap<Cloudlet, MyPowerHarddriveStorage>();
 	public static Cloudlet curr = null;
 
 	/** Round Robin Algorithm temp variable */
@@ -127,6 +127,8 @@ public class MyDatacenter extends DatacenterEX {
 				File tempFile = iter.next();
 
 				// Might need to move this in Datacenter.java
+
+				// updating global variable curr(used in addFile() ) with value of local variable cl
                 curr = cl;
 				int answerTag = this.addFile(tempFile);
 
