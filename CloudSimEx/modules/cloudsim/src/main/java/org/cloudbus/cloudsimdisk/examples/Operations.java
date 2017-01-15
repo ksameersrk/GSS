@@ -59,6 +59,14 @@ public class Operations
                 }
             }
         }
+        ArrayList<Node> all = new ArrayList<Node>(simulation.keySet());
+        all.sort(Comparator.comparing(Node::getID));
+        System.out.println("Check the mapping with assignment : ");
+        for(Node n : all)
+        {
+            System.out.println(n.getID()+ " : "+simulation.get(n).getFiles());
+        }
+
         Double totalEnergyConsumed = 0.0;
         // ArrayList<Node> t = new ArrayList<>(simulation.keySet());
         // t.sort(Comparator.comparing(Node::getID));

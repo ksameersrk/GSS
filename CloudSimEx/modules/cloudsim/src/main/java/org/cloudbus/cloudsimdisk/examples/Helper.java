@@ -92,6 +92,8 @@ public class Helper {
 	 */
 	public DatacenterCharacteristics			datacenterCharacteristics;
 
+	public HashMap<Node, MyPowerHarddriveStorage> nmmap = new HashMap<>();
+
 	// Methods
 	/**
 	 * Initialize CloudSim.
@@ -182,8 +184,11 @@ public class Helper {
 	}
 
     public void createPersistentStorage(Set<Node> nodes) throws ParameterException {
+		MyPowerHarddriveStorage tmp = null;
         for (Node n : nodes) {
-            storageList.add(new MyPowerHarddriveStorage(n.getID(), "Node HDD" + n.getID(), n.getStorageModel(), n.getPowerModel()));
+        	tmp = new MyPowerHarddriveStorage(n.getID(), "Node HDD" + n.getID(), n.getStorageModel(), n.getPowerModel());
+            storageList.add(tmp);
+            nmmap.put(n, tmp);
         }
     }
 
@@ -367,7 +372,7 @@ public class Helper {
         ArrayList<String> tempRequiredFilesList = null;
         ArrayList<File> tempDataFilesList = null;
 
-        HashMap<Cloudlet, StorageModelHdd> myMap = new HashMap<>();
+        HashMap<Cloudlet, MyPowerHarddriveStorage> myMap = new HashMap<>();
 
         for (int i = 1; i <= seq.size(); i++) {
 
@@ -393,7 +398,7 @@ public class Helper {
             cloudletList.get(i - 1).setVmId(vmlist.get(0).getId());
             // cloudletList.get(i - 1).setVmId(vmlist.get((i - 1)%2).getId());
 
-            myMap.put(cloudletList.get(i-1), seq.get(i-1).getStorageModel());
+            myMap.put(cloudletList.get(i-1), nmmap.get(seq.get(i-1)));
         }
 
         MyDatacenter.csmap = myMap;

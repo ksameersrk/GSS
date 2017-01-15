@@ -75,6 +75,16 @@ public class Tasks {
         return sb.toString().trim();
     }
 
+    public String getFiles()
+    {
+        StringBuilder sb = new StringBuilder();
+        for(String str : dataFiles)
+        {
+            sb.append(str+",");
+        }
+        return sb.toString().trim();
+    }
+
     public String getReqdFile()
     {
         StringBuilder sb = new StringBuilder();

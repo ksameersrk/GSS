@@ -44,7 +44,7 @@ import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
  */
 public class MyDatacenter extends DatacenterEX {
 
-	public static HashMap<Cloudlet, StorageModelHdd> csmap = null;
+	public static HashMap<Cloudlet, MyPowerHarddriveStorage> csmap = null;
 	public static Cloudlet curr = null;
 
 	/** Round Robin Algorithm temp variable */
@@ -284,7 +284,7 @@ public class MyDatacenter extends DatacenterEX {
 
 		/************ HDD POOL MANAGEMENT ******/
 		/* Select the storage algorithm */
-		int key = 2;
+		int key = 3;
 		/*************************************/
 
 		// test if the file is NULL
