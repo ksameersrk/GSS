@@ -82,6 +82,10 @@ public class Tasks {
         {
             sb.append(str+",");
         }
+        for(String str : reqdFiles)
+        {
+            sb.append(str+"\n");
+        }
         return sb.toString().trim();
     }
 

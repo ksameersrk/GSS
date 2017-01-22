@@ -9,7 +9,7 @@
  * Website: http://baptistelouis.weebly.com/projects.html
  *
  * Licence: GPL - http://www.gnu.org/copyleft/gpl.html
- * Copyright (c) 2015, Luleå University of Technology, Sweden.
+ * Copyright (c) 2015, Luleï¿½ University of Technology, Sweden.
  *******************************************************************************/
 
 package org.cloudbus.cloudsimdisk;
@@ -36,6 +36,12 @@ public class MyCloudlet extends Cloudlet {
 
 	/** The data files. */
 	private List<File>		dataFiles		= null;
+
+	/** The update files. */
+	private  List<File>		updateFiles		= null;
+
+	/** The delete files. */
+	private  List<File>		deleteFiles 	= null;
 
 	/**
 	 * The constructor.
@@ -74,6 +80,9 @@ public class MyCloudlet extends Cloudlet {
 		setDataFiles(dataFiles);
 	}
 
+	// constructor overloading for where all 4 operations(PUT, GET, UPDATE, DELETE) are to be performed
+
+
 	// GETTER AND SETTER
 
 	/**
@@ -110,5 +119,36 @@ public class MyCloudlet extends Cloudlet {
 	public void setDataFiles(List<File> dataFiles) {
 		this.dataFiles = dataFiles;
 	}
+
+	/**
+	 * @return the updateFiles
+	 */
+	public List<File> getUpdateFiles() {
+		return updateFiles;
+	}
+
+	/**
+	 * @param updateFiles
+	 *            the updateFiles to set
+	 */
+	public void setUpdateFiles(List<File> updateFiles) {
+		this.updateFiles = updateFiles;
+	}
+
+	/**
+	 * @return the deleteFiles
+	 */
+	public List<File> getDeleteFiles() {
+		return deleteFiles;
+	}
+
+	/**
+	 * @param deleteFiles
+	 *            the deleteFiles to set
+	 */
+	public void setDeleteFiles(List<File> deleteFiles) {
+		this.deleteFiles = deleteFiles;
+	}
+
 
 }

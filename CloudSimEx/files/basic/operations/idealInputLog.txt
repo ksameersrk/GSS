@@ -9,4 +9,4 @@ PUT,60,Acct2/Container2/FileH,443
 PUT,70,Acct3/Container1/FileI,3
 PUT,80,Acct4/Container5/FileJ,356
 PUT,80,Acct1/Container1/FileK,576
-PUT,80,Acct3/Container4/FileL,978
+GET,80,Acct4/Container1/FileG

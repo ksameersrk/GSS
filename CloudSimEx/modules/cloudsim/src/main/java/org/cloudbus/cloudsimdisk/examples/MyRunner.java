@@ -124,6 +124,42 @@ public class MyRunner {
         Log.printLine("END !");
     }
 
+	public MyRunner(HashMap<Node, Tasks> simulation, String arrivalFile, String putDataFile, String getDataFile, ArrayList<Node> seq) throws Exception
+	{
+		Log.printLine("Starting simulation \n");
+		WriteToLogFile.AddtoFile("Starting simulation \n");
+		WriteToResultFile.init();
+
+		//-----------------INIT-----------------//
+		helper.initCloudSim();
+		helper.createBroker("basic", arrivalFile);
+		helper.createPeList(numberOfProcessingUnits);
+		helper.createHostList(numberOfProcessingUnits);
+		helper.createVmList(numberOfProcessingUnits);
+		helper.createPersistentStorage(simulation.keySet());
+		helper.createDatacenterCharacteristics();
+		helper.createDatacenter();
+
+		// Files
+		helper.addFiles("");
+		helper.createRequiredFilesList(getDataFile);
+		helper.createDataFilesList(putDataFile);
+
+		// Cloudlets
+		helper.createCloudletList(simulation, seq);
+
+		// Logs
+		helper.printPersistenStorageDetails();
+		//--------------INIT END----------------//
+
+
+		start();
+		print();
+
+		WriteToResultFile.end();
+		Log.printLine("END !");
+	}
+
 	/**
 	 * Initialize the simulation.
 	 * 

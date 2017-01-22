@@ -31,46 +31,79 @@ public class Operations
         CloudSim.lifeLength = 100;
         CloudSim.pauseInterval = 30;
 
+        // Create the ring
         Ring ring = getRing("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/rings.in");
-        HashMap<Node, Tasks> simulation = new HashMap<>();
+        HashMap<Node, Tasks> nodeToTaskMapping = new HashMap<>();
         String inputLog = "files/basic/operations/idealInputLog.txt";
         ArrayList<String> arrivalFile = new ArrayList<>();
         ArrayList<String> dataFile = new ArrayList<>();
-        ArrayList<Node> seq = new ArrayList<>();
+        ArrayList<String> requiredFile = new ArrayList<>();
+        ArrayList<Node> nodeList = new ArrayList<>();
+        // for PUT operation
         try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
                 String data[] = line.split(",");
-                arrivalFile.add(data[1]);
-                arrivalFile.add(data[1]);
-                arrivalFile.add(data[1]);
-                dataFile.add(data[2]+","+data[3]);
-                dataFile.add(data[2]+","+data[3]);
-                dataFile.add(data[2]+","+data[3]);
-                for(Node n : ring.getNodes(data[2]))
-                {
-                    seq.add(n);
-                    if (simulation.containsKey(n)) {
-                        simulation.get(n).addTask(line);
-                    } else {
-                        simulation.put(n, new Tasks(n, line));
+
+                if(data[0].equals("PUT")) {
+                    arrivalFile.add(data[1]);
+                    arrivalFile.add(data[1]);
+                    arrivalFile.add(data[1]);
+                    dataFile.add(data[2] + "," + data[3]);
+                    dataFile.add(data[2] + "," + data[3]);
+                    dataFile.add(data[2] + "," + data[3]);
+
+                    for(Node n : ring.getNodes(data[2]))
+                    {
+                        nodeList.add(n);
+                        if (nodeToTaskMapping.containsKey(n)) {
+                            nodeToTaskMapping.get(n).addTask(line);
+                        } else {
+                            nodeToTaskMapping.put(n, new Tasks(n, line));
+                        }
                     }
                 }
+
+
             }
         }
-        ArrayList<Node> all = new ArrayList<Node>(simulation.keySet());
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                String data[] = line.split(",");
+
+                if(data[0].equals("GET")) {
+                    arrivalFile.add(data[1]);
+                    requiredFile.add(data[2]);
+                    ArrayList<Node> nodes = ring.getNodes(data[2]);
+                    Node n = nodes.get(0);
+                    nodeList.add(n);
+                    if (nodeToTaskMapping.containsKey(n)) {
+                        nodeToTaskMapping.get(n).addTask(line);
+                    } else {
+                        nodeToTaskMapping.put(n, new Tasks(n, line));
+                    }
+                }
+
+
+
+
+            }
+        }
+        ArrayList<Node> all = new ArrayList<Node>(nodeToTaskMapping.keySet());
         all.sort(Comparator.comparing(Node::getID));
         System.out.println("Check the mapping with assignment : ");
         for(Node n : all)
         {
-            System.out.println(n.getID()+ " : "+simulation.get(n).getFiles());
+            System.out.println(n.getID()+ " : "+nodeToTaskMapping.get(n).getFiles());
         }
 
         Double totalEnergyConsumed = 0.0;
-        // ArrayList<Node> t = new ArrayList<>(simulation.keySet());
+        // ArrayList<Node> t = new ArrayList<>(nodeToTaskMapping.keySet());
         // t.sort(Comparator.comparing(Node::getID));
-        totalEnergyConsumed = putOperation(simulation, arrivalFile, dataFile, seq);
+        totalEnergyConsumed = performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, nodeList);
         System.out.println("\n\nTotal Energy Consumed : "+totalEnergyConsumed);
     }
 
@@ -113,7 +146,7 @@ public class Operations
     }
 
 
-    public static double putOperation(HashMap<Node, Tasks> simulation, ArrayList<String> arrivalFile, ArrayList<String> dataFile, ArrayList<Node> seq) throws Exception
+    public static double performOperations(HashMap<Node, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile, ArrayList<String> requiredFile, ArrayList<Node> nodeList) throws Exception
     {
         Runnable monitor = new Runnable() {
             @Override
@@ -140,23 +173,32 @@ public class Operations
 
 
         String arrival = "basic/operations/arrival.txt";
-        String data = "basic/operations/data.txt";
+        String putData = "basic/operations/putData.txt";
+        String getData = "basic/operations/getData.txt";
 
-        StringBuilder sb1 = new StringBuilder();
-        StringBuilder sb2 = new StringBuilder();
+        StringBuilder arrivalTimes = new StringBuilder();
+        StringBuilder putOpData = new StringBuilder();
+        StringBuilder getOpData = new StringBuilder();
         for(String x : arrivalFile)
         {
-            sb1.append(x+"\n");
+            arrivalTimes.append(x+"\n");
         }
+        arrivalTimes.setLength(arrivalTimes.length() - 1);
         for(String x : dataFile)
         {
-            sb2.append(x+"\n");
+            putOpData.append(x+"\n");
         }
+        putOpData.setLength(putOpData.length() - 1);
+        for(String x : requiredFile)
+        {
+            getOpData.append(x+"\n");
+        }
+        getOpData.setLength(getOpData.length() - 1);
+        FileUtils.writeStringToFile(new File("files/"+arrival), arrivalTimes.toString());
+        FileUtils.writeStringToFile(new File("files/"+putData), putOpData.toString());
+        FileUtils.writeStringToFile(new File("files/"+getData), getOpData.toString());
 
-        FileUtils.writeStringToFile(new File("files/"+arrival), sb1.toString());
-        FileUtils.writeStringToFile(new File("files/"+data), sb2.toString());
-
-        MyRunner run = new MyRunner(simulation, arrival, data, seq);
+        MyRunner run = new MyRunner(nodeToTaskMapping, arrival, putData, getData, nodeList);
         System.out.println("Energy Consumed : "+run.getTotalStorageEnergyConsumed() + " Joules()");
         return run.getTotalStorageEnergyConsumed();
     }

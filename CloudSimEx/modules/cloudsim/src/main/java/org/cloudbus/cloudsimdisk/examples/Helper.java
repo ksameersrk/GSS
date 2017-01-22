@@ -213,7 +213,7 @@ public class Helper {
 	/**
 	 *  Create a setup for DataCenter of Nodes
 	 */
-	public void createDataCenterNodes(int node_count, int zone_count, HashMap<Node, Tasks> simulation)
+	public void createDataCenterNodes(int node_count, int zone_count, HashMap<Node, Tasks> nodeToTaskMapping)
 	{
         this.createHostList(zone_count);
         this.createPeList(zone_count);
@@ -368,7 +368,7 @@ public class Helper {
     }
 
 
-    public void createCloudletList(HashMap<Node, Tasks> simulation, ArrayList<Node> seq) throws ParameterException {
+    public void createCloudletList(HashMap<Node, Tasks> nodeToTaskMapping, ArrayList<Node> nodeList) throws ParameterException {
 
         // local variable
         ArrayList<String> tempRequiredFilesList = null;
@@ -376,7 +376,7 @@ public class Helper {
 
         HashMap<Cloudlet, MyPowerHarddriveStorage> myMap = new HashMap<>();
 
-        for (int i = 1; i <= seq.size(); i++) {
+        for (int i = 1; i <= nodeList.size(); i++) {
 
             if (i <= dataFiles.size()) {
                 tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(i - 1)));
@@ -401,7 +401,7 @@ public class Helper {
             // cloudletList.get(i - 1).setVmId(vmlist.get((i - 1)%2).getId());
 
 			// creating a hashmap where key is cloudlet and value is Disk, so assigning a disk to each cloudlet
-            myMap.put(cloudletList.get(i-1), nmmap.get(seq.get(i-1)));
+            myMap.put(cloudletList.get(i-1), nmmap.get(nodeList.get(i-1)));
         }
 
         // passing all the mappings to MyDatacenter.java
