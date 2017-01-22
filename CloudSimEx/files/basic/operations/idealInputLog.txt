@@ -8,5 +8,6 @@ PUT,60,Acct4/Container1/FileG,9
 PUT,60,Acct2/Container2/FileH,443
 PUT,70,Acct3/Container1/FileI,3
 PUT,80,Acct4/Container5/FileJ,356
-PUT,80,Acct1/Container1/FileK,576
+UPDATE,80,Acct4/Container5/FileJ,576
+DELETE,80,Acct2/Container2/FileH
 GET,80,Acct4/Container1/FileG

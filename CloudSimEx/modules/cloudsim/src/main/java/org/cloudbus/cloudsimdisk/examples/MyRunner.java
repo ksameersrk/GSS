@@ -124,7 +124,7 @@ public class MyRunner {
         Log.printLine("END !");
     }
 
-	public MyRunner(HashMap<Node, Tasks> simulation, String arrivalFile, String putDataFile, String getDataFile, ArrayList<Node> seq) throws Exception
+	public MyRunner(HashMap<Node, Tasks> simulation, String arrivalFile, String putDataFile, String getDataFile, String updateDataFile, String deleteDataFile, ArrayList<Node> seq) throws Exception
 	{
 		Log.printLine("Starting simulation \n");
 		WriteToLogFile.AddtoFile("Starting simulation \n");
@@ -144,6 +144,8 @@ public class MyRunner {
 		helper.addFiles("");
 		helper.createRequiredFilesList(getDataFile);
 		helper.createDataFilesList(putDataFile);
+		helper.createUpdateFilesList(updateDataFile);
+		helper.createDeleteFilesList(deleteDataFile);
 
 		// Cloudlets
 		helper.createCloudletList(simulation, seq);

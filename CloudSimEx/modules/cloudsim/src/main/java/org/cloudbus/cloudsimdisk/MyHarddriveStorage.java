@@ -9,7 +9,7 @@
  * Website: http://baptistelouis.weebly.com/projects.html
  *
  * Licence: GPL - http://www.gnu.org/copyleft/gpl.html
- * Copyright (c) 2015, Luleå University of Technology, Sweden.
+ * Copyright (c) 2015, Luleï¿½ University of Technology, Sweden.
  *******************************************************************************/
 
 package org.cloudbus.cloudsimdisk;
@@ -646,7 +646,8 @@ public class MyHarddriveStorage implements Storage {
 		// retrieve transaction times
 		double seekTime = getSeekTime();
 		double rotationLatency = getRotLatency();
-		double transferTime = getTransferTime(file.getSize());
+		//double transferTime = getTransferTime(file.getSize());
+		double transferTime = getTransferTime(0);
 
 		// check if the file is in the storage
 		if (contains(file)) {
@@ -659,6 +660,17 @@ public class MyHarddriveStorage implements Storage {
 		return result;
 	}
 
+	// to update file contents
+	public double updateFile(File file){
+		double result = 0.0;
+		if (!isFileValid(file, "updateFile()")) {
+			return result;
+		}
+
+		deleteFile(file);
+		result = addFile(file);
+		return  result;
+	}
 	/**
 	 * Checks whether a certain file is on the storage or not.
 	 * 

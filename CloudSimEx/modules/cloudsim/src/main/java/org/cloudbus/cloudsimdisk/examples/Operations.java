@@ -38,6 +38,8 @@ public class Operations
         ArrayList<String> arrivalFile = new ArrayList<>();
         ArrayList<String> dataFile = new ArrayList<>();
         ArrayList<String> requiredFile = new ArrayList<>();
+        ArrayList<String> updateFile = new ArrayList<>();
+        ArrayList<String> deleteFile = new ArrayList<>();
         ArrayList<Node> nodeList = new ArrayList<>();
         // for PUT operation
         try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
@@ -64,10 +66,9 @@ public class Operations
                         }
                     }
                 }
-
-
             }
         }
+        // for GET operation
         try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -86,10 +87,62 @@ public class Operations
                         nodeToTaskMapping.put(n, new Tasks(n, line));
                     }
                 }
+            }
+        }
 
+        // for UPDATE operation
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                String data[] = line.split(",");
 
+                if(data[0].equals("UPDATE")) {
+                    arrivalFile.add(data[1]);
+                    arrivalFile.add(data[1]);
+                    arrivalFile.add(data[1]);
+                    updateFile.add(data[2] + "," + data[3]);
+                    updateFile.add(data[2] + "," + data[3]);
+                    updateFile.add(data[2] + "," + data[3]);
 
+                    for(Node n : ring.getNodes(data[2]))
+                    {
+                        nodeList.add(n);
+                        if (nodeToTaskMapping.containsKey(n)) {
+                            nodeToTaskMapping.get(n).addTask(line);
+                        } else {
+                            nodeToTaskMapping.put(n, new Tasks(n, line));
+                        }
+                    }
+                }
+            }
+        }
 
+        // for DELETE operation
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                String data[] = line.split(",");
+
+                if(data[0].equals("DELETE")) {
+                    arrivalFile.add(data[1]);
+                    arrivalFile.add(data[1]);
+                    arrivalFile.add(data[1]);
+                    deleteFile.add(data[2]);
+                    deleteFile.add(data[2]);
+                    deleteFile.add(data[2]);
+
+                    for(Node n : ring.getNodes(data[2]))
+                    {
+                        nodeList.add(n);
+                        if (nodeToTaskMapping.containsKey(n)) {
+                            nodeToTaskMapping.get(n).addTask(line);
+                        } else {
+                            nodeToTaskMapping.put(n, new Tasks(n, line));
+                        }
+                    }
+                }
             }
         }
         ArrayList<Node> all = new ArrayList<Node>(nodeToTaskMapping.keySet());
@@ -103,7 +156,7 @@ public class Operations
         Double totalEnergyConsumed = 0.0;
         // ArrayList<Node> t = new ArrayList<>(nodeToTaskMapping.keySet());
         // t.sort(Comparator.comparing(Node::getID));
-        totalEnergyConsumed = performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, nodeList);
+        totalEnergyConsumed = performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList);
         System.out.println("\n\nTotal Energy Consumed : "+totalEnergyConsumed);
     }
 
@@ -146,7 +199,7 @@ public class Operations
     }
 
 
-    public static double performOperations(HashMap<Node, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile, ArrayList<String> requiredFile, ArrayList<Node> nodeList) throws Exception
+    public static double performOperations(HashMap<Node, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile, ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<Node> nodeList) throws Exception
     {
         Runnable monitor = new Runnable() {
             @Override
@@ -175,10 +228,15 @@ public class Operations
         String arrival = "basic/operations/arrival.txt";
         String putData = "basic/operations/putData.txt";
         String getData = "basic/operations/getData.txt";
+        String updateData = "basic/operations/updateData.txt";
+        String deleteData = "basic/operations/deleteData.txt";
 
         StringBuilder arrivalTimes = new StringBuilder();
         StringBuilder putOpData = new StringBuilder();
         StringBuilder getOpData = new StringBuilder();
+        StringBuilder updateOpData = new StringBuilder();
+        StringBuilder deleteOpData = new StringBuilder();
+        /*
         for(String x : arrivalFile)
         {
             arrivalTimes.append(x+"\n");
@@ -194,11 +252,41 @@ public class Operations
             getOpData.append(x+"\n");
         }
         getOpData.setLength(getOpData.length() - 1);
+        */
+
+        for(int i = 0; i < arrivalFile.size(); i++){
+            if(i > 0)
+                arrivalTimes.append("\n");
+            arrivalTimes.append(arrivalFile.get(i));
+        }
+        for(int i = 0; i < dataFile.size(); i++){
+            if(i > 0)
+                putOpData.append("\n");
+            putOpData.append(dataFile.get(i));
+        }
+        for(int i = 0; i < requiredFile.size(); i++){
+            if(i > 0)
+                getOpData.append("\n");
+            getOpData.append(requiredFile.get(i));
+        }
+        for(int i = 0; i < updateFile.size(); i++){
+            if(i > 0)
+                updateOpData.append("\n");
+            updateOpData.append(updateFile.get(i));
+        }
+        for(int i = 0; i < deleteFile.size(); i++){
+            if(i > 0)
+                deleteOpData.append("\n");
+            deleteOpData.append(deleteFile.get(i));
+        }
+
         FileUtils.writeStringToFile(new File("files/"+arrival), arrivalTimes.toString());
         FileUtils.writeStringToFile(new File("files/"+putData), putOpData.toString());
         FileUtils.writeStringToFile(new File("files/"+getData), getOpData.toString());
+        FileUtils.writeStringToFile(new File("files/"+updateData), updateOpData.toString());
+        FileUtils.writeStringToFile(new File("files/"+deleteData), deleteOpData.toString());
 
-        MyRunner run = new MyRunner(nodeToTaskMapping, arrival, putData, getData, nodeList);
+        MyRunner run = new MyRunner(nodeToTaskMapping, arrival, putData, getData, updateData, deleteData, nodeList);
         System.out.println("Energy Consumed : "+run.getTotalStorageEnergyConsumed() + " Joules()");
         return run.getTotalStorageEnergyConsumed();
     }

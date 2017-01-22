@@ -57,6 +57,10 @@ public class Helper {
 	 */
 	public List<File>							dataFiles		= new ArrayList<File>();
 
+	public List<File>							updateFiles		= new ArrayList<File>();
+
+	public List<String>							deleteFiles		= new ArrayList<String>();
+
 	/**
 	 * the Power-VM List.
 	 */
@@ -312,6 +316,66 @@ public class Helper {
 		}
 	}
 
+	public void createUpdateFilesList(String source) {
+		String path = "files/" + source;
+
+		try {
+			// instantiate a reader
+			BufferedReader input = new BufferedReader(new FileReader(path));
+
+			// read line by line
+			String line;
+			String[] lineSplited;
+			String fileName;
+			String fileSize;
+			while ((line = input.readLine()) != null) {
+
+				// retrieve fileName and fileSize
+				lineSplited = line.split(",");
+				fileName = lineSplited[0];
+				fileSize = lineSplited[1];
+
+				// add file to the List
+				updateFiles.add(new File(fileName, Integer.parseInt(fileSize)));
+			}
+
+			// close the reader
+			input.close();
+
+		} catch (IOException | NumberFormatException | ParameterException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void createDeleteFilesList(String source) {
+
+		if (source != "") {
+
+			String path = "files/" + source;
+
+			try {
+				// instantiates reader
+				BufferedReader input = new BufferedReader(new FileReader(path));
+
+				// instantiates local variable
+				String fileName;
+
+				// read line by line
+				while ((fileName = input.readLine()) != null) {
+
+					// add fileName to the List
+					deleteFiles.add(fileName);
+				}
+
+				// close the reader
+				input.close();
+
+			} catch (IOException | NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/**
 	 * @param CloudlerNumber
 	 * @throws ParameterException
@@ -373,6 +437,8 @@ public class Helper {
         // local variable
         ArrayList<String> tempRequiredFilesList = null;
         ArrayList<File> tempDataFilesList = null;
+        ArrayList<File> tempUpdateFileList = null;
+        ArrayList<String> tempDeleteFileList = null;
 
         HashMap<Cloudlet, MyPowerHarddriveStorage> myMap = new HashMap<>();
 
@@ -381,20 +447,40 @@ public class Helper {
             if (i <= dataFiles.size()) {
                 tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(i - 1)));
                 tempRequiredFilesList = null;
+                tempUpdateFileList = null;
+                tempDeleteFileList = null;
             }
             else if (i > dataFiles.size() && i <= (requiredFiles.size() + dataFiles.size())) {
                 tempRequiredFilesList = new ArrayList<String>(Arrays.asList(requiredFiles.get(i - dataFiles.size() - 1)));
                 tempDataFilesList = null;
-            } else {
+				tempUpdateFileList = null;
+				tempDeleteFileList = null;
+            }
+            else if(i > (requiredFiles.size() + dataFiles.size()) && i <= (requiredFiles.size() + dataFiles.size() + updateFiles.size())){
+				tempUpdateFileList = new ArrayList<File>(Arrays.asList(updateFiles.get(i - dataFiles.size() - requiredFiles.size() - 1)));
+				tempDeleteFileList = null;
+				tempDataFilesList = null;
+				tempRequiredFilesList = null;
+			}
+			else if(i > (requiredFiles.size() + dataFiles.size() + updateFiles.size()) && i<= (requiredFiles.size() + dataFiles.size() + updateFiles.size() + deleteFiles.size()))
+			{
+				tempDeleteFileList = new ArrayList<String>(Arrays.asList(deleteFiles.get(i - dataFiles.size() - requiredFiles.size() - updateFiles.size() - 1)));
+				tempRequiredFilesList = null;
+				tempDataFilesList = null;
+				tempUpdateFileList = null;
+			}
+			else {
                 tempRequiredFilesList = null;
                 tempDataFilesList = null;
+				tempUpdateFileList = null;
+				tempDeleteFileList = null;
             }
 
             // create cloudlet
             cloudletList.add(new MyCloudlet(i, MyConstants.CLOUDLET_LENGHT, MyConstants.CLOUDLET_PES_NUMBER,
                     MyConstants.CLOUDLET_FILE_SIZE, MyConstants.CLOUDLET_OUTPUT_SIZE,
                     MyConstants.CLOUDLET_UTILIZATION_MODEL_CPU, MyConstants.CLOUDLET_UTILIZATION_MODEL_RAM,
-                    MyConstants.CLOUDLET_UTILIZATION_MODEL_BW, tempRequiredFilesList, tempDataFilesList));
+                    MyConstants.CLOUDLET_UTILIZATION_MODEL_BW, tempRequiredFilesList, tempDataFilesList, tempUpdateFileList, tempDeleteFileList));
             cloudletList.get(i - 1).setUserId(broker.getId());
             //bind cloudlet to vm
             cloudletList.get(i - 1).setVmId(vmlist.get(0).getId());

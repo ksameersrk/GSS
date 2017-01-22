@@ -152,6 +152,44 @@ public class MyDatacenter extends DatacenterEX {
 			}
 		}
 
+		// handle update files
+		List<File> updateFiles = new ArrayList<File>();
+		if (cl instanceof MyCloudlet) {
+			MyCloudlet mycl = (MyCloudlet) cl;
+			updateFiles = mycl.getUpdateFiles();
+		}
+		if (updateFiles != null) {
+			Iterator<File> iter = updateFiles.iterator();
+
+			while (iter.hasNext()) {
+				File tempFile = iter.next();
+				curr = cl;
+
+				for (MyPowerHarddriveStorage storage : this.<MyPowerHarddriveStorage> getStorageList()) {
+					Double res = storage.deleteFile(tempFile);
+				}
+
+				int answerTag = this.addFile(tempFile);
+				// test if tempFile has been added
+				if (answerTag == DataCloudTags.FILE_ADD_SUCCESSFUL) {
+
+					// find where the file has been added
+					for (MyPowerHarddriveStorage storage : this.<MyPowerHarddriveStorage> getStorageList()) {
+
+						// test if the storage id EQUAL the file ResourceID
+						if (storage.getId() == tempFile.getResourceID()) {
+
+							// update HDD variables
+							processOperationWithStorage(storage, tempFile, cl, "updated");
+						}
+					}
+				} else if (answerTag == DataCloudTags.FILE_ADD_ERROR_EXIST_READ_ONLY) {
+					Log.printLine(tempFile.getName() + ".addFile(): Warning - This file named <" + tempFile.getName()
+							+ "> is already stored");
+				}
+			}
+		}
+
 		// Handle requiredFiles
 		List<String> requiredFiles = new ArrayList<String>();
 		if (cl instanceof MyCloudlet) {
@@ -175,6 +213,33 @@ public class MyDatacenter extends DatacenterEX {
 						break;
 					}
 				}
+			}
+		}
+
+		// handle delete files
+		List<String> deleteFiles = new ArrayList<String>();
+		if(cl instanceof MyCloudlet){
+			MyCloudlet mycl = (MyCloudlet) cl;
+			deleteFiles = mycl.getDeleteFiles();
+		}
+
+		if(deleteFiles != null){
+			Iterator<String> iter = deleteFiles.iterator();
+
+			while (iter.hasNext()){
+				String fileName = iter.next();
+
+				for (MyPowerHarddriveStorage storage : this.<MyPowerHarddriveStorage> getStorageList()) {
+					File tempFile = storage.deleteFile(fileName);
+
+					if (tempFile != null) {
+
+						// update HDD variables
+						processOperationWithStorage(storage, tempFile, cl, "deleted");
+						break;
+					}
+				}
+
 			}
 		}
 	}

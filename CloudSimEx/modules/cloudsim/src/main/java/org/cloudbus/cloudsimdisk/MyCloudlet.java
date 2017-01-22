@@ -41,7 +41,7 @@ public class MyCloudlet extends Cloudlet {
 	private  List<File>		updateFiles		= null;
 
 	/** The delete files. */
-	private  List<File>		deleteFiles 	= null;
+	private  List<String>		deleteFiles 	= null;
 
 	/**
 	 * The constructor.
@@ -81,7 +81,20 @@ public class MyCloudlet extends Cloudlet {
 	}
 
 	// constructor overloading for where all 4 operations(PUT, GET, UPDATE, DELETE) are to be performed
+	public MyCloudlet(int cloudletId, long cloudletLength, int pesNumber,
+					  long cloudletFileSize, long cloudletOutputSize,
+					  UtilizationModel utilizationModelCpu,
+					  UtilizationModel utilizationModelRam,
+					  UtilizationModel utilizationModelBw,
+					  List<String> requiredFiles, List<File> dataFiles, List<File> updateFiles, List<String> deleteFiles) {
+		super(cloudletId, cloudletLength, pesNumber, cloudletFileSize, cloudletOutputSize,
+				utilizationModelCpu, utilizationModelRam, utilizationModelBw);
 
+		setRequiredFiles(requiredFiles);
+		setDataFiles(dataFiles);
+		setUpdateFiles(updateFiles);
+		setDeleteFiles(deleteFiles);
+	}
 
 	// GETTER AND SETTER
 
@@ -138,7 +151,7 @@ public class MyCloudlet extends Cloudlet {
 	/**
 	 * @return the deleteFiles
 	 */
-	public List<File> getDeleteFiles() {
+	public List<String> getDeleteFiles() {
 		return deleteFiles;
 	}
 
@@ -146,7 +159,7 @@ public class MyCloudlet extends Cloudlet {
 	 * @param deleteFiles
 	 *            the deleteFiles to set
 	 */
-	public void setDeleteFiles(List<File> deleteFiles) {
+	public void setDeleteFiles(List<String> deleteFiles) {
 		this.deleteFiles = deleteFiles;
 	}
 
