@@ -161,7 +161,7 @@ public class MyPowerDatacenter extends MyDatacenter {
 		Double clockTime = CloudSim.clock();
 		Log.formatLine("\n%.6f: %s: Cloudlet # %d: <%s> %s on %s.", clockTime, getName(), cl.getCloudletId(),
 				tempFile.getName(), action, storage.getName());
-		Log.formatLine("%10s Power  consumption of %6.3f Watt(s).", "", tempPower);
+		Log.formatLine("%10s Power  consumption characteristics of disk = %6.3f Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]", "", tempPower);
 		Log.formatLine("%10s Queue Waiting time of %9.6f Seconds(s).", "", waitingTime);
 		Log.formatLine("%10s Transaction time   of %9.6f Seconde(s).", "", transTime);
 		Log.formatLine("%10s Arrival time at %9.6f Seconde(s).", "", clockTime - waitingTime - transTime);
