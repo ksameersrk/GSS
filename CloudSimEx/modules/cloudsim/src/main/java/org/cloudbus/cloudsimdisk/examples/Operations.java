@@ -2,14 +2,8 @@ package org.cloudbus.cloudsimdisk.examples;
 
 import org.apache.commons.io.FileUtils;
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
-import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHddHGSTUltrastarHUC109090CSS600;
-import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHddSeagateEnterpriseST6000VN0001;
-import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHddToshibaEnterpriseMG04SCA500E;
-import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModeHddHGSTUltrastarHUC109090CSS600;
-import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModeHddSeagateEnterpriseST6000VN0001;
-import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModeHddToshibaEnterpriseMG04SCA500E;
-import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
+import org.cloudbus.cloudsimdisk.models.hdd.*;
+import org.cloudbus.cloudsimdisk.power.models.hdd.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -163,9 +157,14 @@ public class Operations
     public static Ring getRing(String filename)
     {
         Ring ring = null;
+        // HDD specs
         StorageModelHdd[] storageModelHdds = new StorageModelHdd[]{ new StorageModelHddSeagateEnterpriseST6000VN0001() , new StorageModelHddHGSTUltrastarHUC109090CSS600(), new StorageModelHddToshibaEnterpriseMG04SCA500E() };
         PowerModelHdd[] powerModelHdds = new PowerModelHdd[]{ new PowerModeHddSeagateEnterpriseST6000VN0001() , new PowerModeHddHGSTUltrastarHUC109090CSS600() , new PowerModeHddToshibaEnterpriseMG04SCA500E() };
 
+        /*// SSD specs
+        StorageModelHdd[] storageModelHdds = new StorageModelHdd[]{ new StorageModelSsdToshibaHG6EnterpriseTHNSNJ512GCSU() , new StorageModelSsdSeagate600ProEnterpriseST480FP0021(), new StorageModelSsdIntelDCS3500EnterpriseSC2BB800G401() };
+        PowerModelHdd[] powerModelHdds = new PowerModelHdd[]{ new PowerModelSsdToshibaHG6EnterpriseTHNSNJ512GCSU() , new PowerModelSsdSeagate600ProEnterpriseST480FP0021() , new PowerModelSsdIntelDCS3500EnterpriseSC2BB800G401() };
+        */
         File file = new File(filename);
 
         try (BufferedReader in = new BufferedReader(new FileReader(file)))
