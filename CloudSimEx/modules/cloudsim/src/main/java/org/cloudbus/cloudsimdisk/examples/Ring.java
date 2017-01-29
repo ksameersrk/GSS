@@ -130,7 +130,7 @@ public class Ring
 
     public static void main(String[] args)
     {
-        File file = new File("sources/org/cloudbus/cloudsimdisk/examples/rings.in");
+        File file = new File("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/rings.in");
         try (BufferedReader in = new BufferedReader(new FileReader(file)))
         {
             int Node_Count, Partition_Power, Replicas;
@@ -152,14 +152,26 @@ public class Ring
                 hm.put(id, new Node(id, zone, weight, hddModel, hddPowerModel));
             }
             Ring ring = buildRing(hm, Partition_Power, Replicas);
-            for(Node n : ring.getNodes(filePath))
-            {
-                System.out.println(n);
-            }
+            showRingWorking(ring);
         }
         catch (Exception e)
         {
             new Exception("Main");
+        }
+    }
+
+    public static void showRingWorking(Ring ring)
+    {
+        String filenames[] = {"FileA", "FileB", "FileC", "FileD", "FileE"};
+        for(String filename : filenames)
+        {
+            System.out.println("Filename : "+filename);
+            for(Node n : ring.getNodes(filename))
+            {
+                System.out.println(n);
+            }
+            System.out.println();
+            System.out.println();
         }
     }
 }
