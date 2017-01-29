@@ -190,7 +190,7 @@ public class Helper {
     public void createPersistentStorage(Set<Node> nodes) throws ParameterException {
 		MyPowerHarddriveStorage tmp = null;
         for (Node n : nodes) {
-        	tmp = new MyPowerHarddriveStorage(n.getID(), "Node HDD" + n.getID(), n.getStorageModel(), n.getPowerModel());
+        	tmp = new MyPowerHarddriveStorage(n.getID(), "Node HDD" + n.getID(), n.getStorageModel(), n.getPowerModel(), n.getIsSpunDown());
             storageList.add(tmp);
 
             // creating a hashmap where key is node and value is Disk, so assigning a disk to each node
@@ -442,7 +442,8 @@ public class Helper {
 
         HashMap<Cloudlet, MyPowerHarddriveStorage> myMap = new HashMap<>();
 
-        for (int i = 1; i <= nodeList.size(); i++) {
+        for (int i = 1; i <= nodeList.size(); i++) // nodeList size same as arriveFile that's y we use it
+        {
 
             if (i <= dataFiles.size()) {
                 tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(i - 1)));
@@ -590,6 +591,8 @@ public class Helper {
 			Log.printLine();
 			Log.formatLine("%8sMaximum Queue size    : %10d operation(s)", "",
 					Collections.max(tempList.get(i).getQueueLengthHistory()));
+			Log.printLine();
+			Log.formatLine("Disk behaviour 	: " + tempList.get(i).getIsSpunDown());
 			Log.printLine();
 		}
 		Log.printLine();

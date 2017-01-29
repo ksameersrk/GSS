@@ -9,7 +9,7 @@
  * Website: http://baptistelouis.weebly.com/projects.html
  *
  * Licence: GPL - http://www.gnu.org/copyleft/gpl.html
- * Copyright (c) 2015, Luleå University of Technology, Sweden.
+ * Copyright (c) 2015, Luleï¿½ University of Technology, Sweden.
  *******************************************************************************/
 
 package org.cloudbus.cloudsimdisk.power;
@@ -46,6 +46,9 @@ public class MyPowerHarddriveStorage extends MyHarddriveStorage {
 	/** Total energy in active mode */
 	private double			totalEnergyActive;
 
+	/** Tells whether the disk is spun down and powered off when not in use*/
+	private boolean 		isSpunDown;
+
 	/**
 	 * Creates a new Hard Drive storage base on a specific HDD Model.
 	 * 
@@ -72,7 +75,21 @@ public class MyPowerHarddriveStorage extends MyHarddriveStorage {
 		setLastIdleStartTime(0.0);
 	}
 
+    public MyPowerHarddriveStorage(int id, String name, StorageModelHdd storageModelHdd, PowerModelHdd powerModel, boolean isSpunDown)
+            throws ParameterException {
+        super(id, name, storageModelHdd);
+        setIsSpunDown(isSpunDown);
+        // set HDD characteristics
+        setPowerModelHdd(powerModel);
+
+        // set initial parameters
+        setInActiveDuration(0.0);
+        setLastIdleStartTime(0.0);
+    }
+
 	// GETTERs and SETTERs
+
+
 
 	/**
 	 * Sets the power model.
@@ -175,6 +192,10 @@ public class MyPowerHarddriveStorage extends MyHarddriveStorage {
 	public double getTotalEnergyIdle() {
 		return totalEnergyIdle;
 	}
+
+	public void setIsSpunDown(boolean spinDown) { this.isSpunDown = spinDown; }
+
+	public  boolean getIsSpunDown() { return  this.isSpunDown; }
 
 	/**
 	 * Sets the total energy consumed by this HDD in Idle mode.

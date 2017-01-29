@@ -14,6 +14,7 @@ public class Node {
     private double desiredParts;
     private StorageModelHdd hddModel;
     private PowerModelHdd hddPowerModel;
+    private boolean isSpunDown;
 
     public Node(int id, int zone, double weight,StorageModelHdd hddModel, PowerModelHdd hddPowerModel)
     {
@@ -23,7 +24,19 @@ public class Node {
         this.desiredParts = 0.0;
         this.hddModel = hddModel;
         this.hddPowerModel = hddPowerModel;
+        this.isSpunDown = false;
 
+    }
+
+    public Node(int id, int zone, double weight,StorageModelHdd hddModel, PowerModelHdd hddPowerModel, boolean isSpunDown)
+    {
+        this.id = id;
+        this.zone = zone;
+        this.weight = weight;
+        this.desiredParts = 0.0;
+        this.hddModel = hddModel;
+        this.hddPowerModel = hddPowerModel;
+        this.isSpunDown = isSpunDown;
     }
 
     public String toString()
@@ -75,6 +88,8 @@ public class Node {
     {
         return this.id == n.id;
     }
+
+    public boolean getIsSpunDown(){ return this.isSpunDown; }
 
 
 }
