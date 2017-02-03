@@ -23,23 +23,29 @@ public class StagingDiskAndSpinDown {
         CloudSim.lifeLength = 100;
         CloudSim.pauseInterval = 30;
 
+        // the total number of nodes that will be used for storage ( spun down  + always active)
         int totalNoOfNodes = 256;
 
         // staging disk properties
         boolean addStagingDisk = true;
         StorageModelHdd stagingDiskStorageModel = new StorageModelSsdSeagate600ProEnterpriseST480FP0021();
         PowerModelHdd stagingDiskPowerModel = new PowerModelSsdSeagate600ProEnterpriseST480FP0021();
+        // when memory occupied reaches this value, we have to clear up old files
+        // (eg when occupied space goes above 80% of max capacity it is time to free up some space)
         int stagingDiskThresholdMemory = (int) (stagingDiskStorageModel.getCapacity() * 0.8);
+        // while clearing up staging disk, we keep removing old files until the occupied space goes below this value
+        // (eg when disk is 80% full, we keep on removing least recently used file until the occupied space goes below 50 % capacity)
         int stagingDiskLowerThreshold = (int) (stagingDiskStorageModel.getCapacity() * 0.5);
-        int stagingDiskUsedMemory = 0;
         Node stagingDisk = new Node(999, 99, 99, stagingDiskStorageModel, stagingDiskPowerModel, false);
-        System.out.println(stagingDiskThresholdMemory);
+        // System.out.println(stagingDiskThresholdMemory);
 
         // node properties
         int noOfSpunDownDisks = 1;
         int noOfActiveAlwaysDisks = 2;
 
         // Create the ring
+        // separate ring for active always disks and spun down ones, so it becomes easy to access the entire set of disks at once
+        // this is just a logical simplification, which in no way affects the total power consumed
         Ring ringOfActiveAlwaysDisks = getRing("files/basic/StagingDiskAndSpinDown/rings.in", (int)((noOfActiveAlwaysDisks * totalNoOfNodes)/
                 (noOfActiveAlwaysDisks + noOfSpunDownDisks)), noOfActiveAlwaysDisks, false);
         Ring ringOfSpunDownDisks = getRing("files/basic/StagingDiskAndSpinDown/rings.in", (int)((noOfSpunDownDisks * totalNoOfNodes)/
@@ -55,27 +61,31 @@ public class StagingDiskAndSpinDown {
         ArrayList<String> updateFile = new ArrayList<>();
         ArrayList<String> deleteFile = new ArrayList<>();
 
+        // if there is no staging disk
         if (addStagingDisk == false) {
+            // pass the operation name to this getOperationFileList() method and it will return the op file to be passed to MyRunner
             dataFile = getOperationFileList(inputLog, "PUT", nodeToTaskMapping, arrivalFile, ringOfActiveAlwaysDisks, nodeList, noOfActiveAlwaysDisks);
             requiredFile = getOperationFileList(inputLog, "GET", nodeToTaskMapping, arrivalFile, ringOfActiveAlwaysDisks, nodeList, noOfActiveAlwaysDisks);
             updateFile = getOperationFileList(inputLog, "UPDATE", nodeToTaskMapping, arrivalFile, ringOfActiveAlwaysDisks, nodeList, noOfActiveAlwaysDisks);
             deleteFile = getOperationFileList(inputLog, "DELETE", nodeToTaskMapping, arrivalFile, ringOfActiveAlwaysDisks, nodeList, noOfActiveAlwaysDisks);
         } else {
-
+            // if there a staging disk included
             stagingDiskSimulate(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, inputLog, nodeToTaskMapping, nodeList,
                     noOfActiveAlwaysDisks, ringOfActiveAlwaysDisks, noOfSpunDownDisks, ringOfSpunDownDisks, stagingDiskThresholdMemory,
                     stagingDisk, stagingDiskLowerThreshold);
 
         }
 
-        ArrayList<Node> all = new ArrayList<Node>(nodeToTaskMapping.keySet());
-        all.sort(Comparator.comparing(Node::getID));
+        // list of all nodes on which operations are to be performed
+        ArrayList<Node> allNodes = new ArrayList<Node>(nodeToTaskMapping.keySet());
+        allNodes.sort(Comparator.comparing(Node::getID));
         System.out.println("Check the mapping with assignment : ");
-        for (Node n : all) {
+        for (Node n : allNodes) {
             System.out.println(n.getID() + " : " + nodeToTaskMapping.get(n).getFiles());
         }
 
         Double totalEnergyConsumed = 0.0;
+        // call performOperations() which performs all the CRUD operations as given in input and returns total power consumed
         totalEnergyConsumed = performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList);
         System.out.println("\n\nTotal Energy Consumed : " + totalEnergyConsumed);
 
@@ -88,6 +98,7 @@ public class StagingDiskAndSpinDown {
                                            int stagingDiskThresholdMemory, Node stagingDisk, int stagingDiskLowerThreshold) throws Exception {
         int stagingDiskMemoryUsed = 0;
         Map<String, Integer> stagingDiskFileList = new LinkedHashMap<String, Integer>();
+        // get the entire list of operations in chronological order , time : list of operations to be performed at that time mapping
         Map<Integer, ArrayList<String>> chronologicallyOrderedOperations = getChronologicallyOrderedOperations(inputLog);
         ArrayList<String> tmpdataFile = new ArrayList<>();
         ArrayList<String> tmprequiredFile = new ArrayList<>();
@@ -96,19 +107,31 @@ public class StagingDiskAndSpinDown {
 
         Map<String, Integer> tmpToBeDeletedList = new LinkedHashMap<String, Integer>();
 
+        // iterate through the operations chronologically
         for (Integer key : chronologicallyOrderedOperations.keySet()) {
             ArrayList<String> operations = chronologicallyOrderedOperations.get(key);
             for (String op : operations) {
                 op = op.trim();
                 String data[] = op.split(",");
+                // for PUT operation
                 if (data[0].equals("PUT")) {
 
+                    // this method takes care of all scenarios involved in adding a file, which are :
+                    //  1) if disk wont reach max threshold limit on adding this file, then :
+                    //          a) add file to staging disk
+                    //          b) add file immediately to active always nodes
+                    // 2) else if disk will reach max threshold limit on adding this file, then :
+                    //          a) retrieve list of all operations to be done on spun down disks, and carry them out(GET and UPDATE are straightforward but
+                    // for DELETE we maintain separate list of files deleted since last time staging disk free up was done, and then do those
+                    // DELETE operations on spun down disks)
+                    //          b) free up staging disk(go on removing least recently used files till occupied space goes below staging disk lower threshold)
+                    //          c) then add file to staging disk
                     stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data, stagingDiskMemoryUsed, stagingDiskThresholdMemory,
                             tmpToBeDeletedList, stagingDiskFileList, stagingDiskLowerThreshold, noOfSpunDownDisks, tmpdataFile, tmpdeleteFile, nodeList,
                             nodeToTaskMapping, ringOfActiveAlwaysDisks, ringOfSpunDownDisks);
 
                 } else if (data[0].equals("GET")) {
-                    // if in staging disk add operation to staging disk also somehow coz this file has been used move it up the order in stagingFile disk
+                    // if file in staging disk then fetch from it
                     if (stagingDiskFileList.containsKey(data[2])) {
                         tmprequiredFile.add(op);
                         nodeList.add(stagingDisk);
@@ -118,12 +141,15 @@ public class StagingDiskAndSpinDown {
                             nodeToTaskMapping.put(stagingDisk, new Tasks(stagingDisk, op));
                         }
                         int fileSize = stagingDiskFileList.get(data[2]);
+                        // in order to support the LRU algo for placement of files on staging disk, we need to keep updating the positioning a file in the
+                        // stagingDiskFileList, so we remove this entry and put it in beginning now that we have called an operation on that file
                         // remove from file list
                         stagingDiskFileList.remove(data[2]);
                         // update position of file in list
                         stagingDiskFileList = addToBeginning(data[2], fileSize, stagingDiskFileList);
                     } else {
-                        // else go to active always node
+                        // if file not on staging disk
+                        // go to active always node
                         tmprequiredFile.add(op);
                         ArrayList<Node> nodes = ringOfActiveAlwaysDisks.getNodes(data[2]);
                         Node n = nodes.get(0);
@@ -133,11 +159,12 @@ public class StagingDiskAndSpinDown {
                         } else {
                             nodeToTaskMapping.put(n, new Tasks(n, op));
                         }
-                        // need to see when to get from spunDown disks
                         // also when file not in stagingDisk and we get it from end node, should we add it to stagingDisk for future use
                         stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data, stagingDiskMemoryUsed, stagingDiskThresholdMemory,
                                 tmpToBeDeletedList, stagingDiskFileList, stagingDiskLowerThreshold, noOfSpunDownDisks, tmpdataFile, tmpdeleteFile, nodeList,
                                 nodeToTaskMapping, ringOfActiveAlwaysDisks, ringOfSpunDownDisks);
+                        // need to see when to get from spunDown disks
+
                     }
                 } else if (data[0].equals("UPDATE")) {
                     // if old version also present, then remove old version before proceeding
@@ -153,11 +180,13 @@ public class StagingDiskAndSpinDown {
                             nodeToTaskMapping, ringOfActiveAlwaysDisks, ringOfSpunDownDisks);
                 } else if (data[0].equals("DELETE")) {
                     // delete everywhere
+                    // if file in staging disk, then remove it and make note that it has been removed so that we can remove it from spun Down disk as well
+                    // during the next staging disk free up
                     if (stagingDiskFileList.containsKey(data[2])) {
                         int memoryToBeFreed = stagingDiskFileList.get(data[2]);
                         stagingDiskFileList.remove(data[2]);
                         stagingDiskMemoryUsed -= memoryToBeFreed;
-
+                        // remove from staging disk
                         tmpdeleteFile.add(op);
                         nodeList.add(stagingDisk);
                         if (nodeToTaskMapping.containsKey(stagingDisk)) {
@@ -166,6 +195,7 @@ public class StagingDiskAndSpinDown {
                             nodeToTaskMapping.put(stagingDisk, new Tasks(stagingDisk, op));
                         }
                     }
+                    // remove from active always disks
                     for (int i = 0; i < noOfActiveAlwaysDisks; i++)
                         tmpdeleteFile.add(op);
                     for (Node n : ringOfActiveAlwaysDisks.getNodes(data[2])) {
@@ -185,8 +215,11 @@ public class StagingDiskAndSpinDown {
             }
         }
 
+        // finally now that we hav all tmp op files, we send them and get the op files which can be passed to MyRunner
         createOperationFileList(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, tmpdataFile, tmprequiredFile, tmpupdateFile, tmpdeleteFile);
     }
+
+    // this method takes care of all actions to be taken when there is a PUT operation required to be done when there is a staging disk
 
     public static void stagingDiskPutOperation(String op, Node stagingDisk, int noOfActiveAlwaysDisks, String data[], int stagingDiskMemoryUsed,
                                                int stagingDiskThresholdMemory, Map<String, Integer> tmpToBeDeletedList,
@@ -194,6 +227,7 @@ public class StagingDiskAndSpinDown {
                                                int noOfSpunDownDisks, ArrayList<String> tmpOpFile, ArrayList<String> tmpdeleteFile,
                                                ArrayList<Node> nodeList, HashMap<Node, Tasks> nodeToTaskMapping, Ring ringOfActiveAlwaysDisks,
                                                Ring ringOfSpunDownDisks) {
+        // if staging disk occupied more that upper threshold
         if (stagingDiskMemoryUsed + Integer.parseInt(data[3]) > stagingDiskThresholdMemory) {
             freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDiskThresholdMemory, tmpToBeDeletedList, stagingDiskFileList,
                     stagingDiskLowerThreshold, noOfSpunDownDisks, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ringOfActiveAlwaysDisks,
@@ -270,7 +304,7 @@ public class StagingDiskAndSpinDown {
         }
 
 
-        // how will you update the spunDown disks of the delete operations done here
+        // update the spunDown disks of the delete operations done here
         for (String file : tmpToBeDeletedList.keySet()) {
             for (int i = 0; i < noOfSpunDownDisks; i++)
                 tmpdeleteFile.add("DELETE," + data[1] + "," + file);
@@ -283,11 +317,11 @@ public class StagingDiskAndSpinDown {
                 }
             }
         }
-        // (could keep another queue which will be updated on every delete operation and we execute all of them when this case is encountered)
 
 
     }
 
+    // simply returns the op files in required format
     public static void createOperationFileList(ArrayList<String> arrivalFile, ArrayList<String> dataFile, ArrayList<String> requiredFile, ArrayList<String>
             updateFile, ArrayList<String> deleteFile, ArrayList<String> tmpdataFile, ArrayList<String> tmprequiredFile, ArrayList<String> tmpupdateFile,
                                                ArrayList<String> tmpdeleteFile) {
@@ -321,6 +355,7 @@ public class StagingDiskAndSpinDown {
         }
     }
 
+    // move element to top of list
     public static Map<String, Integer> addToBeginning(String fileName, int fileSize, Map<String, Integer> fileList) {
         Map<String, Integer> stagingDiskFileList = new LinkedHashMap<String, Integer>();
         stagingDiskFileList.put(fileName, fileSize);
@@ -332,6 +367,7 @@ public class StagingDiskAndSpinDown {
         return stagingDiskFileList;
     }
 
+    // return map of time to operation mapping where keys indicating time are chronologically ordered
     public static Map<Integer, ArrayList<String>> getChronologicallyOrderedOperations(String inputLog) throws Exception {
         Map<Integer, ArrayList<String>> chronologicallyOrderedOperations = new LinkedHashMap<Integer, ArrayList<String>>();
         try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
@@ -350,6 +386,7 @@ public class StagingDiskAndSpinDown {
         return chronologicallyOrderedOperations;
     }
 
+    // get op list when staging disk is not involved
     public static ArrayList<String> getOperationFileList(String inputLog, String operation, HashMap<Node, Tasks> nodeToTaskMapping, ArrayList<String>
             arrivalFile, Ring ring, ArrayList<Node> nodeList, int noOfActiveAlwaysDisks) throws Exception {
         ArrayList<String> operationFileList = new ArrayList<>();
@@ -407,6 +444,7 @@ public class StagingDiskAndSpinDown {
         return operationFileList;
     }
 
+    // create ring based on specified parameters and return it
     public static Ring getRing(String filename, int noOfNodes, int noOfReplicas, boolean isSpunDown) {
         Ring ring = null;
 
@@ -450,6 +488,7 @@ public class StagingDiskAndSpinDown {
         return ring;
     }
 
+    // does the task of send the cloudlets and starting the simulation
     public static double performOperations(HashMap<Node, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile,
                                            ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<Node>
                                                    nodeList) throws Exception {
