@@ -23,11 +23,18 @@ public class StagingDiskAndSpinDown {
         CloudSim.lifeLength = 100;
         CloudSim.pauseInterval = 30;
 
+        // ======================================================================================================
         // the total number of nodes that will be used for storage ( spun down  + always active)
         int totalNoOfNodes = 256;
-
+        // node properties
+        int noOfSpunDownDisks = 1;
+        int noOfActiveAlwaysDisks = 2;
         // staging disk properties
         boolean addStagingDisk = true;
+        // ======================================================================================================
+
+
+        // staging disk properties
         StorageModelHdd stagingDiskStorageModel = new StorageModelSsdSeagate600ProEnterpriseST480FP0021();
         PowerModelHdd stagingDiskPowerModel = new PowerModelSsdSeagate600ProEnterpriseST480FP0021();
         // when memory occupied reaches this value, we have to clear up old files
@@ -38,10 +45,6 @@ public class StagingDiskAndSpinDown {
         int stagingDiskLowerThreshold = (int) (stagingDiskStorageModel.getCapacity() * 0.5);
         Node stagingDisk = new Node(999, 99, 99, stagingDiskStorageModel, stagingDiskPowerModel, false);
         // System.out.println(stagingDiskThresholdMemory);
-
-        // node properties
-        int noOfSpunDownDisks = 1;
-        int noOfActiveAlwaysDisks = 2;
 
         // Create the ring
         // separate ring for active always disks and spun down ones, so it becomes easy to access the entire set of disks at once
