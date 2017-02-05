@@ -190,7 +190,10 @@ public class MyPowerHarddriveStorage extends MyHarddriveStorage {
 	 * @return the energy
 	 */
 	public double getTotalEnergyIdle() {
-		return totalEnergyIdle;
+        if(getIsSpunDown())
+            return 0.0;
+        else
+	        return totalEnergyIdle;
 	}
 
 	public void setIsSpunDown(boolean spinDown) { this.isSpunDown = spinDown; }
@@ -212,7 +215,7 @@ public class MyPowerHarddriveStorage extends MyHarddriveStorage {
 	 * @return the energy
 	 */
 	public double getTotalEnergyActive() {
-		return totalEnergyActive;
+			return totalEnergyActive;
 	}
 
 	/**

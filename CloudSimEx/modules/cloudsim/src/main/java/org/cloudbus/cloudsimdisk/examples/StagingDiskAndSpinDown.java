@@ -27,10 +27,10 @@ public class StagingDiskAndSpinDown {
         // the total number of nodes that will be used for storage ( spun down  + always active)
         int totalNoOfNodes = 256;
         // node properties
-        int noOfSpunDownDisks = 0;
-        int noOfActiveAlwaysDisks = 3;
+        int noOfSpunDownDisks = 1;
+        int noOfActiveAlwaysDisks = 2;
         // staging disk properties
-        boolean addStagingDisk = false;
+        boolean addStagingDisk = true;
         // ======================================================================================================
 
 
@@ -54,7 +54,7 @@ public class StagingDiskAndSpinDown {
         Ring ringOfSpunDownDisks = getRing("files/basic/StagingDiskAndSpinDown/rings.in", (int)((noOfSpunDownDisks * totalNoOfNodes)/
                 (noOfActiveAlwaysDisks + noOfSpunDownDisks)), noOfSpunDownDisks, true);
 
-        String inputLog = "files/basic/StagingDiskAndSpinDown/inputIdealDataset4000Ops.txt";
+        String inputLog = "files/basic/StagingDiskAndSpinDown/idealInputLog.txt";
         ArrayList<String> arrivalFile = new ArrayList<>();
         ArrayList<Node> nodeList = new ArrayList<>();
         HashMap<Node, Tasks> nodeToTaskMapping = new HashMap<>();
@@ -133,7 +133,8 @@ public class StagingDiskAndSpinDown {
                     // DELETE operations on spun down disks)
                     //          b) free up staging disk(go on removing least recently used files till occupied space goes below staging disk lower threshold)
                     //          c) then add file to staging disk
-                    stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data, stagingDiskMemoryUsed, stagingDiskThresholdMemory,
+                    stagingDiskMemoryUsed += stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data, stagingDiskMemoryUsed,
+                            stagingDiskThresholdMemory,
                             tmpToBeDeletedList, stagingDiskFileList, stagingDiskLowerThreshold, noOfSpunDownDisks, tmpdataFile, tmpdeleteFile, nodeList,
                             nodeToTaskMapping, ringOfActiveAlwaysDisks, ringOfSpunDownDisks, allFilesUploaded);
 
@@ -168,7 +169,8 @@ public class StagingDiskAndSpinDown {
                         }
                         // also when file not in stagingDisk and we get it from end node, should we add it to stagingDisk for future use
                         String putOp = "PUT,"+data[1]+","+data[2]+","+allFilesUploaded.get(data[2]);
-                        stagingDiskPutOperation(putOp, stagingDisk, noOfActiveAlwaysDisks, putOp.split(","), stagingDiskMemoryUsed, stagingDiskThresholdMemory,
+                        stagingDiskMemoryUsed += stagingDiskPutOperation(putOp, stagingDisk, noOfActiveAlwaysDisks, putOp.split(","), stagingDiskMemoryUsed,
+                                stagingDiskThresholdMemory,
                                 tmpToBeDeletedList, stagingDiskFileList, stagingDiskLowerThreshold, noOfSpunDownDisks, tmpdataFile, tmpdeleteFile, nodeList,
                                 nodeToTaskMapping, ringOfActiveAlwaysDisks, ringOfSpunDownDisks, allFilesUploaded);
                         // need to see when to get from spunDown disks
@@ -183,7 +185,7 @@ public class StagingDiskAndSpinDown {
                     }
                     // now same as PUT
 
-                    stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data,
+                    stagingDiskMemoryUsed += stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data,
                             stagingDiskMemoryUsed,
                             stagingDiskThresholdMemory,
                             tmpToBeDeletedList, stagingDiskFileList, stagingDiskLowerThreshold, noOfSpunDownDisks, tmpupdateFile, tmpdeleteFile, nodeList,
@@ -231,22 +233,26 @@ public class StagingDiskAndSpinDown {
 
     // this method takes care of all actions to be taken when there is a PUT operation required to be done when there is a staging disk
 
-    public static void stagingDiskPutOperation(String op, Node stagingDisk, int noOfActiveAlwaysDisks, String data[], int stagingDiskMemoryUsed,
+    public static int stagingDiskPutOperation(String op, Node stagingDisk, int noOfActiveAlwaysDisks, String data[], int stagingDiskMemoryUsed,
                                                int stagingDiskThresholdMemory, Map<String, Integer> tmpToBeDeletedList,
                                                Map<String, Integer> stagingDiskFileList, int stagingDiskLowerThreshold,
                                                int noOfSpunDownDisks, ArrayList<String> tmpOpFile, ArrayList<String> tmpdeleteFile,
                                                ArrayList<Node> nodeList, HashMap<Node, Tasks> nodeToTaskMapping, Ring ringOfActiveAlwaysDisks,
                                                Ring ringOfSpunDownDisks, Map<String, Integer>allFilesUploaded) {
-        // if staging disk occupied more that upper threshold
+        int stagingDiskMemoryToBeAdded = 0;
+        // if staging disk occupied more thastagingDiskMemoryUsedt upper threshold
         if (stagingDiskMemoryUsed + Integer.parseInt(data[3]) > stagingDiskThresholdMemory) {
-            freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDiskThresholdMemory, tmpToBeDeletedList, stagingDiskFileList,
+            stagingDiskMemoryToBeAdded += freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDiskThresholdMemory, tmpToBeDeletedList,
+                    stagingDiskFileList,
                     stagingDiskLowerThreshold, noOfSpunDownDisks, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ringOfActiveAlwaysDisks,
                     ringOfSpunDownDisks);
         }
         // enough space in staging disk now
         tmpOpFile.add(op);
         nodeList.add(stagingDisk);
-        stagingDiskMemoryUsed += Integer.parseInt(data[3]);
+
+        stagingDiskMemoryToBeAdded += Integer.parseInt(data[3]);
+
         //stagingDiskFileList.put()
         // add to stagingDiskFileList
         stagingDiskFileList.put(data[2], Integer.parseInt(data[3])); // key : name of file, value : size  of file
@@ -272,10 +278,11 @@ public class StagingDiskAndSpinDown {
 
         // add file to allFilesUploaded file list
         allFilesUploaded.put(data[2], Integer.parseInt(data[3])); // this takes care of both operations(update and add)
+        return  stagingDiskMemoryToBeAdded;
 
     }
 
-    public static void freeUpStagingDiskMemory(String data[], int stagingDiskMemoryUsed, int stagingDiskThresholdMemory,
+    public static int freeUpStagingDiskMemory(String data[], int stagingDiskMemoryUsed, int stagingDiskThresholdMemory,
                                                Map<String, Integer> tmpToBeDeletedList, Map<String, Integer> stagingDiskFileList,
                                                int stagingDiskLowerThreshold, int noOfSpunDownDisks, ArrayList<String> tmpOpFile,
                                                ArrayList<String> tmpdeleteFile, ArrayList<Node> nodeList, HashMap<Node, Tasks> nodeToTaskMapping,
@@ -285,10 +292,9 @@ public class StagingDiskAndSpinDown {
         Map<String, Integer> tmpToBeAddedToSpunDownFiles = new LinkedHashMap<String, Integer>();
         int memoryToBeFreed = 0;
         for (String file : stagingDiskFileList.keySet()) {
-            if (stagingDiskMemoryUsed - memoryToBeFreed - stagingDiskFileList.get(file) > stagingDiskLowerThreshold) {
-                tmpToBeAddedToSpunDownFiles.put(file, stagingDiskFileList.get(file));
-                memoryToBeFreed += stagingDiskFileList.get(file);
-            } else {
+            tmpToBeAddedToSpunDownFiles.put(file, stagingDiskFileList.get(file));
+            memoryToBeFreed += stagingDiskFileList.get(file);
+            if (stagingDiskMemoryUsed - memoryToBeFreed - stagingDiskFileList.get(file) < stagingDiskLowerThreshold) {
                 break;
             }
         }
@@ -298,7 +304,8 @@ public class StagingDiskAndSpinDown {
         }
 
         // update stagingDiskMemoryUsed after removing old files
-        stagingDiskMemoryUsed -= memoryToBeFreed;
+        int stagingDiskMemoryToBeAdded = 0;
+        stagingDiskMemoryToBeAdded -= memoryToBeFreed;
         memoryToBeFreed = 0;
 
         // now add those files to spun down disks
@@ -331,7 +338,7 @@ public class StagingDiskAndSpinDown {
                 }
             }
         }
-
+    return stagingDiskMemoryToBeAdded;
 
     }
 

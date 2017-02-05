@@ -563,16 +563,18 @@ public class Helper {
 	 * @param endTimeSimulation
 	 */
 	public void printResults(double endTimeSimulation) {
-		double TotalStorageEnergy = datacenter.getTotalStorageEnergy();
+		double TotalStorageEnergy = getTotalStorageEnergyConsumed();
 		List<MyPowerHarddriveStorage> tempList = datacenter.getStorageList();
 
 		// PRINTOUT -----------------------------------------------------------------------
 		Log.printLine();
 		Log.printLine("*************************** RESULTS ***************************");
 		Log.printLine();
+
 		Log.printLine("TIME SPENT IN IDLE/ACTIVE MODE FOR EACH STORAGE");
 		for (int i = 0; i < tempList.size(); i++) {
 			Log.printLine("Storage \"" + tempList.get(i).getName() + "\"");
+            Log.formatLine("\tDisk behaviour (is spun down)	: " + tempList.get(i).getIsSpunDown());
 			for (Double interval : tempList.get(i).getIdleIntervalsHistory()) {
 				Log.formatLine("%8sIdle intervale: %9.3f second(s)", "", interval);
 			}
@@ -592,7 +594,6 @@ public class Helper {
 			Log.formatLine("%8sMaximum Queue size    : %10d operation(s)", "",
 					Collections.max(tempList.get(i).getQueueLengthHistory()));
 			Log.printLine();
-			Log.formatLine("Disk behaviour 	: " + tempList.get(i).getIsSpunDown());
 			Log.printLine();
 		}
 		Log.printLine();
@@ -607,6 +608,7 @@ public class Helper {
 		WriteToLogFile.AddtoFile("TIME SPENT IN IDLE/ACTIVE MODE FOR EACH STORAGE");
 		for (int i = 0; i < tempList.size(); i++) {
 			WriteToLogFile.AddtoFile("Storage \"" + tempList.get(i).getName() + "\"");
+			WriteToLogFile.AddtoFile("\tDisk behaviour (is spun down)	: " + tempList.get(i).getIsSpunDown());
 			for (Double interval : tempList.get(i).getIdleIntervalsHistory()) {
 				WriteToLogFile.AddtoFile(String.format("%8sIdle intervale: %9.3f second(s)", "", interval));
 			}
@@ -642,7 +644,20 @@ public class Helper {
 
 	public double getTotalStorageEnergyConsumed()
 	{
+		/*
+		// old way : deprecated, applicable only when all disks are always active
 		double TotalStorageEnergy = datacenter.getTotalStorageEnergy();
+		*/
+		double TotalStorageEnergy = 0;
+
+		List<MyPowerHarddriveStorage> tempList = datacenter.getStorageList();
+		for (int i = 0; i < tempList.size(); i++) {
+			TotalStorageEnergy += tempList.get(i).getTotalEnergyActive();
+			// only if disk not of is spun down type then add idle state power consumption
+			if(!tempList.get(i).getIsSpunDown()){
+				TotalStorageEnergy += tempList.get(i).getTotalEnergyIdle();
+			}
+		}
 		return TotalStorageEnergy ;
 	}
 }

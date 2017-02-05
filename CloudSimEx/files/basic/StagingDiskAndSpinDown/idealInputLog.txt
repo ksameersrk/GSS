@@ -1,7 +1,7 @@
 PUT,10,Acct1/Container1/FileA,43
 PUT,10,Acct2/Container4/FileB,213
-PUT,20,Acct1/Container2/FileC,932
-PUT,30,Acct3/Container4/FileD,934
+PUT,20,Acct1/Container2/FileC,325
+PUT,30,Acct3/Container4/FileD,349
 PUT,40,Acct3/Container2/FileE,95
 PUT,50,Acct2/Container3/FileF,96
 PUT,60,Acct4/Container1/FileG,9
@@ -14,10 +14,10 @@ GET,20,Acct1/Container2/FileC,932
 GET,30,Acct3/Container4/FileD,934
 GET,40,Acct3/Container2/FileE,95
 UPDATE,80,Acct4/Container5/FileJ,576
-UPDATE,10,Acct1/Container1/FileA,43
-UPDATE,10,Acct2/Container4/FileB,213
-UPDATE,20,Acct1/Container2/FileC,932
-UPDATE,30,Acct3/Container4/FileD,934
+UPDATE,10,Acct1/Container1/FileA,143
+UPDATE,10,Acct2/Container4/FileB,313
+UPDATE,20,Acct1/Container2/FileC,492
+UPDATE,30,Acct3/Container4/FileD,624
 UPDATE,40,Acct3/Container2/FileE,95
 UPDATE,50,Acct2/Container3/FileF,96
 UPDATE,60,Acct4/Container1/FileG,9
