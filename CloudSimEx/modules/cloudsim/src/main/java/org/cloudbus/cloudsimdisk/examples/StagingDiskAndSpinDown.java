@@ -154,7 +154,8 @@ public class StagingDiskAndSpinDown {
                         // remove from file list
                         stagingDiskFileList.remove(data[2]);
                         // update position of file in list
-                        stagingDiskFileList = addToBeginning(data[2], fileSize, stagingDiskFileList);
+                        //stagingDiskFileList = addToBeginning(data[2], fileSize, stagingDiskFileList);
+                        stagingDiskFileList.put(data[2], fileSize);
                     } else {
                         // if file not on staging disk
                         // go to active always node
@@ -240,7 +241,7 @@ public class StagingDiskAndSpinDown {
                                                ArrayList<Node> nodeList, HashMap<Node, Tasks> nodeToTaskMapping, Ring ringOfActiveAlwaysDisks,
                                                Ring ringOfSpunDownDisks, Map<String, Integer>allFilesUploaded) {
         int stagingDiskMemoryToBeAdded = 0;
-        // if staging disk occupied more thastagingDiskMemoryUsedt upper threshold
+        // if staging disk occupied more the stagingDiskMemoryUsed upper threshold
         if (stagingDiskMemoryUsed + Integer.parseInt(data[3]) > stagingDiskThresholdMemory) {
             stagingDiskMemoryToBeAdded += freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDiskThresholdMemory, tmpToBeDeletedList,
                     stagingDiskFileList,
@@ -294,7 +295,7 @@ public class StagingDiskAndSpinDown {
         for (String file : stagingDiskFileList.keySet()) {
             tmpToBeAddedToSpunDownFiles.put(file, stagingDiskFileList.get(file));
             memoryToBeFreed += stagingDiskFileList.get(file);
-            if (stagingDiskMemoryUsed - memoryToBeFreed - stagingDiskFileList.get(file) < stagingDiskLowerThreshold) {
+            if (stagingDiskMemoryUsed - memoryToBeFreed  < stagingDiskLowerThreshold) {
                 break;
             }
         }

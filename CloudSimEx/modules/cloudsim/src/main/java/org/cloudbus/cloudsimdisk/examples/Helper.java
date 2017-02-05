@@ -597,7 +597,9 @@ public class Helper {
 			Log.printLine();
 		}
 		Log.printLine();
-		Log.formatLine("Energy consumed by Persistent Storage: %.3f Joule(s)", TotalStorageEnergy);
+		Log.formatLine("Energy consumed by Always Active Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedByActiveAlwaysDisks());
+		Log.formatLine("Energy consumed by Spun Down Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedBySpunDownDisks());
+		Log.formatLine("Energy consumed by Entire Persistent Storage: %.3f Joule(s)", TotalStorageEnergy);
 		Log.printLine();
 		// -----------------------------------------------------------------------
 
@@ -632,6 +634,8 @@ public class Helper {
 			WriteToLogFile.AddtoFile("\n");
 		}
 		WriteToLogFile.AddtoFile("\n");
+		WriteToLogFile.AddtoFile(String.format("Energy consumed by Always Active Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedByActiveAlwaysDisks()));
+		WriteToLogFile.AddtoFile(String.format("Energy consumed by Spun Down Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedBySpunDownDisks()));
 		WriteToLogFile.AddtoFile(String.format("Energy consumed by Persistent Storage: %.3f Joule(s)",
 				TotalStorageEnergy));
 		WriteToLogFile.AddtoFile("\n");
@@ -650,11 +654,54 @@ public class Helper {
 		*/
 		double TotalStorageEnergy = 0;
 
+
 		List<MyPowerHarddriveStorage> tempList = datacenter.getStorageList();
 		for (int i = 0; i < tempList.size(); i++) {
 			TotalStorageEnergy += tempList.get(i).getTotalEnergyActive();
 			// only if disk not of is spun down type then add idle state power consumption
 			if(!tempList.get(i).getIsSpunDown()){
+				TotalStorageEnergy += tempList.get(i).getTotalEnergyIdle();
+			}
+		}
+		return TotalStorageEnergy ;
+	}
+
+	public double getTotalStorageEnergyConsumedByActiveAlwaysDisks()
+	{
+		/*
+		// old way : deprecated, applicable only when all disks are always active
+		double TotalStorageEnergy = datacenter.getTotalStorageEnergy();
+		*/
+		double TotalStorageEnergy = 0;
+
+
+		List<MyPowerHarddriveStorage> tempList = datacenter.getStorageList();
+		for (int i = 0; i < tempList.size(); i++) {
+
+			// only if disk not of is spun down type then add idle state power consumption
+			if(!tempList.get(i).getIsSpunDown()){
+				TotalStorageEnergy += tempList.get(i).getTotalEnergyActive();
+				TotalStorageEnergy += tempList.get(i).getTotalEnergyIdle();
+			}
+		}
+		return TotalStorageEnergy ;
+	}
+
+	public double getTotalStorageEnergyConsumedBySpunDownDisks()
+	{
+		/*
+		// old way : deprecated, applicable only when all disks are always active
+		double TotalStorageEnergy = datacenter.getTotalStorageEnergy();
+		*/
+		double TotalStorageEnergy = 0;
+
+
+		List<MyPowerHarddriveStorage> tempList = datacenter.getStorageList();
+		for (int i = 0; i < tempList.size(); i++) {
+
+			// only if disk not of is spun down type then add idle state power consumption
+			if(tempList.get(i).getIsSpunDown()){
+				TotalStorageEnergy += tempList.get(i).getTotalEnergyActive();
 				TotalStorageEnergy += tempList.get(i).getTotalEnergyIdle();
 			}
 		}
