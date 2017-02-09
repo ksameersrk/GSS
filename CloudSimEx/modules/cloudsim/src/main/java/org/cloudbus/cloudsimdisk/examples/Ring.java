@@ -83,7 +83,12 @@ public class Ring
         } 
         return results;
     }
-    
+
+    public ArrayList<Node> getAllNodes()
+    {
+        ArrayList<Node> allNodes = new ArrayList<>(nodes.values());
+        return allNodes;
+    }
     public static Ring buildRing(HashMap<Integer,Node> nodes, int partitionPower, int replicas)
     {
         ArrayList<Integer> partitionToNode = new ArrayList<Integer>();

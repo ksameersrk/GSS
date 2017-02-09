@@ -26,7 +26,8 @@ public class Tasks {
         String tmp[] = newTask.split(",");
         if (tmp[0].equals("PUT")) {
             PUTrequestArrivalTimesSource.add(tmp[1]);
-            dataFiles.add(tmp[2] + "," + tmp[3]);
+            //dataFiles.add(tmp[2] + "," + tmp[3]);
+            dataFiles.add(tmp[2]);
         }
         else if (tmp[0].equals("GET")) {
             GETrequestArrivalTimesSource.add(tmp[1]);
@@ -34,7 +35,8 @@ public class Tasks {
         }
         else if (tmp[0].equals("UPDATE")) {
             UPDATErequestArrivalTimesSource.add(tmp[1]);
-            updateFiles.add(tmp[2] + "," + tmp[3]);
+            //updateFiles.add(tmp[2] + "," + tmp[3]);
+            updateFiles.add(tmp[2]);
         }
         else if (tmp[0].equals("DELETE")) {
             DELETErequestArrivalTimesSource.add(tmp[1]);
@@ -53,7 +55,8 @@ public class Tasks {
         String tmp[] = newTask.split(",");
         if (tmp[0].equals("PUT")) {
             PUTrequestArrivalTimesSource.add(tmp[1]);
-            dataFiles.add(tmp[2] + "," + tmp[3]);
+            //dataFiles.add(tmp[2] + "," + tmp[3]);
+            dataFiles.add(tmp[2]);
         }
         else if (tmp[0].equals("GET")) {
             GETrequestArrivalTimesSource.add(tmp[1]);
@@ -61,7 +64,8 @@ public class Tasks {
         }
         else if (tmp[0].equals("UPDATE")) {
             UPDATErequestArrivalTimesSource.add(tmp[1]);
-            updateFiles.add(tmp[2] + "," + tmp[3]);
+            //updateFiles.add(tmp[2] + "," + tmp[3]);
+            updateFiles.add(tmp[2]);
         }
         else if (tmp[0].equals("DELETE")) {
             DELETErequestArrivalTimesSource.add(tmp[1]);
