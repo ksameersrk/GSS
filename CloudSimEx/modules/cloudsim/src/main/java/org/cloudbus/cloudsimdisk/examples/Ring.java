@@ -135,7 +135,7 @@ public class Ring
 
     public static void main(String[] args)
     {
-        File file = new File("sources/org/cloudbus/cloudsimdisk/examples/rings.in");
+        File file = new File("/Users/skulkarni9/Desktop/8thSem/GSS/CloudSimEx/modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/rings.in");
         try (BufferedReader in = new BufferedReader(new FileReader(file)))
         {
             int Node_Count, Partition_Power, Replicas;
