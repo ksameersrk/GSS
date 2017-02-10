@@ -119,9 +119,9 @@ public class SpinningDownAlgo2
         List<Node> spunDownable = new ArrayList<>();
         List<Node> allNodes = new ArrayList<>();
         allNodes.addAll(map.keySet());
-        for(int i=0; i<N; i++)
+        while(N>0)
         {
-            randomNum = ThreadLocalRandom.current().nextInt(0, N-i);
+            randomNum = ThreadLocalRandom.current().nextInt(0, N);
             List<String> files = map.get(allNodes.get(randomNum));
             for(String filename : files)
             {
@@ -129,8 +129,19 @@ public class SpinningDownAlgo2
             }
             if(isPolicyValid(fileCountMap, 2))
             {
+                N--;
                 spunDownable.add(allNodes.get(randomNum));
                 allNodes.remove(randomNum);
+                List<Node> tmp = new ArrayList<Node>();
+                tmp.addAll(allNodes);
+                for(Node n : tmp)
+                {
+                    if(isNodeToBeRemoved(n, fileCountMap, map, 2))
+                    {
+                        N--;
+                        allNodes.remove(n);
+                    }
+                }
             }
             else
             {
@@ -139,6 +150,19 @@ public class SpinningDownAlgo2
         }
         return spunDownable;
 
+    }
+
+    public static boolean isNodeToBeRemoved(Node node, Map<String, Integer> fileCountMap,
+                                            Map<Node, ArrayList<String>> map, int minCount)
+    {
+        for(String filename : map.get(node))
+        {
+            if(fileCountMap.get(filename) <= minCount)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isPolicyValid(Map<String, Integer> fileCount, int minCount)
