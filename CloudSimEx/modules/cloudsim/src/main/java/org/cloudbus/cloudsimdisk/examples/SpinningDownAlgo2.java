@@ -61,7 +61,7 @@ public class SpinningDownAlgo2
         {
             int Node_Count, Partition_Power, Replicas;
             String a[] = in.readLine().trim().split(" ");
-            Node_Count = Integer.parseInt(a[0]);
+            Node_Count = 5;
             Partition_Power = Integer.parseInt(a[1]);
             Replicas = Integer.parseInt(a[2]);
             HashMap<Integer, Node> hm = new HashMap<Integer, Node>();
@@ -79,14 +79,14 @@ public class SpinningDownAlgo2
             Ring ring = buildRing(hm, Partition_Power, Replicas);
             System.out.println(ring);
             Map<Node, ArrayList<String>> nodeToFileList = getNodeToFileList(
-                    "files/basic/StagingDiskAndSpinDown/inputIdealDataset100Ops.txt",
+                    "files/basic/SpinningDownAlgo1/idealInputLog.txt",
                     ring.getAllNodes(),
                     ring);
             display(nodeToFileList);
 
             System.out.println("Simulating After Each Operation : ");
             List<List<Node>> result = simulate(
-                    "files/basic/StagingDiskAndSpinDown/inputIdealDataset100Ops.txt",
+                    "files/basic/SpinningDownAlgo1/idealInputLog.txt",
                     ring.getAllNodes(),
                     ring);
 
