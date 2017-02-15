@@ -5,6 +5,7 @@ import java.lang.*;
 import java.security.*;
 import java.nio.*;
 import java.io.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
@@ -15,7 +16,9 @@ public class Ring
     private ArrayList<Integer> partitionToNode;
     private int replicas;
     private int partitionShift;
-    
+    private Map<Integer, List<Node>> zoneIdToNodes;
+    private Map<String, List<Node>> handOffNodes;
+
     public Ring(HashMap<Integer,Node> nodes, ArrayList<Integer> partitionToNode, int replicas)
     {
         this.nodes = nodes;
@@ -32,6 +35,8 @@ public class Ring
             new Exception("partitionToPower is not power of 2");
         }
         this.partitionShift = 32 - partitionPower;
+        this.zoneIdToNodes = this.getZoneIdToNodes();
+        this.handOffNodes = new HashMap<>();
     }
     
     public long getUnsignedInt(int x)
@@ -84,10 +89,98 @@ public class Ring
         return results;
     }
 
+    public Map<Integer, List<Node>> getZoneIdToNodes()
+    {
+        Map<Integer, List<Node>> zoneIdToNodes = new HashMap<>();
+        for(Node n : this.getAllNodes())
+        {
+            if(zoneIdToNodes.containsKey(n.getZone()))
+            {
+                zoneIdToNodes.get(n.getZone()).add(n);
+            }
+            else
+            {
+                List<Node> newNodeList = new ArrayList<>();
+                newNodeList.add(n);
+                zoneIdToNodes.put(n.getZone(), newNodeList);
+            }
+        }
+        return zoneIdToNodes;
+    }
+
+    public void deleteHandOffNodes(String filePath)
+    {
+        if(this.handOffNodes.containsKey(filePath))
+        {
+            this.handOffNodes.remove(filePath);
+        }
+    }
+
+    /*
+        getActiveNodes takes into account following
+            - If all three nodes from ring are active, then return it.
+            - If less then 3 nodes are active, then handoff nodes are choosen
+              from other zones.
+            - An entry of handoff nodes is maintained.
+            - If User wishes to delete handOff nodes, then he has to execute
+              deleteHandOffNodes(String filePath)
+     */
+    
+    public List<Node> getActiveNodes(String filePath)
+    {
+        List<Node> activeNodes = new ArrayList<>();
+        List<Node> currentHandOffNodes = new ArrayList<>();
+        Set<Integer> zones = new HashSet<>();
+        for(Node n : getNodes(filePath))
+        {
+            if(!n.getIsSpunDown())
+            {
+                activeNodes.add(n);
+                zones.add(n.getZone());
+            }
+        }
+        if(activeNodes.size() != 3)
+        {
+            if(this.handOffNodes.containsKey(filePath))
+            {
+                int NumOfHandOffNodes = 3 - activeNodes.size();
+                if(NumOfHandOffNodes < this.handOffNodes.get(filePath).size())
+                {
+                    for(int i=0; i<NumOfHandOffNodes; i++)
+                    {
+                        currentHandOffNodes.add(this.handOffNodes.get(filePath).get(i));
+                    }
+                }
+                else
+                {
+                    currentHandOffNodes.addAll(this.handOffNodes.get(filePath));
+                }
+            }
+            while (activeNodes.size() + currentHandOffNodes.size() != 3)
+            {
+                Set<Integer> otherZones = this.zoneIdToNodes.keySet();
+                otherZones.removeAll(zones);
+                ArrayList<Integer> otherZonesList = new ArrayList<>(otherZones);
+                int randomNumber = ThreadLocalRandom.current().nextInt(0, otherZonesList.size());
+                List<Node> nodesFromRandomZone = this.zoneIdToNodes.get(otherZonesList.get(randomNumber));
+                Collections.shuffle(nodesFromRandomZone);
+                for(Node n : nodesFromRandomZone)
+                {
+                    if(!n.getIsSpunDown())
+                    {
+                        currentHandOffNodes.add(n);
+                        break;
+                    }
+                }
+            }
+            this.handOffNodes.put(filePath, currentHandOffNodes);
+        }
+        return activeNodes;
+    }
+
     public ArrayList<Node> getAllNodes()
     {
-        ArrayList<Node> allNodes = new ArrayList<>(nodes.values());
-        return allNodes;
+        return new ArrayList<>(nodes.values());
     }
     public static Ring buildRing(HashMap<Integer,Node> nodes, int partitionPower, int replicas)
     {
@@ -157,7 +250,7 @@ public class Ring
                 hm.put(id, new Node(id, zone, weight, hddModel, hddPowerModel));
             }
             Ring ring = buildRing(hm, Partition_Power, Replicas);
-            for(Node n : ring.getNodes(filePath))
+            for(Node n : ring.getActiveNodes(filePath))
             {
                 System.out.println(n);
             }
