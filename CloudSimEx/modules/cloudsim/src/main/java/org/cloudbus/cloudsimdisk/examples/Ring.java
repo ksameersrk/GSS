@@ -157,22 +157,49 @@ public class Ring
                     currentHandOffNodes.addAll(this.handOffNodes.get(filePath));
                 }
             }
-            while (activeNodes.size() + currentHandOffNodes.size() != 3)
+            int tries = 0;
+            while (activeNodes.size() + currentHandOffNodes.size() != 3 && tries != 1000)
             {
                 Set<Integer> otherZones = this.zoneIdToNodes.keySet();
                 otherZones.removeAll(zones);
                 ArrayList<Integer> otherZonesList = new ArrayList<>(otherZones);
-                int randomNumber = ThreadLocalRandom.current().nextInt(0, otherZonesList.size());
-                List<Node> nodesFromRandomZone = this.zoneIdToNodes.get(otherZonesList.get(randomNumber));
-                Collections.shuffle(nodesFromRandomZone);
-                for(Node n : nodesFromRandomZone)
+                if(otherZonesList.size() != 0)
                 {
-                    if(!n.getIsSpunDown())
+                    int randomNumber = ThreadLocalRandom.current().nextInt(0, otherZonesList.size());
+                    List<Node> nodesFromRandomZone = this.zoneIdToNodes.get(otherZonesList.get(randomNumber));
+                    Collections.shuffle(nodesFromRandomZone);
+                    for(Node n : nodesFromRandomZone)
                     {
-                        currentHandOffNodes.add(n);
-                        break;
+                        if(!n.getIsSpunDown())
+                        {
+                            currentHandOffNodes.add(n);
+                            break;
+                        }
                     }
                 }
+                else if(zones.size() != 0)
+                {
+                    int randomNumber = ThreadLocalRandom.current().nextInt(0, zones.size());
+                    List<Node> nodesFromRandomZone = this.zoneIdToNodes.get(new ArrayList<Integer>(zones).get(randomNumber));
+                    Collections.shuffle(nodesFromRandomZone);
+                    for(Node n : nodesFromRandomZone)
+                    {
+                        if(!n.getIsSpunDown() && !activeNodes.contains(n))
+                        {
+                            currentHandOffNodes.add(n);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    System.out.println("Cannot Assign HandOff nodes : Need to Spin UP some disks");
+                }
+                tries++;
+            }
+            if(tries == 1000)
+            {
+                System.out.println("Could Not Assign the HandOff Nodes");
             }
             this.handOffNodes.put(filePath, currentHandOffNodes);
         }
