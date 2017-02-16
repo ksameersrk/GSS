@@ -17,6 +17,8 @@ buildNumber.properties
 .idea/
 *.iml
 *.iws
+*.xls
+*/logs/*
 
 # Eclipse
 .classpath
