@@ -109,7 +109,16 @@ public class Ring
         return zoneIdToNodes;
     }
 
-    public void deleteHandOffNodes(String filePath)
+    public List<Node> getHandOffNodes(String filePath)
+    {
+        if(this.handOffNodes.containsKey(filePath))
+        {
+            return this.handOffNodes.get(filePath);
+        }
+        return new ArrayList<>();
+    }
+
+    public void removeHandOffNodesEntry(String filePath)
     {
         if(this.handOffNodes.containsKey(filePath))
         {
@@ -123,8 +132,8 @@ public class Ring
             - If less then 3 nodes are active, then handoff nodes are choosen
               from other zones.
             - An entry of handoff nodes is maintained.
-            - If User wishes to delete handOff nodes, then he has to execute
-              deleteHandOffNodes(String filePath)
+            - If User wishes to delete handOff nodes, to get those nodes getHandOffNodes
+              and then he has to execute removeHandOffNodesEntry(String filePath)
      */
     
     public ArrayList<Node> getActiveNodes(String filePath)
@@ -179,8 +188,10 @@ public class Ring
                 }
                 else if(zones.size() != 0)
                 {
-                    int randomNumber = ThreadLocalRandom.current().nextInt(0, zones.size());
-                    List<Node> nodesFromRandomZone = this.zoneIdToNodes.get(new ArrayList<Integer>(zones).get(randomNumber));
+                    List newZones = new ArrayList<Integer>(zones);
+                    int randomNumber = ThreadLocalRandom.current().nextInt(0, newZones.size());
+                    List<Node> nodesFromRandomZone = this.zoneIdToNodes.get(newZones.get(randomNumber));
+                    System.out.println("DEBUG : "+nodesFromRandomZone.toString());
                     Collections.shuffle(nodesFromRandomZone);
                     for(Node n : nodesFromRandomZone)
                     {
@@ -200,6 +211,7 @@ public class Ring
             if(tries == 1000)
             {
                 System.out.println("Could Not Assign the HandOff Nodes");
+                System.exit(999);
             }
             this.handOffNodes.put(filePath, currentHandOffNodes);
         }
