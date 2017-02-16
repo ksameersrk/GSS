@@ -1,5 +1,6 @@
 package org.cloudbus.cloudsimdisk.examples;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.lang.*;
 import java.security.*;
@@ -126,7 +127,7 @@ public class Ring
               deleteHandOffNodes(String filePath)
      */
     
-    public List<Node> getActiveNodes(String filePath)
+    public ArrayList<Node> getActiveNodes(String filePath)
     {
         List<Node> activeNodes = new ArrayList<>();
         List<Node> currentHandOffNodes = new ArrayList<>();
@@ -175,13 +176,27 @@ public class Ring
             }
             this.handOffNodes.put(filePath, currentHandOffNodes);
         }
-        return activeNodes;
+        return (new ArrayList<>(activeNodes));
+    }
+
+    public ArrayList<Node> getInactiveNodes(String filePath)
+    {
+        List<Node> inactiveNodes = new ArrayList<>();
+        for(Node n : getNodes(filePath))
+        {
+            if(n.getIsSpunDown())
+            {
+                inactiveNodes.add(n);
+            }
+        }
+        return (new ArrayList<>(inactiveNodes));
     }
 
     public ArrayList<Node> getAllNodes()
     {
         return new ArrayList<>(nodes.values());
     }
+
     public static Ring buildRing(HashMap<Integer,Node> nodes, int partitionPower, int replicas)
     {
         ArrayList<Integer> partitionToNode = new ArrayList<Integer>();

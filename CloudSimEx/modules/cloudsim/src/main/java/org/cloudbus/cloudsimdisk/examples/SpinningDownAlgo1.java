@@ -24,7 +24,7 @@ public class SpinningDownAlgo1 {
 
         // ======================================================================================================
         // the total number of nodes that will be used for storage ( spun down  + always active)
-        int totalNoOfNodes = 256;
+        int totalNoOfNodes = 4;
         // node properties
         int noOfSpunDownDisks = 0;
         int noOfActiveAlwaysDisks = 3;
@@ -603,8 +603,28 @@ public class SpinningDownAlgo1 {
         // nodeToFileMapping has node as key and list of files as value
         // add find disks that could be spun down logic here
 
+        Random randomGenerator = new Random();
+        int count = 0;
+
+        while(allNodes.size() > 1)
+        {
+            int index = randomGenerator.nextInt(allNodes.size());
+            ArrayList<String> tmpFiles = new ArrayList<String>(nodeToFileMapping.get(allNodes.get(index)));
+
+            for (String file : tmpFiles)
+            {
+                for (Iterator<Node> n = allNodes.iterator(); n.hasNext(); )
+                {
+                    if(nodeToFileMapping.containsKey(n) && nodeToFileMapping.get(n).contains(file))
+                    {
+                        allNodes.remove(n);
+                    }
+                }
+            }
+            count += 1;
+        }
 
 
-        return 0;
+        return count;
     }
 }

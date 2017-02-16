@@ -24,20 +24,18 @@ public class StagingDiskRingAndSpinDown {
 
         // ======================================================================================================
         // the total number of nodes that will be used for storage ( spun down  + always active)
-        int totalNoOfNodes = 256;
+        int totalNoOfNodes = 5;
         // node properties
         int noOfSpunDownDisks = 1;
         int noOfActiveAlwaysDisks = 2;
         // staging disk properties
-        boolean addStagingDisk = true;
+        boolean addStagingDisk = false;
         // ======================================================================================================
 
-        int totalHddRingStorageCapacity = 256*((6000000 + 900000 + 5000000)/3);
-        int totalStagingDiskCapacity = (int)(0.05 * totalHddRingStorageCapacity); // 5% capacity
-        int avgSSDCapacity = (int)((800000 + 480000 + 512000)/3);
-        int noOfStagingDisks = (int)(totalStagingDiskCapacity/avgSSDCapacity);
-
-
+        int totalHddRingStorageCapacity = totalNoOfNodes * ((6000000 + 900000 + 5000000) / 3);
+        int totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
+        int avgSSDCapacity = (int) ((800000 + 480000 + 512000) / 3);
+        int noOfStagingDisks = (int) (totalStagingDiskCapacity / avgSSDCapacity);
 
 
         // staging disk properties
@@ -49,7 +47,7 @@ public class StagingDiskRingAndSpinDown {
         // (eg when disk is 80% full, we keep on removing least recently used file until the occupied space goes below 50 % capacity)
 //int stagingDiskLowerThreshold = (int) (totalHddRingStorageCapacity * 0.5);
         Ring stagingDiskRing = getRing("files/basic/StagingDiskAndSpinDown/rings.in", noOfStagingDisks
-        , 1, false, false);
+                , 1, false, false);
 
 //        List<Node> stagingDiskNodes = new ArrayList<Node>(stagingDiskRing.getAllNodes());
 //        for(Node n : stagingDiskNodes)
@@ -61,9 +59,9 @@ public class StagingDiskRingAndSpinDown {
         // Create the ring
         // separate ring for active always disks and spun down ones, so it becomes easy to access the entire set of disks at once
         // this is just a logical simplification, which in no way affects the total power consumed
-        Ring ringOfActiveAlwaysDisks = getRing("files/basic/StagingDiskAndSpinDown/rings.in", (int)((noOfActiveAlwaysDisks * totalNoOfNodes)/
+        Ring ringOfActiveAlwaysDisks = getRing("files/basic/StagingDiskAndSpinDown/rings.in", (int) ((noOfActiveAlwaysDisks * totalNoOfNodes) /
                 (noOfActiveAlwaysDisks + noOfSpunDownDisks)), noOfActiveAlwaysDisks, false, true);
-        Ring ringOfSpunDownDisks = getRing("files/basic/StagingDiskAndSpinDown/rings.in", (int)((noOfSpunDownDisks * totalNoOfNodes)/
+        Ring ringOfSpunDownDisks = getRing("files/basic/StagingDiskAndSpinDown/rings.in", (int) ((noOfSpunDownDisks * totalNoOfNodes) /
                 (noOfActiveAlwaysDisks + noOfSpunDownDisks)), noOfSpunDownDisks, true, true);
 
         String inputLog = "files/basic/StagingDiskRingAndSpinDown/idealInputLog.txt";
@@ -82,7 +80,7 @@ public class StagingDiskRingAndSpinDown {
             dataFile = getOperationFileList(inputLog, "PUT", nodeToTaskMapping, arrivalFile, ringOfActiveAlwaysDisks, nodeList, noOfActiveAlwaysDisks);
             requiredFile = getOperationFileList(inputLog, "GET", nodeToTaskMapping, arrivalFile, ringOfActiveAlwaysDisks, nodeList, noOfActiveAlwaysDisks);
             updateFile = getOperationFileList(inputLog, "UPDATE", nodeToTaskMapping, arrivalFile, ringOfActiveAlwaysDisks, nodeList, noOfActiveAlwaysDisks);
-            deleteFile = getOperationFileList(inputLog, "DELEMap< Node, Map<String, Integer>> stagingDiskFileList = new LinkedHashMap<Node, Map<String, Integer>>();TE", nodeToTaskMapping, arrivalFile, ringOfActiveAlwaysDisks, nodeList, noOfActiveAlwaysDisks);
+            deleteFile = getOperationFileList(inputLog, "DELETE", nodeToTaskMapping, arrivalFile, ringOfActiveAlwaysDisks, nodeList, noOfActiveAlwaysDisks);
         } else {
             // if there a staging disk included
             stagingDiskSimulate(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, inputLog, nodeToTaskMapping, nodeList,
@@ -109,18 +107,18 @@ public class StagingDiskRingAndSpinDown {
                                            ArrayList<String> updateFile, ArrayList<String> deleteFile, String inputLog,
                                            HashMap<Node, Tasks> nodeToTaskMapping, ArrayList<Node> nodeList, int noOfActiveAlwaysDisks,
                                            Ring ringOfActiveAlwaysDisks, int noOfSpunDownDisks, Ring ringOfSpunDownDisks,
-                                            Ring stagingDiskRing) throws Exception {
+                                           Ring stagingDiskRing) throws Exception {
         List<Node> stagingDiskNodes = stagingDiskRing.getAllNodes();
         Map<Node, Integer> stagingDiskMemoryUsed = new LinkedHashMap<Node, Integer>();
         Map<Node, Integer> stagingDiskUpperThresholdMemory = new LinkedHashMap<Node, Integer>();
         Map<Node, Integer> stagingDiskLowerThresholdMemory = new LinkedHashMap<Node, Integer>();
-        Map< Node, Map<String, Integer>> stagingDiskFileList = new LinkedHashMap<Node, Map<String, Integer>>();
+        Map<Node, Map<String, Integer>> stagingDiskFileList = new LinkedHashMap<Node, Map<String, Integer>>();
         // initialise used memory for all nodes as 0
-        for(Node n : stagingDiskNodes){
+        for (Node n : stagingDiskNodes) {
             stagingDiskMemoryUsed.put(n, 0);
-            stagingDiskLowerThresholdMemory.put(n, (int)(n.getStorageModel().getCapacity()*0.5));
+            stagingDiskLowerThresholdMemory.put(n, (int) (n.getStorageModel().getCapacity() * 0.5));
             // initialise stagingDiskUpperThresholdMemory
-            stagingDiskUpperThresholdMemory.put(n, (int)(n.getStorageModel().getCapacity()*0.8));
+            stagingDiskUpperThresholdMemory.put(n, (int) (n.getStorageModel().getCapacity() * 0.8));
             stagingDiskFileList.put(n, new HashMap<String, Integer>());
         }
 
@@ -159,10 +157,11 @@ public class StagingDiskRingAndSpinDown {
                     // DELETE operations on spun down disks)
                     //          b) free up staging disk(go on removing least recently used files till occupied space goes below staging disk lower threshold)
                     //          c) then add file to staging disk
-                     int memToBeAdded = stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data, stagingDiskMemoryUsed.get
+                    int memToBeAdded = stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data, stagingDiskMemoryUsed.get
                                     (stagingDisk),
                             stagingDiskUpperThresholdMemory.get(stagingDisk),
-                            tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks, tmpdataFile,
+                            tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
+                            tmpdataFile,
                             tmpdeleteFile,
                             nodeList,
                             nodeToTaskMapping, ringOfActiveAlwaysDisks, ringOfSpunDownDisks, allFilesUploaded);
@@ -199,8 +198,9 @@ public class StagingDiskRingAndSpinDown {
                             nodeToTaskMapping.put(n, new Tasks(n, op));
                         }
                         // also when file not in stagingDisk and we get it from end node, should we add it to stagingDisk for future use
-                        String putOp = "PUT,"+data[1]+","+data[2]+","+allFilesUploaded.get(data[2]);
-                        int memToBeAdded = stagingDiskPutOperation(putOp, stagingDisk, noOfActiveAlwaysDisks, putOp.split(","), stagingDiskMemoryUsed.get(stagingDisk),
+                        String putOp = "PUT," + data[1] + "," + data[2] + "," + allFilesUploaded.get(data[2]);
+                        int memToBeAdded = stagingDiskPutOperation(putOp, stagingDisk, noOfActiveAlwaysDisks, putOp.split(","), stagingDiskMemoryUsed.get
+                                        (stagingDisk),
                                 stagingDiskUpperThresholdMemory.get(stagingDisk),
                                 tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
                                 tmpdataFile,
@@ -224,7 +224,8 @@ public class StagingDiskRingAndSpinDown {
                     int memToBeAdded = stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data,
                             stagingDiskMemoryUsed.get(stagingDisk),
                             stagingDiskUpperThresholdMemory.get(stagingDisk),
-                            tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks, tmpupdateFile,
+                            tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
+                            tmpupdateFile,
                             tmpdeleteFile,
                             nodeList,
                             nodeToTaskMapping, ringOfActiveAlwaysDisks, ringOfSpunDownDisks, allFilesUploaded);
@@ -276,7 +277,7 @@ public class StagingDiskRingAndSpinDown {
                                               Map<String, Integer> stagingDiskFileList, int stagingDiskLowerThreshold,
                                               int noOfSpunDownDisks, ArrayList<String> tmpOpFile, ArrayList<String> tmpdeleteFile,
                                               ArrayList<Node> nodeList, HashMap<Node, Tasks> nodeToTaskMapping, Ring ringOfActiveAlwaysDisks,
-                                              Ring ringOfSpunDownDisks, Map<String, Integer>allFilesUploaded) {
+                                              Ring ringOfSpunDownDisks, Map<String, Integer> allFilesUploaded) {
         int stagingDiskMemoryToBeAdded = 0;
         // if staging disk occupied more the stagingDiskMemoryUsed upper threshold
         if (stagingDiskMemoryUsed + Integer.parseInt(data[3]) > stagingDiskThresholdMemory) {
@@ -316,7 +317,7 @@ public class StagingDiskRingAndSpinDown {
 
         // add file to allFilesUploaded file list
         allFilesUploaded.put(data[2], Integer.parseInt(data[3])); // this takes care of both operations(update and add)
-        return  stagingDiskMemoryToBeAdded;
+        return stagingDiskMemoryToBeAdded;
 
     }
 
@@ -332,7 +333,7 @@ public class StagingDiskRingAndSpinDown {
         for (String file : stagingDiskFileList.keySet()) {
             tmpToBeAddedToSpunDownFiles.put(file, stagingDiskFileList.get(file));
             memoryToBeFreed += stagingDiskFileList.get(file);
-            if (stagingDiskMemoryUsed - memoryToBeFreed  < stagingDiskLowerThreshold) {
+            if (stagingDiskMemoryUsed - memoryToBeFreed < stagingDiskLowerThreshold) {
                 break;
             }
         }
@@ -504,10 +505,10 @@ public class StagingDiskRingAndSpinDown {
 
 
         // SSD specs
-        StorageModelHdd[] storageModelSSDs = new StorageModelHdd[]{ new StorageModelSsdToshibaHG6EnterpriseTHNSNJ512GCSU() , new
-        StorageModelSsdSeagate600ProEnterpriseST480FP0021(), new StorageModelSsdIntelDCS3500EnterpriseSC2BB800G401() };
-        PowerModelHdd[] powerModelSSDs = new PowerModelHdd[]{ new PowerModelSsdToshibaHG6EnterpriseTHNSNJ512GCSU() , new
-        PowerModelSsdSeagate600ProEnterpriseST480FP0021() , new PowerModelSsdIntelDCS3500EnterpriseSC2BB800G401() };
+        StorageModelHdd[] storageModelSSDs = new StorageModelHdd[]{new StorageModelSsdToshibaHG6EnterpriseTHNSNJ512GCSU(), new
+                StorageModelSsdSeagate600ProEnterpriseST480FP0021(), new StorageModelSsdIntelDCS3500EnterpriseSC2BB800G401()};
+        PowerModelHdd[] powerModelSSDs = new PowerModelHdd[]{new PowerModelSsdToshibaHG6EnterpriseTHNSNJ512GCSU(), new
+                PowerModelSsdSeagate600ProEnterpriseST480FP0021(), new PowerModelSsdIntelDCS3500EnterpriseSC2BB800G401()};
 
         File file = new File(filename);
 
@@ -523,14 +524,13 @@ public class StagingDiskRingAndSpinDown {
                 int id = Integer.parseInt(a[0]);
                 int zone = Integer.parseInt(a[1]);
                 double weight = Double.parseDouble(a[2]);
-                StorageModelHdd hddModel ;
+                StorageModelHdd hddModel;
                 PowerModelHdd hddPowerModel;
 
-                if(isHDD){
+                if (isHDD) {
                     hddModel = storageModelHdds[i % (storageModelHdds.length)]; // model of disks in the persistent storage
                     hddPowerModel = powerModelHdds[i % (powerModelHdds.length)]; // power model of disks
-                }
-                else{
+                } else {
                     hddModel = storageModelSSDs[i % (storageModelSSDs.length)]; // model of disks in the persistent storage
                     hddPowerModel = powerModelSSDs[i % (powerModelSSDs.length)]; // power model of disks
                 }

@@ -83,6 +83,7 @@ public class Node {
     {
         this.desiredParts = desiredParts;
     }
+    public  void  setIsSpunDown(boolean isSpunDown) {this.isSpunDown = isSpunDown;}
 
     public boolean equals(Node n)
     {
