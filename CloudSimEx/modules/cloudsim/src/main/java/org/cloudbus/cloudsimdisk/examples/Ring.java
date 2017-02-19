@@ -10,6 +10,19 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 
+/*
+    Ring
+        - public List<Node> getHandOffNodes(String filePath)
+        - public void addHandOffNodesEntry(String filePath, ArrayList<Node> nodes)
+        - public void removeHandOffNodesEntry(String filePath)
+
+        - public List<Node> getPrimaryNodesNodes(String filePath)
+        - public void addPrimaryNodesEntry(String filePath, ArrayList<Node> nodes)
+        - public void removePrimaryNodesEntry(String filePath)
+
+        - public Map<String, List<Node>> getActiveNodes(String filePath)
+        - public ArrayList<Node> getNodes(String filePath)
+ */
 public class Ring
 {
     private HashMap<Integer, Node> nodes;
@@ -18,7 +31,7 @@ public class Ring
     private int partitionShift;
     private Map<Integer, List<Node>> zoneIdToNodes;
     private Map<String, List<Node>> handOffNodesMap;
-    private Map<String, List<Node>> ringNodesMap;
+    private Map<String, List<Node>> primaryNodesMap;
 
     public Ring(HashMap<Integer,Node> nodes, ArrayList<Integer> partitionToNode, int replicas)
     {
@@ -38,7 +51,7 @@ public class Ring
         this.partitionShift = 32 - partitionPower;
         this.zoneIdToNodes = this.getZoneIdToNodes();
         this.handOffNodesMap = new HashMap<>();
-        this.ringNodesMap = new HashMap<>();
+        this.primaryNodesMap = new HashMap<>();
     }
     
     public long getUnsignedInt(int x)
@@ -119,7 +132,7 @@ public class Ring
         return new ArrayList<>();
     }
 
-    public void removeHandOffNodesEntry(String filePath, ArrayList<Node> nodes)
+    public void addHandOffNodesEntry(String filePath, ArrayList<Node> nodes)
     {
         if(this.handOffNodesMap.containsKey(filePath))
         {
@@ -139,53 +152,54 @@ public class Ring
         }
     }
 
-    public List<Node> getRingNodesNodes(String filePath)
+    public List<Node> getPrimaryNodesNodes(String filePath)
     {
-        if(this.ringNodesMap.containsKey(filePath))
+        if(this.primaryNodesMap.containsKey(filePath))
         {
-            return this.ringNodesMap.get(filePath);
+            return this.primaryNodesMap.get(filePath);
         }
         return new ArrayList<>();
     }
 
-    public void removeRingNodesEntry(String filePath, ArrayList<Node> nodes)
+    public void addPrimaryNodesEntry(String filePath, ArrayList<Node> nodes)
     {
-        if(this.ringNodesMap.containsKey(filePath))
+        if(this.primaryNodesMap.containsKey(filePath))
         {
-            this.ringNodesMap.get(filePath).addAll(nodes);
+            this.primaryNodesMap.get(filePath).addAll(nodes);
         }
         else
         {
-            this.ringNodesMap.put(filePath, nodes);
+            this.primaryNodesMap.put(filePath, nodes);
         }
     }
 
-    public void removeRingNodesEntry(String filePath)
+    public void removePrimaryNodesEntry(String filePath)
     {
-        if(this.ringNodesMap.containsKey(filePath))
+        if(this.primaryNodesMap.containsKey(filePath))
         {
-            this.ringNodesMap.remove(filePath);
+            this.primaryNodesMap.remove(filePath);
         }
     }
     
-    public List<Node> getActiveNodes(String filePath)
+    public Map<String, List<Node>> getActiveNodes(String filePath)
     {
-        List<Node> activeNodes = new ArrayList<>();
+        List<Node> primaryNodes = new ArrayList<>();
         List<Node> currentHandOffNodes = new ArrayList<>();
         Set<Integer> zones = new HashSet<>();
+        Map<String, List<Node>> result = new HashMap<>();
         for(Node n : getNodes(filePath))
         {
             if(!n.getIsSpunDown())
             {
-                activeNodes.add(n);
+                primaryNodes.add(n);
                 zones.add(n.getZone());
             }
         }
-        if(activeNodes.size() != 3)
+        if(primaryNodes.size() != 3)
         {
             if(this.handOffNodesMap.containsKey(filePath))
             {
-                int NumOfHandOffNodes = 3 - activeNodes.size();
+                int NumOfHandOffNodes = 3 - primaryNodes.size();
                 if(NumOfHandOffNodes < this.handOffNodesMap.get(filePath).size())
                 {
                     for(int i=0; i<NumOfHandOffNodes; i++)
@@ -199,7 +213,7 @@ public class Ring
                 }
             }
             int tries = 0;
-            while (activeNodes.size() + currentHandOffNodes.size() != 3 && tries != 1000)
+            while (primaryNodes.size() + currentHandOffNodes.size() != 3 && tries != 1000)
             {
                 Set<Integer> otherZones = this.zoneIdToNodes.keySet();
                 otherZones.removeAll(zones);
@@ -220,14 +234,14 @@ public class Ring
                 }
                 else if(zones.size() != 0)
                 {
-                    List newZones = new ArrayList<Integer>(zones);
+                    List newZones = new ArrayList<>(zones);
                     int randomNumber = ThreadLocalRandom.current().nextInt(0, newZones.size());
                     List<Node> nodesFromRandomZone = this.zoneIdToNodes.get(newZones.get(randomNumber));
                     System.out.println("DEBUG : "+nodesFromRandomZone.toString());
                     Collections.shuffle(nodesFromRandomZone);
                     for(Node n : nodesFromRandomZone)
                     {
-                        if(!n.getIsSpunDown() && !activeNodes.contains(n))
+                        if(!n.getIsSpunDown() && !primaryNodes.contains(n))
                         {
                             currentHandOffNodes.add(n);
                             break;
@@ -246,10 +260,9 @@ public class Ring
                 System.exit(999);
             }
         }
-        this.handOffNodesMap.put(filePath, currentHandOffNodes);
-        this.ringNodesMap.put(filePath, activeNodes);
-        activeNodes.addAll(currentHandOffNodes);
-        return activeNodes;
+        result.put("primary", primaryNodes);
+        result.put("handOff", currentHandOffNodes);
+        return result;
     }
 
     public List<Node> getInactiveNodes(String filePath)
@@ -316,7 +329,7 @@ public class Ring
 
     public static void main(String[] args)
     {
-        File file = new File("/Users/skulkarni9/Desktop/8thSem/GSS/CloudSimEx/modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/rings.in");
+        File file = new File("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/rings.in");
         try (BufferedReader in = new BufferedReader(new FileReader(file)))
         {
             int Node_Count, Partition_Power, Replicas;
@@ -343,9 +356,15 @@ public class Ring
                 System.out.println(n);
             }
             System.out.print("**\n");
-            for(Node n : ring.getNodes(filePath))
+            Map<String, List<Node>> activeNodes = ring.getActiveNodes(filePath);
+            for(String str : activeNodes.keySet())
             {
-                System.out.println(n);
+                System.out.println(str);
+                for(Node n : activeNodes.get(str))
+                {
+                    System.out.println(n);
+                }
+                System.out.println();
             }
         }
         catch (Exception e)
