@@ -1,6 +1,5 @@
 package org.cloudbus.cloudsimdisk.examples;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.lang.*;
 import java.security.*;
@@ -18,7 +17,8 @@ public class Ring
     private int replicas;
     private int partitionShift;
     private Map<Integer, List<Node>> zoneIdToNodes;
-    private Map<String, List<Node>> handOffNodes;
+    private Map<String, List<Node>> handOffNodesMap;
+    private Map<String, List<Node>> ringNodesMap;
 
     public Ring(HashMap<Integer,Node> nodes, ArrayList<Integer> partitionToNode, int replicas)
     {
@@ -37,7 +37,8 @@ public class Ring
         }
         this.partitionShift = 32 - partitionPower;
         this.zoneIdToNodes = this.getZoneIdToNodes();
-        this.handOffNodes = new HashMap<>();
+        this.handOffNodesMap = new HashMap<>();
+        this.ringNodesMap = new HashMap<>();
     }
     
     public long getUnsignedInt(int x)
@@ -111,32 +112,63 @@ public class Ring
 
     public List<Node> getHandOffNodes(String filePath)
     {
-        if(this.handOffNodes.containsKey(filePath))
+        if(this.handOffNodesMap.containsKey(filePath))
         {
-            return this.handOffNodes.get(filePath);
+            return this.handOffNodesMap.get(filePath);
         }
         return new ArrayList<>();
     }
 
-    public void removeHandOffNodesEntry(String filePath)
+    public void removeHandOffNodesEntry(String filePath, ArrayList<Node> nodes)
     {
-        if(this.handOffNodes.containsKey(filePath))
+        if(this.handOffNodesMap.containsKey(filePath))
         {
-            this.handOffNodes.remove(filePath);
+            this.handOffNodesMap.get(filePath).addAll(nodes);
+        }
+        else
+        {
+            this.handOffNodesMap.put(filePath, nodes);
         }
     }
 
-    /*
-        getActiveNodes takes into account following
-            - If all three nodes from ring are active, then return it.
-            - If less then 3 nodes are active, then handoff nodes are choosen
-              from other zones.
-            - An entry of handoff nodes is maintained.
-            - If User wishes to delete handOff nodes, to get those nodes getHandOffNodes
-              and then he has to execute removeHandOffNodesEntry(String filePath)
-     */
+    public void removeHandOffNodesEntry(String filePath)
+    {
+        if(this.handOffNodesMap.containsKey(filePath))
+        {
+            this.handOffNodesMap.remove(filePath);
+        }
+    }
+
+    public List<Node> getRingNodesNodes(String filePath)
+    {
+        if(this.ringNodesMap.containsKey(filePath))
+        {
+            return this.ringNodesMap.get(filePath);
+        }
+        return new ArrayList<>();
+    }
+
+    public void removeRingNodesEntry(String filePath, ArrayList<Node> nodes)
+    {
+        if(this.ringNodesMap.containsKey(filePath))
+        {
+            this.ringNodesMap.get(filePath).addAll(nodes);
+        }
+        else
+        {
+            this.ringNodesMap.put(filePath, nodes);
+        }
+    }
+
+    public void removeRingNodesEntry(String filePath)
+    {
+        if(this.ringNodesMap.containsKey(filePath))
+        {
+            this.ringNodesMap.remove(filePath);
+        }
+    }
     
-    public ArrayList<Node> getActiveNodes(String filePath)
+    public List<Node> getActiveNodes(String filePath)
     {
         List<Node> activeNodes = new ArrayList<>();
         List<Node> currentHandOffNodes = new ArrayList<>();
@@ -151,19 +183,19 @@ public class Ring
         }
         if(activeNodes.size() != 3)
         {
-            if(this.handOffNodes.containsKey(filePath))
+            if(this.handOffNodesMap.containsKey(filePath))
             {
                 int NumOfHandOffNodes = 3 - activeNodes.size();
-                if(NumOfHandOffNodes < this.handOffNodes.get(filePath).size())
+                if(NumOfHandOffNodes < this.handOffNodesMap.get(filePath).size())
                 {
                     for(int i=0; i<NumOfHandOffNodes; i++)
                     {
-                        currentHandOffNodes.add(this.handOffNodes.get(filePath).get(i));
+                        currentHandOffNodes.add(this.handOffNodesMap.get(filePath).get(i));
                     }
                 }
                 else
                 {
-                    currentHandOffNodes.addAll(this.handOffNodes.get(filePath));
+                    currentHandOffNodes.addAll(this.handOffNodesMap.get(filePath));
                 }
             }
             int tries = 0;
@@ -213,12 +245,14 @@ public class Ring
                 System.out.println("Could Not Assign the HandOff Nodes");
                 System.exit(999);
             }
-            this.handOffNodes.put(filePath, currentHandOffNodes);
         }
-        return (new ArrayList<>(activeNodes));
+        this.handOffNodesMap.put(filePath, currentHandOffNodes);
+        this.ringNodesMap.put(filePath, activeNodes);
+        activeNodes.addAll(currentHandOffNodes);
+        return activeNodes;
     }
 
-    public ArrayList<Node> getInactiveNodes(String filePath)
+    public List<Node> getInactiveNodes(String filePath)
     {
         List<Node> inactiveNodes = new ArrayList<>();
         for(Node n : getNodes(filePath))
@@ -228,7 +262,7 @@ public class Ring
                 inactiveNodes.add(n);
             }
         }
-        return (new ArrayList<>(inactiveNodes));
+        return inactiveNodes;
     }
 
     public ArrayList<Node> getAllNodes()
@@ -304,7 +338,12 @@ public class Ring
                 hm.put(id, new Node(id, zone, weight, hddModel, hddPowerModel));
             }
             Ring ring = buildRing(hm, Partition_Power, Replicas);
-            for(Node n : ring.getActiveNodes(filePath))
+            for(Node n : ring.getNodes(filePath))
+            {
+                System.out.println(n);
+            }
+            System.out.print("**\n");
+            for(Node n : ring.getNodes(filePath))
             {
                 System.out.println(n);
             }
