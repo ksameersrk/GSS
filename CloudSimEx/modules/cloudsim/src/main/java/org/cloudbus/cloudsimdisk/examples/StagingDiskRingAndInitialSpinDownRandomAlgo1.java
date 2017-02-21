@@ -16,7 +16,7 @@ import static org.cloudbus.cloudsimdisk.examples.Ring.buildRing;
 /**
  * Created by spadigi on 2/15/17.
  */
-public class StagingDiskRingAndSpinDownRandomAlgo1 {
+public class StagingDiskRingAndInitialSpinDownRandomAlgo1 {
     public static void main(String[] args) throws Exception {
         // IF THESE 2 VARIABLES ARE NOT INITIALIZED THEN SIMULATION WONT BE PAUSED
         CloudSim.lifeLength = 100;
@@ -24,13 +24,13 @@ public class StagingDiskRingAndSpinDownRandomAlgo1 {
 
         // ======================================================================================================
         // the total number of nodes that will be used for storage ( spun down  + always active)
-        int totalNoOfNodes = 5;
+        int totalNoOfNodes = 256;
         // node properties
         int noOfReplicas = 3;
         int noOfSpunDownDisks = 1;
         int noOfActiveAlwaysDisks;
         // staging disk properties
-        boolean addStagingDisk = true;
+        boolean addStagingDisk = false;
 
         Ring ring ;
 
@@ -72,20 +72,21 @@ public class StagingDiskRingAndSpinDownRandomAlgo1 {
         if (addStagingDisk == true) {
 
             Map<Node, ArrayList<String>> nodeToStartingFileList = spinningDownAlgo2.getNodeToFileList(
-                    "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/startingFileListSmall.txt",
+                    "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/startingFileList.txt",
                     ring.getAllNodes(),
                     ring);
 
             List<List<Node>> result = spinningDownAlgo2.simulate(
-                    "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/startingFileListSmall.txt",
+                    "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/startingFileList.txt",
                     ring.getAllNodes(),
                     ring);
 
             List<Integer> tmp = new ArrayList<>();
-            for (Node n : result.get(result.size() - 1)) {
-                tmp.add(n.getID());
+            if(result.size() > 0) {
+                for (Node n : result.get(result.size() - 1)) {
+                    tmp.add(n.getID());
+                }
             }
-
             tmp.sort(Comparator.comparing(Integer::intValue));
 
             System.out.println("Operation No : " + (result.size()) + ", No of Nodes spunDownAble : " + tmp.size() + " are : " + tmp);
@@ -98,7 +99,7 @@ public class StagingDiskRingAndSpinDownRandomAlgo1 {
             }
         }
 
-        String inputLog = "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/idealInputLog.txt";
+        String inputLog = "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/inputIdealDataset100Ops.txt";
         ArrayList<String> arrivalFile = new ArrayList<>();
         ArrayList<Node> nodeList = new ArrayList<>();
         HashMap<Node, Tasks> nodeToTaskMapping = new HashMap<>();
@@ -224,7 +225,7 @@ public class StagingDiskRingAndSpinDownRandomAlgo1 {
                         // if file not on staging disk
                         // go to active always node
                         tmprequiredFile.add(op);
-                        ArrayList<Node> nodes = ring.getActiveNodes(data[2]);
+                        ArrayList<Node> nodes = ring.getActiveNodes(data[2], 1); // get needs only one node
                         Node n = nodes.get(0);
                         nodeList.add(n);
                         if (nodeToTaskMapping.containsKey(n)) {
@@ -284,7 +285,7 @@ public class StagingDiskRingAndSpinDownRandomAlgo1 {
                     // remove from active always disks
                     for (int i = 0; i < noOfActiveAlwaysDisks; i++)
                         tmpdeleteFile.add(op);
-                    for (Node n : ring.getActiveNodes(data[2])) {
+                    for (Node n : ring.getActiveNodes(data[2], noOfActiveAlwaysDisks)) {
                         nodeList.add(n);
                         if (nodeToTaskMapping.containsKey(n)) {
                             nodeToTaskMapping.get(n).addTask(op);
@@ -340,7 +341,7 @@ public class StagingDiskRingAndSpinDownRandomAlgo1 {
             nodeToTaskMapping.put(stagingDisk, new Tasks(stagingDisk, op));
         }
 
-        for (Node n : ring.getActiveNodes(data[2])) {
+        for (Node n : ring.getActiveNodes(data[2], noOfActiveAlwaysDisks)) {
             nodeList.add(n);
             if (nodeToTaskMapping.containsKey(n)) {
                 nodeToTaskMapping.get(n).addTask(op);

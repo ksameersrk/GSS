@@ -265,6 +265,29 @@ public class Ring
         return result;
     }
 
+    public ArrayList<Node> getActiveNodes(String filepath, int noOfNodeReqd)
+    {
+        ArrayList<Node> activeNodes = new ArrayList<>();
+        Map<String, List<Node>> result = getActiveNodes(filepath);
+        List<Node> primaryNodes = result.get("primary");
+        if (primaryNodes.size() >= noOfNodeReqd)
+        {
+            for(int i=0; i< noOfNodeReqd; ++i)
+                activeNodes.add(primaryNodes.get(i));
+        }
+        else
+        {
+            for(int i=0; i< primaryNodes.size(); ++i)
+                activeNodes.add(primaryNodes.get(i));
+
+            List<Node> handOffNodes = result.get("handOff");
+            for(int i=0; i< (noOfNodeReqd - primaryNodes.size()); ++i)
+                activeNodes.add(handOffNodes.get(i));
+        }
+
+        return  activeNodes;
+    }
+
     public List<Node> getInactiveNodes(String filePath)
     {
         List<Node> inactiveNodes = new ArrayList<>();
