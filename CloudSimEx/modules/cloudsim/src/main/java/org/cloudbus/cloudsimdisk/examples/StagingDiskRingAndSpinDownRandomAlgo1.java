@@ -72,12 +72,12 @@ public class StagingDiskRingAndSpinDownRandomAlgo1 {
         if (addStagingDisk == true) {
 
             Map<Node, ArrayList<String>> nodeToStartingFileList = spinningDownAlgo2.getNodeToFileList(
-                    "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/startingFileListSmall.txt",
+                    "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/startingFileList.txt",
                     ring.getAllNodes(),
                     ring);
 
             List<List<Node>> result = spinningDownAlgo2.simulate(
-                    "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/startingFileListSmall.txt",
+                    "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/startingFileList.txt",
                     ring.getAllNodes(),
                     ring);
 
@@ -224,7 +224,7 @@ public class StagingDiskRingAndSpinDownRandomAlgo1 {
                         // if file not on staging disk
                         // go to active always node
                         tmprequiredFile.add(op);
-                        ArrayList<Node> nodes = ring.getActiveNodes(data[2]);
+                        List<Node> nodes = ring.getActiveNodes(data[2]).get("primary");
                         Node n = nodes.get(0);
                         nodeList.add(n);
                         if (nodeToTaskMapping.containsKey(n)) {
@@ -284,7 +284,7 @@ public class StagingDiskRingAndSpinDownRandomAlgo1 {
                     // remove from active always disks
                     for (int i = 0; i < noOfActiveAlwaysDisks; i++)
                         tmpdeleteFile.add(op);
-                    for (Node n : ring.getActiveNodes(data[2])) {
+                    for (Node n : ring.getActiveNodes(data[2]).get("primary")) {
                         nodeList.add(n);
                         if (nodeToTaskMapping.containsKey(n)) {
                             nodeToTaskMapping.get(n).addTask(op);
@@ -340,7 +340,7 @@ public class StagingDiskRingAndSpinDownRandomAlgo1 {
             nodeToTaskMapping.put(stagingDisk, new Tasks(stagingDisk, op));
         }
 
-        for (Node n : ring.getActiveNodes(data[2])) {
+        for (Node n : ring.getActiveNodes(data[2]).get("primary")) {
             nodeList.add(n);
             if (nodeToTaskMapping.containsKey(n)) {
                 nodeToTaskMapping.get(n).addTask(op);
