@@ -9,13 +9,14 @@ public class MyRegion
 {
     Map<String, MyZone> myZones;
     String name;
-    double weight;
+    double numberOfPartitionsByWeight;
+    double numberOfPartitionsByDispersion;
+    double numberOfPartitionsDifference;
 
     public MyRegion(String name)
     {
         this.name = name;
         this.myZones = new HashMap<>();
-        this.weight = 0.0;
     }
 
     public String getName()
@@ -47,21 +48,77 @@ public class MyRegion
     }
 
     public double getWeight() {
-        this.calculateWeight();
-        return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public void calculateWeight() {
         double weight = 0.0;
         for(MyZone myZone : this.getAllZones())
         {
             weight += myZone.getWeight();
         }
-        this.setWeight(weight);
+        return weight;
+    }
+
+    public double getAverageWeight() {
+        double weight = 0.0;
+        for(MyZone myZone : this.getAllZones())
+        {
+            weight += myZone.getAverageWeight();
+        }
+        return weight/this.myZones.size();
+    }
+
+    public double getNumberOfPartitionsByWeight() {
+        return numberOfPartitionsByWeight;
+    }
+
+    public void setNumberOfPartitionsByWeight(double numberOfPartitions) {
+        this.numberOfPartitionsByWeight = numberOfPartitions;
+    }
+
+    public void calculateNumberOfPartitionsByWeight(long totalNumberOfPartitions, double totalWeight)
+    {
+        for(MyZone myZone : this.getAllZones())
+        {
+            myZone.calculateNumberOfPartitionsByWeight(totalNumberOfPartitions, totalWeight);
+        }
+        double partitions = 0.0;
+        for(MyZone myZone : this.getAllZones())
+        {
+            partitions += myZone.getNumberOfPartitionsByWeight();
+        }
+        this.setNumberOfPartitionsByWeight(partitions);
+    }
+
+    public double getNumberOfPartitionsByDispersion() {
+        return numberOfPartitionsByDispersion;
+    }
+
+    public void setNumberOfPartitionsByDispersion(double numberOfPartitionsByDispersion) {
+        this.numberOfPartitionsByDispersion = numberOfPartitionsByDispersion;
+    }
+
+    public void calculateNumberOfPartitionsByDispersion(double partitons)
+    {
+        double zonePartitions = partitons / this.getAllZones().size();
+        for(MyZone myZone : this.getAllZones())
+        {
+            myZone.calculateNumberOfPartitionsByDispersion(zonePartitions);
+        }
+        this.setNumberOfPartitionsByDispersion(partitons);
+    }
+
+    public double getNumberOfPartitionsDifference() {
+        return numberOfPartitionsDifference;
+    }
+
+    public void setNumberOfPartitionsDifference(double numberOfPartitionsDifference) {
+        this.numberOfPartitionsDifference = numberOfPartitionsDifference;
+    }
+
+    public void calculateNumberOfPartitionsDifference() {
+        for(MyZone myZone : this.getAllZones())
+        {
+            myZone.calculateNumberOfPartitionsDifference();
+        }
+        this.setNumberOfPartitionsDifference(this.getNumberOfPartitionsByWeight()-this.getNumberOfPartitionsByDispersion());
     }
 
     @Override

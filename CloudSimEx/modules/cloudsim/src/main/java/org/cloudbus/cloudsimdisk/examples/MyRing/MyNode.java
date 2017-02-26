@@ -13,6 +13,9 @@ public class MyNode
     private StorageModelHdd hddModel;
     private PowerModelHdd hddPowerModel;
     private boolean isSpunDown;
+    double numberOfPartitionsByWeight;
+    double numberOfPartitionsByDispersion;
+    double numberOfPartitionsDifference;
 
     public String getName() {
         return name;
@@ -52,6 +55,44 @@ public class MyNode
 
     public void setSpunDown(boolean spunDown) {
         isSpunDown = spunDown;
+    }
+
+    public double getNumberOfPartitionsByWeight() {
+        return numberOfPartitionsByWeight;
+    }
+
+    public void setNumberOfPartitionsByWeight(double numberOfPartitions) {
+        this.numberOfPartitionsByWeight = numberOfPartitions;
+    }
+
+    public void calculateNumberOfPartitionsByWeight(long totalNumberOfPartitions, double totalWeight)
+    {
+        this.setNumberOfPartitionsByWeight(totalNumberOfPartitions * (this.getWeight()/totalWeight));
+    }
+
+    public double getNumberOfPartitionsByDispersion() {
+        return numberOfPartitionsByDispersion;
+    }
+
+    public void setNumberOfPartitionsByDispersion(double numberOfPartitionsByDispersion) {
+        this.numberOfPartitionsByDispersion = numberOfPartitionsByDispersion;
+    }
+
+    public void calculateNumberOfPartitionsByDispersion(double partitions)
+    {
+        this.setNumberOfPartitionsByDispersion(partitions);
+    }
+
+    public double getNumberOfPartitionsDifference() {
+        return numberOfPartitionsDifference;
+    }
+
+    public void setNumberOfPartitionsDifference(double numberOfPartitionsDifference) {
+        this.numberOfPartitionsDifference = numberOfPartitionsDifference;
+    }
+
+    public void calculateNumberOfPartitionsDifference() {
+        this.setNumberOfPartitionsDifference(this.getNumberOfPartitionsByWeight()-this.getNumberOfPartitionsByDispersion());
     }
 
     @Override

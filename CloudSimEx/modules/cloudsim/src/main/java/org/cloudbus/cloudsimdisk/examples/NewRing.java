@@ -14,7 +14,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.MessageDigest;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.lang.*;
 
 public class NewRing
@@ -25,8 +24,6 @@ public class NewRing
     private Map<Integer, Node> partitionToNodeMap;
     private int replicas;
     private int partitionShift;
-    private Map<String, List<Node>> handOffNodesMap;
-    private Map<String, List<Node>> primaryNodesMap;
 
     public NewRing(HashMap<Integer,Node> nodes, ArrayList<Integer> partitionToNode, int replicas, int partitionPower)
     {
@@ -34,8 +31,6 @@ public class NewRing
         this.partitionToNode = partitionToNode;
         this.replicas = replicas;
         this.partitionShift = 32 - partitionPower;
-        this.handOffNodesMap = new HashMap<>();
-        this.primaryNodesMap = new HashMap<>();
         this.createMappings();
     }
 
@@ -147,64 +142,6 @@ public class NewRing
         return partitions;
     }
 
-    public List<Node> getHandOffNodes(String filePath)
-    {
-        if(this.handOffNodesMap.containsKey(filePath))
-        {
-            return this.handOffNodesMap.get(filePath);
-        }
-        return new ArrayList<>();
-    }
-
-    public void addHandOffNodesEntry(String filePath, ArrayList<Node> nodes)
-    {
-        if(this.handOffNodesMap.containsKey(filePath))
-        {
-            this.handOffNodesMap.get(filePath).addAll(nodes);
-        }
-        else
-        {
-            this.handOffNodesMap.put(filePath, nodes);
-        }
-    }
-
-    public void removeHandOffNodesEntry(String filePath)
-    {
-        if(this.handOffNodesMap.containsKey(filePath))
-        {
-            this.handOffNodesMap.remove(filePath);
-        }
-    }
-
-    public List<Node> getPrimaryNodesNodes(String filePath)
-    {
-        if(this.primaryNodesMap.containsKey(filePath))
-        {
-            return this.primaryNodesMap.get(filePath);
-        }
-        return new ArrayList<>();
-    }
-
-    public void addPrimaryNodesEntry(String filePath, ArrayList<Node> nodes)
-    {
-        if(this.primaryNodesMap.containsKey(filePath))
-        {
-            this.primaryNodesMap.get(filePath).addAll(nodes);
-        }
-        else
-        {
-            this.primaryNodesMap.put(filePath, nodes);
-        }
-    }
-
-    public void removePrimaryNodesEntry(String filePath)
-    {
-        if(this.primaryNodesMap.containsKey(filePath))
-        {
-            this.primaryNodesMap.remove(filePath);
-        }
-    }
-
     public Node getNodeByPartition(int partitionNumber)
     {
         if(this.partitionToNodeMap.containsKey(partitionNumber))
@@ -223,11 +160,9 @@ public class NewRing
         return null;
     }
 
-    public Map<String, List<Node>> getActiveNodes(String filePath)
+    public List<Node> getActiveNodes(String filePath)
     {
         List<Node> primaryNodes = new ArrayList<>();
-        List<Node> currentHandOffNodes = new ArrayList<>();
-        Map<String, List<Node>> result = new HashMap<>();
         for(Node n : getNodes(filePath))
         {
             if(!n.getIsSpunDown())
@@ -235,46 +170,7 @@ public class NewRing
                 primaryNodes.add(n);
             }
         }
-        if(primaryNodes.size() != 3)
-        {
-            if(this.handOffNodesMap.containsKey(filePath))
-            {
-                int NumOfHandOffNodes = 3 - primaryNodes.size();
-                if(NumOfHandOffNodes < this.handOffNodesMap.get(filePath).size())
-                {
-                    for(int i=0; i<NumOfHandOffNodes; i++)
-                    {
-                        currentHandOffNodes.add(this.handOffNodesMap.get(filePath).get(i));
-                    }
-                }
-                else
-                {
-                    currentHandOffNodes.addAll(this.handOffNodesMap.get(filePath));
-                }
-            }
-            List<Node> otherNodes = new ArrayList<>();
-            for(Node n : this.getAllNodes())
-            {
-                if(!n.getIsSpunDown() && !primaryNodes.contains(n) && !currentHandOffNodes.contains(n))
-                {
-                    otherNodes.add(n);
-                }
-            }
-            while (otherNodes.size() != 0 || primaryNodes.size() + currentHandOffNodes.size() < 3)
-            {
-                int randomNumber = ThreadLocalRandom.current().nextInt(0, otherNodes.size());
-                currentHandOffNodes.add(otherNodes.get(randomNumber));
-                otherNodes.remove(randomNumber);
-            }
-            if(primaryNodes.size() + currentHandOffNodes.size() < 3)
-            {
-                System.out.println("Problem Assign Nodes");
-                System.exit(999);
-            }
-        }
-        result.put("primary", primaryNodes);
-        result.put("handOff", currentHandOffNodes);
-        return result;
+        return primaryNodes;
     }
 
     public List<Node> getInactiveNodes(String filePath)
@@ -298,7 +194,7 @@ public class NewRing
     public static NewRing buildRing(HashMap<Integer,Node> nodes, int partitionPower, int replicas)
     {
         ArrayList<Integer> partitionToNode = new ArrayList<Integer>();
-        long parts = (long) 2 << partitionPower;
+        long parts = (long) 1 << partitionPower;
         double totalWeight = 0.0;
         for(Node obj : nodes.values())
         {
@@ -317,6 +213,8 @@ public class NewRing
                 {
                     obj.decrementDesiredParts();
                     partitionToNode.add(obj.getID());
+                    partitionToNode.add(obj.getID());
+                    partitionToNode.add(obj.getID());
                     isNotBreak = false;
                     break;
                 }
@@ -329,12 +227,19 @@ public class NewRing
                     {
                         obj.decrementDesiredParts();
                         partitionToNode.add(obj.getID());
+                        partitionToNode.add(obj.getID());
+                        partitionToNode.add(obj.getID());
                         break;
                     }
                 }
             }
         }
         Collections.shuffle(partitionToNode);
+        System.out.println("partitionTONode");
+        for(int i=0; i<partitionToNode.size();i++)
+        {
+            System.out.println(i+" : "+partitionToNode.get(i));
+        }
         NewRing ring = new NewRing(nodes, partitionToNode, replicas, partitionPower);
         return ring;
     }
@@ -366,15 +271,6 @@ public class NewRing
             for(Integer p : ring.getPartitions(filePath))
             {
                 System.out.println("Node ID : "+partitionMap.get(p).getID()+", Partition : "+p+", File : "+filePath);
-            }
-            Map<String, List<Node>> test = ring.getActiveNodes(filePath);
-            for(String str : test.keySet())
-            {
-                System.out.println("Label : "+str);
-                for(Node n : test.get(str))
-                {
-                    System.out.println("Node ID : "+n.getID());
-                }
             }
         }
         catch (Exception e)

@@ -1,7 +1,5 @@
 package org.cloudbus.cloudsimdisk.examples.MyRing;
 
-import org.cloudbus.cloudsimdisk.examples.Node;
-
 import java.util.*;
 
 /**
@@ -11,13 +9,14 @@ public class MyZone
 {
     Map<String, MyNode> myNodes;
     String name;
-    double weight;
+    double numberOfPartitionsByWeight;
+    double numberOfPartitionsByDispersion;
+    double numberOfPartitionsDifference;
 
     public MyZone(String name)
     {
         this.name = name;
         this.myNodes = new HashMap<>();
-        this.weight = 0.0;
     }
 
     public String getName()
@@ -45,23 +44,74 @@ public class MyZone
         return this.myNodes.values();
     }
 
-    public double getWeight() {
-        this.calculateWeight();
-        return weight;
-    }
-
-    public void setWeight(double weight)
+    public double getAverageWeight()
     {
-        this.weight = weight;
+        return getWeight()/this.myNodes.size();
     }
 
-    public void calculateWeight() {
+    public double getWeight() {
         double weight = 0.0;
         for(MyNode n : this.getAllNodes())
         {
             weight += n.getWeight();
         }
-        this.setWeight(weight);
+        return weight;
+    }
+
+    public double getNumberOfPartitionsByWeight() {
+        return numberOfPartitionsByWeight;
+    }
+
+    public void setNumberOfPartitionsByWeight(double numberOfPartitions) {
+        this.numberOfPartitionsByWeight = numberOfPartitions;
+    }
+
+    public void calculateNumberOfPartitionsByWeight(long totalNumberOfPartitions, double totalWeight)
+    {
+        for(MyNode myNode : this.getAllNodes())
+        {
+            myNode.calculateNumberOfPartitionsByWeight(totalNumberOfPartitions, totalWeight);
+        }
+        double partitions = 0.0;
+        for(MyNode myNode : this.getAllNodes())
+        {
+            partitions += myNode.getNumberOfPartitionsByWeight();
+        }
+        this.setNumberOfPartitionsByWeight(partitions);
+    }
+
+    public double getNumberOfPartitionsByDispersion() {
+        return numberOfPartitionsByDispersion;
+    }
+
+    public void setNumberOfPartitionsByDispersion(double numberOfPartitionsByDispersion) {
+        this.numberOfPartitionsByDispersion = numberOfPartitionsByDispersion;
+    }
+
+    public void calculateNumberOfPartitionsByDispersion(double partitions)
+    {
+        double nodePartitions = partitions / this.getAllNodes().size();
+        for(MyNode myNode : this.getAllNodes())
+        {
+            myNode.calculateNumberOfPartitionsByDispersion(nodePartitions);
+        }
+        this.setNumberOfPartitionsByDispersion(partitions);
+    }
+
+    public double getNumberOfPartitionsDifference() {
+        return numberOfPartitionsDifference;
+    }
+
+    public void setNumberOfPartitionsDifference(double numberOfPartitionsDifference) {
+        this.numberOfPartitionsDifference = numberOfPartitionsDifference;
+    }
+
+    public void calculateNumberOfPartitionsDifference() {
+        for(MyNode myNode : this.getAllNodes())
+        {
+            myNode.calculateNumberOfPartitionsDifference();
+        }
+        this.setNumberOfPartitionsDifference(this.getNumberOfPartitionsByWeight()-this.getNumberOfPartitionsByDispersion());
     }
 
     @Override
