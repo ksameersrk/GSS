@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by skulkarni9 on 2/26/17.
@@ -16,14 +17,163 @@ public class MyRing
     long numberOfPartitions;
     long totalNumberOfPartitions;
     int replicas;
+    double overloadPartition;
+    Map<Integer, List<MyNode>> partitionToReplicaToNode;
+    Map<MyNode, List<Integer>> nodeToPartition;
 
-    public MyRing(int partitonPower, int replicas)
+    public MyRing(int partitonPower, int replicas, double overloadPercent)
     {
         this.myRegions = new HashMap();
         this.replicas = replicas;
         this.numberOfPartitions = (long) 1<<partitonPower;
         this.totalNumberOfPartitions = this.numberOfPartitions * this.replicas;
-        this.calculateNumberOfPartitionsByWeight();
+        this.overloadPartition = this.getTotalNumberOfPartitions() * (overloadPercent/100);
+        nodeToPartition = new HashMap<>();
+    }
+
+    public void createRing()
+    {
+        this.calculatePartitions();
+        this.initialzePartitionToReplicaToNode();
+        this.allocatePartitionToReplicaToNode();
+        this.createNodeToPartitionMapping();
+    }
+
+    private void createNodeToPartitionMapping()
+    {
+        for(Integer partition : this.partitionToReplicaToNode.keySet())
+        {
+            List<MyNode> myNodeList = this.partitionToReplicaToNode.get(partition);
+            for(MyNode myNode : myNodeList)
+            {
+                if(this.nodeToPartition.containsKey(myNode))
+                {
+                    this.nodeToPartition.get(myNode).add(partition);
+                }
+                else
+                {
+                    List<Integer> partitionList = new ArrayList<>();
+                    partitionList.add(partition);
+                    this.nodeToPartition.put(myNode, partitionList);
+                }
+            }
+        }
+    }
+
+    private void allocatePartitionToReplicaToNode()
+    {
+        MyRegion myRegion;
+        MyZone myZone;
+        MyNode myNode;
+        for(int partition=0; partition < this.getNumberOfPartitions(); partition++)
+        {
+            System.out.println(partition);
+            for(int replica=0; replica<this.getReplicas(); replica++)
+            {
+                myRegion = this.getRegionByWeightDistribution();
+                myZone = this.getZoneByWeightDistribution(myRegion.getAllZones());
+                myNode = this.getNodeByWeightDistribution(myZone.getAllNodes());
+                myRegion.decrementPartition();
+                myZone.decrementPartition();
+                myNode.decrementPartition();
+                System.out.println(partition+" , "+myNode.getName()+" : "+myNode.getNumberOfPartitionsByWeight());
+                this.partitionToReplicaToNode.get(partition).add(myNode);
+            }
+        }
+    }
+
+    private MyNode getNodeByWeightDistribution(Collection<MyNode> myNodeCollection)
+    {
+        List<MyNode> myNodeList = new ArrayList<>();
+        for(MyNode myNode : myNodeCollection)
+        {
+            if(myNode.getNumberOfPartitionsByWeight() > 0)
+            {
+                myNodeList.add(myNode);
+            }
+        }
+        List<Double> weightDistribution = new ArrayList<>();
+        for(MyNode myNode : myNodeList)
+        {
+            weightDistribution.add(myNode.getNumberOfPartitionsByWeight());
+        }
+        int selectedIndex = this.getIndexSelectedByWeight(weightDistribution);
+        return myNodeList.get(selectedIndex);
+    }
+
+    private MyZone getZoneByWeightDistribution(Collection<MyZone> myZoneCollection)
+    {
+        List<MyZone> myZoneList = new ArrayList<>();
+        for(MyZone myZone : myZoneCollection)
+        {
+            if(myZone.getNumberOfPartitionsByWeight() > 0)
+            {
+                myZoneList.add(myZone);
+            }
+        }
+        List<Double> weightDistribution = new ArrayList<>();
+        for(MyZone myZone : myZoneList)
+        {
+            weightDistribution.add(myZone.getNumberOfPartitionsByWeight());
+        }
+        int selectedIndex = this.getIndexSelectedByWeight(weightDistribution);
+        return myZoneList.get(selectedIndex);
+    }
+
+    private MyRegion getRegionByWeightDistribution()
+    {
+        List<MyRegion> allRegions = new ArrayList<>();
+        for(MyRegion myRegion : this.getAllRegions())
+        {
+            if(myRegion.getNumberOfPartitionsByWeight() > 0)
+            {
+                allRegions.add(myRegion);
+            }
+        }
+        List<Double> weightDistribution = new ArrayList<>();
+        for(MyRegion myRegion : allRegions)
+        {
+            weightDistribution.add(myRegion.getNumberOfPartitionsByWeight());
+        }
+        int selectedIndex = this.getIndexSelectedByWeight(weightDistribution);
+        return allRegions.get(selectedIndex);
+    }
+
+    private int getIndexSelectedByWeight(List<Double> weights)
+    {
+        int lowIndex = 0;
+        int highIndex = (int)weights.stream().mapToDouble(Double::doubleValue).sum();
+        if(lowIndex == highIndex)
+        {
+            return lowIndex;
+        }
+        for(int i=1; i<weights.size(); i++)
+        {
+            weights.set(i, weights.get(i) + weights.get(i-1));
+        }
+        int randomNumber = ThreadLocalRandom.current().nextInt(lowIndex, highIndex);
+        int index = 0;
+        for(Double d : weights)
+        {
+            if(randomNumber >= d)
+            {
+                index++;
+            }
+            else
+            {
+                return index;
+            }
+        }
+        return index;
+    }
+
+    private void initialzePartitionToReplicaToNode()
+    {
+        this.partitionToReplicaToNode = new HashMap<>();
+        for(int partition=0; partition<this.numberOfPartitions; partition++)
+        {
+            this.partitionToReplicaToNode.put(partition, new ArrayList<>());
+        }
     }
 
     public Collection<MyRegion> getAllRegions()
@@ -31,9 +181,24 @@ public class MyRing
         return this.myRegions.values();
     }
 
+    public long getNumberOfPartitions()
+    {
+        return this.numberOfPartitions;
+    }
+
     public long getTotalNumberOfPartitions()
     {
         return this.totalNumberOfPartitions;
+    }
+
+    public long getRemainingPartitions()
+    {
+        long partitions = 0L;
+        for(MyRegion myRegion : this.getAllRegions())
+        {
+            partitions += myRegion.getNumberOfPartitionsByWeight();
+        }
+        return partitions;
     }
 
     public int getReplicas()
@@ -115,9 +280,9 @@ public class MyRing
         return this.myRegions.values().toString();
     }
 
-    public static MyRing buildRing(String fileName, int nodeCount, int partitionPower, int replicas)
+    public static MyRing buildRing(String fileName, int nodeCount, int partitionPower, int replicas, double overloadPercent)
     {
-        MyRing myRing = new MyRing(partitionPower, replicas);
+        MyRing myRing = new MyRing(partitionPower, replicas, overloadPercent);
         File file = new File(fileName);
         try (BufferedReader in = new BufferedReader(new FileReader(file)))
         {
@@ -147,6 +312,7 @@ public class MyRing
                 myRegion.addZone(myZone);
                 myRing.addRegion(myRegion);
             }
+            myRing.createRing();
         }
         catch (Exception e)
         {
@@ -157,18 +323,51 @@ public class MyRing
 
     public static void main(String[] args)
     {
-        MyRing myRing = buildRing("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/rings.txt", 8, 4, 3);
+        int nodeCount = 8;
+        int partitionPower = 4;
+        int replicas = 3;
+        double overloadPercent = 10.0;
+        MyRing myRing = buildRing("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/rings.txt",
+                nodeCount, partitionPower, replicas, overloadPercent);
         System.out.println(myRing);
         System.out.println("Total Weight : "+myRing.getWeight());
         System.out.println("Average Weight : "+myRing.getAverageWeight());
-        myRing.calculatePartitions();
         System.out.println("Total Number of Partitions : "+myRing.getTotalNumberOfPartitions());
 
         display(myRing);
+
+        displayPartitionMap(myRing.partitionToReplicaToNode);
+
+        displayNodeMap(myRing.nodeToPartition);
+    }
+
+    public static void displayNodeMap(Map<MyNode, List<Integer>> nodeToPartition)
+    {
+        System.out.println("*********************");
+        List<MyNode> keys = new ArrayList<>(nodeToPartition.keySet());
+        Collections.sort(keys, Comparator.comparing(Object::toString));
+        for(MyNode myNode : keys)
+        {
+            System.out.println("Node : "+myNode+", Partitions : "+nodeToPartition.get(myNode));
+        }
+        System.out.println("*********************\n\n");
+    }
+
+    public static void displayPartitionMap(Map<Integer, List<MyNode>> partitionToReplicaToNode)
+    {
+        System.out.println("*********************");
+        List<Integer> keys = new ArrayList<>(partitionToReplicaToNode.keySet());
+        keys.stream().mapToInt(Integer::intValue).sorted();
+        for(Integer key : keys)
+        {
+            System.out.println("partition : "+key+", Replicas in Node : "+partitionToReplicaToNode.get(key).toString());
+        }
+        System.out.println("*********************\n\n");
     }
 
     public static void display(MyRing myRing)
     {
+        System.out.println("*********************");
         for(MyRegion myRegion : myRing.getAllRegions())
         {
             System.out.println(myRegion.getName()+", ByWeight : "+myRegion.getNumberOfPartitionsByWeight()+
@@ -184,5 +383,6 @@ public class MyRing
                 }
             }
         }
+        System.out.println("*********************\n\n");
     }
 }

@@ -95,6 +95,11 @@ public class MyNode
         this.setNumberOfPartitionsDifference(this.getNumberOfPartitionsByWeight()-this.getNumberOfPartitionsByDispersion());
     }
 
+    public void decrementPartition()
+    {
+        this.numberOfPartitionsByWeight--;
+    }
+
     @Override
     public String toString()
     {

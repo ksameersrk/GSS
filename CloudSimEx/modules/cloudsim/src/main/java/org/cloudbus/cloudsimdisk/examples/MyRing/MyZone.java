@@ -114,6 +114,11 @@ public class MyZone
         this.setNumberOfPartitionsDifference(this.getNumberOfPartitionsByWeight()-this.getNumberOfPartitionsByDispersion());
     }
 
+    public void decrementPartition()
+    {
+        this.numberOfPartitionsByWeight--;
+    }
+
     @Override
     public String toString()
     {

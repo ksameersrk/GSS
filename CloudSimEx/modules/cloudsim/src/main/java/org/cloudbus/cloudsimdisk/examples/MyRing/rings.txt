@@ -6,3 +6,7 @@ Region1,Zone3,Node4,2.0
 Region1,Zone3,Node5,2.0
 Region1,Zone4,Node6,2.0
 Region1,Zone4,Node7,2.0
+Region2,Zone5,Node8,0.5
+Region2,Zone5,Node9,0.5
+Region2,Zone5,Node10,0.5
+Region2,Zone5,Node11,0.5

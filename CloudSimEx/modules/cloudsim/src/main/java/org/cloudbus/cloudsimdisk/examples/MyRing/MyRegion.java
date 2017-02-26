@@ -121,6 +121,11 @@ public class MyRegion
         this.setNumberOfPartitionsDifference(this.getNumberOfPartitionsByWeight()-this.getNumberOfPartitionsByDispersion());
     }
 
+    public void decrementPartition()
+    {
+        this.numberOfPartitionsByWeight--;
+    }
+
     @Override
     public String toString()
     {
