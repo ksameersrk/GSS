@@ -1,0 +1,8 @@
+Region0,Zone0,Node0,1.0
+Region0,Zone0,Node1,1.0
+Region0,Zone1,Node2,1.0
+Region0,Zone1,Node3,1.0
+Region1,Zone3,Node4,1.0
+Region1,Zone3,Node5,1.0
+Region1,Zone4,Node6,1.0
+Region1,Zone4,Node7,1.0
