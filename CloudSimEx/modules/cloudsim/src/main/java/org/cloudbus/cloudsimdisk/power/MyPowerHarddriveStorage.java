@@ -190,9 +190,6 @@ public class MyPowerHarddriveStorage extends MyHarddriveStorage {
 	 * @return the energy
 	 */
 	public double getTotalEnergyIdle() {
-        if(getIsSpunDown())
-            return 0.0;
-        else
 	        return totalEnergyIdle;
 	}
 

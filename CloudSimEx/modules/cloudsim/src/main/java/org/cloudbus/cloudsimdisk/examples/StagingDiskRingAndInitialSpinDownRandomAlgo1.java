@@ -16,6 +16,26 @@ import static org.cloudbus.cloudsimdisk.examples.Ring.buildRing;
 /**
  * Created by spadigi on 2/15/17.
  */
+
+/**
+ * This program has a SET OF STAGING DISKS having the storage capacity of 5% of the entire HDDs which are part of the ring. Out of all these HDDs,
+ * based on the starting files list (list of files added to disks but not as part of simulation i.e they take up memory on HDD but power consumed by these
+ * operations is not included as part of simulation), we try to spin down disks such that after spinning down disks atleast 2 replicas are on active HDDs
+ *
+ * Spin down algorithm 1: Spin down random disk. Mark which disks cannot be spun down. Spin down another random disk.
+ *
+ * this process is done only in the beginning, before the start of the simulation
+ * spun down disks remain spun down(except for when freeing up staging disk) and active HDDs remain active for the entire duration of the simulation
+ * if there is a new file uploaded, whose most primary nodes are spun down, then we use handoff nodes, but when freeing staging disk, we write to spun
+ * down Primary Nodes, and spin them down again hence we continue using handoff nodes
+ * DRAWBACK : 1) In a scenario where all 3 primary nodes are spun down, we use 2 handoff nodes, hence after first freeing up of staging disk we write to primary
+ * nodes and spin them down but continue using handoff nodes. Hence there are totally 5 copies !!!
+ *      2) consider there are 5 HDDs(a,b,c,d,e) and there is only one starting file, written to 3 HDDs(a,b,c). Hence we can spin down 3 disks(c,d,e) in total.
+ *      Now 3 disks will remain spun down for the rest of the simulation, this wont scale as we are trying to store all data on basically 2 disks(coz we dont
+ *      delete on handoff)
+ * For improved version refer to StagingDiskRingAndDynamicSpinDownRandomAlgo1.java
+ */
+
 public class StagingDiskRingAndInitialSpinDownRandomAlgo1 {
     public static void main(String[] args) throws Exception {
         // IF THESE 2 VARIABLES ARE NOT INITIALIZED THEN SIMULATION WONT BE PAUSED
@@ -30,7 +50,7 @@ public class StagingDiskRingAndInitialSpinDownRandomAlgo1 {
         int noOfSpunDownDisks = 1;
         int noOfActiveAlwaysDisks;
         // staging disk properties
-        boolean addStagingDisk = false;
+        boolean addStagingDisk = true;
 
         Ring ring ;
 
@@ -65,18 +85,13 @@ public class StagingDiskRingAndInitialSpinDownRandomAlgo1 {
         // Create the ring
         // separate ring for active always disks and spun down ones, so it becomes easy to access the entire set of disks at once
         // this is just a logical simplification, which in no way affects the total power consumed
-        SpinningDownAlgo2 spinningDownAlgo2 = new SpinningDownAlgo2();
+        SpinningDownAlgo1 spinningDownAlgo1 = new SpinningDownAlgo1();
 
 
 
         if (addStagingDisk == true) {
 
-            Map<Node, ArrayList<String>> nodeToStartingFileList = spinningDownAlgo2.getNodeToFileList(
-                    "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/startingFileList.txt",
-                    ring.getAllNodes(),
-                    ring);
-
-            List<List<Node>> result = spinningDownAlgo2.simulate(
+            List<List<Node>> result = spinningDownAlgo1.simulate(
                     "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/startingFileList.txt",
                     ring.getAllNodes(),
                     ring);
@@ -94,12 +109,12 @@ public class StagingDiskRingAndInitialSpinDownRandomAlgo1 {
             ArrayList<Node> ringNodeList = ring.getAllNodes();
             for (Node n : ringNodeList) {
                 if (tmp.contains(n.getID())) {
-                    n.setIsSpunDown(false);
+                    n.setIsSpunDown(true);
                 }
             }
         }
 
-        String inputLog = "files/basic/StagingDiskRingAndSpinDownRandomAlgo1/inputIdealDataset100Ops.txt";
+        String inputLog = "files/basic/StagingDiskAndSpinDown/inputIdealDataset4000Ops.txt";
         ArrayList<String> arrivalFile = new ArrayList<>();
         ArrayList<Node> nodeList = new ArrayList<>();
         HashMap<Node, Tasks> nodeToTaskMapping = new HashMap<>();

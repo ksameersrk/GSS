@@ -16,6 +16,13 @@ import static org.cloudbus.cloudsimdisk.examples.Ring.buildRing;
 /**
  * Created by SaiVishwas on 1/26/17.
  */
+
+/**
+ * This program has a SINGLE staging disk having the storage capacity of 5% of the entire HDDs which are part of the ring. Out of all these HDDs,
+ * one-third of them are configured to be spun down all them except when we need to free up some of the memory in the staging disk
+ * the remaining 2/3 are always active
+ * hardcoded such that out of 3 replicas, 2 go to always active HDDs and one copy to spun down HDD
+ */
 public class StagingDiskAndSpinDown {
 
     public static void main(String[] args) throws Exception {

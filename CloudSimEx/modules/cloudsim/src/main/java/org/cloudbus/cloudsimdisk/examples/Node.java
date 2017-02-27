@@ -1,7 +1,14 @@
 package org.cloudbus.cloudsimdisk.examples;
 
+import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
+
+import java.security.Key;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by sai on 15/10/16.
@@ -15,6 +22,8 @@ public class Node {
     private StorageModelHdd hddModel;
     private PowerModelHdd hddPowerModel;
     private boolean isSpunDown;
+    private ArrayList<Map<String, Integer>> spinDownIntervals = new ArrayList<Map<String, Integer>>();
+
 
     public Node(int id, int zone, double weight,StorageModelHdd hddModel, PowerModelHdd hddPowerModel)
     {
@@ -37,6 +46,7 @@ public class Node {
         this.hddModel = hddModel;
         this.hddPowerModel = hddPowerModel;
         this.isSpunDown = isSpunDown;
+        this.spinDownIntervals = null;
     }
 
     public String toString()
@@ -83,8 +93,22 @@ public class Node {
     {
         this.desiredParts = desiredParts;
     }
-    public  void  setIsSpunDown(boolean isSpunDown) {this.isSpunDown = isSpunDown;}
-
+    public  void  setIsSpunDown(boolean isSpunDown) {
+        this.isSpunDown = isSpunDown;
+    }
+    public void addSpunDownAt(int time){
+        Map<String, Integer> myMap = new HashMap<String, Integer>();
+        myMap.put("spun down at", time);
+        myMap.put("spun up at", -1);
+        this.spinDownIntervals.add(myMap);
+    }
+    public void setSpunUpAt(int time){
+        // update last added dict in spinDownIntervals
+        this.spinDownIntervals.get(spinDownIntervals.size() - 1).put("spun up at", time);
+    }
+    public ArrayList<Map<String, Integer>> getSpinDownIntervals(){
+        return this.spinDownIntervals;
+    }
     public boolean equals(Node n)
     {
         return this.id == n.id;

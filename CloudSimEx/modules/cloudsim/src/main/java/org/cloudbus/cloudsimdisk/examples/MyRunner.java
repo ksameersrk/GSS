@@ -88,7 +88,7 @@ public class MyRunner {
 		// END
 	}
 
-	public MyRunner(HashMap<Node, Tasks> simulation, String arrivalFile, String dataFile, ArrayList<Node> seq) throws Exception
+	public MyRunner(HashMap<Node, Tasks> nodeToTaskMapping, String arrivalFile, String dataFile, ArrayList<Node> nodeList) throws Exception
     {
         Log.printLine("Starting simulation \n");
         WriteToLogFile.AddtoFile("Starting simulation \n");
@@ -100,7 +100,7 @@ public class MyRunner {
         helper.createPeList(numberOfProcessingUnits);
         helper.createHostList(numberOfProcessingUnits);
         helper.createVmList(numberOfProcessingUnits);
-        helper.createPersistentStorage(simulation.keySet());
+        helper.createPersistentStorage(nodeToTaskMapping.keySet());
         helper.createDatacenterCharacteristics();
         helper.createDatacenter();
 
@@ -110,7 +110,7 @@ public class MyRunner {
         helper.createDataFilesList(dataFile);
 
         // Cloudlets
-        helper.createCloudletList(simulation, seq);
+        helper.createCloudletList(nodeToTaskMapping, nodeList);
 
         // Logs
         helper.printPersistenStorageDetails();
@@ -124,7 +124,7 @@ public class MyRunner {
         Log.printLine("END !");
     }
 
-	public MyRunner(HashMap<Node, Tasks> simulation, String arrivalFile, String putDataFile, String getDataFile, String updateDataFile, String deleteDataFile, ArrayList<Node> seq) throws Exception
+	public MyRunner(HashMap<Node, Tasks> nodeToTaskMapping, String arrivalFile, String putDataFile, String getDataFile, String updateDataFile, String deleteDataFile, ArrayList<Node> nodeList) throws Exception
 	{
 		Log.printLine("Starting simulation \n");
 		WriteToLogFile.AddtoFile("Starting simulation \n");
@@ -136,7 +136,7 @@ public class MyRunner {
 		helper.createPeList(numberOfProcessingUnits);
 		helper.createHostList(numberOfProcessingUnits);
 		helper.createVmList(numberOfProcessingUnits);
-		helper.createPersistentStorage(simulation.keySet());
+		helper.createPersistentStorage(nodeToTaskMapping.keySet());
 		helper.createDatacenterCharacteristics();
 		helper.createDatacenter();
 
@@ -148,7 +148,7 @@ public class MyRunner {
 		helper.createDeleteFilesList(deleteDataFile);
 
 		// Cloudlets
-		helper.createCloudletList(simulation, seq);
+		helper.createCloudletList(nodeToTaskMapping, nodeList);
 
 		// Logs
 		helper.printPersistenStorageDetails();
@@ -156,7 +156,7 @@ public class MyRunner {
 
 
 		start();
-		print();
+		print(new ArrayList<Node>(nodeToTaskMapping.keySet()));
 
 		WriteToResultFile.end();
 		Log.printLine("END !");
@@ -219,6 +219,9 @@ public class MyRunner {
 		helper.printResults(endTimeSimulation);
 	}
 
+	public void print(ArrayList<Node> nodeList){
+		helper.printResults(endTimeSimulation, nodeList);
+	}
 	public double getTotalStorageEnergyConsumed()
 	{
 		double TotalStorageEnergy = helper.getTotalStorageEnergyConsumed();
