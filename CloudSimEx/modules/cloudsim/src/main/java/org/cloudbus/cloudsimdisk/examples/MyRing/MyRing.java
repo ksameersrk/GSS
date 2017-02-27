@@ -25,6 +25,7 @@ public class MyRing
     double overloadPartition;
     Map<Integer, List<MyNode>> partitionToReplicaToNode;
     Map<MyNode, List<Integer>> nodeToPartition;
+    List<MyNode> allNodes;
 
     public MyRing(int partitonPower, int replicas, double overloadPercent)
     {
@@ -43,6 +44,24 @@ public class MyRing
         this.initialzePartitionToReplicaToNode();
         this.allocatePartitionToReplicaToNode();
         this.createNodeToPartitionMapping();
+        this.setAllNodes();
+    }
+
+    private void setAllNodes()
+    {
+        allNodes = new ArrayList<>();
+        for(MyRegion myRegion : this.getAllRegions())
+        {
+            for(MyZone myZone : myRegion.getAllZones())
+            {
+                this.allNodes.addAll(myZone.getAllNodes());
+            }
+        }
+    }
+
+    public List<MyNode> getAllNodes()
+    {
+        return this.allNodes;
     }
 
     private void createNodeToPartitionMapping()
@@ -397,7 +416,8 @@ public class MyRing
         int partitionPower = 4;
         int replicas = 3;
         double overloadPercent = 10.0;
-        MyRing myRing = buildRing("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/rings.txt",
+        String ringInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/rings.txt";
+        MyRing myRing = buildRing(ringInputPath,
                 nodeCount, partitionPower, replicas, overloadPercent);
         System.out.println(myRing);
         System.out.println("Total Weight : "+myRing.getWeight());

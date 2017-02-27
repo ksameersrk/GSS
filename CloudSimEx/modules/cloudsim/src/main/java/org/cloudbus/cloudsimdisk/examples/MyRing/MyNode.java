@@ -19,6 +19,7 @@ public class MyNode
     double numberOfPartitionsByWeight;
     double numberOfPartitionsByDispersion;
     double numberOfPartitionsDifference;
+    boolean isSpinDown = false;
     Set<Integer> partitionNames = new HashSet<>();
 
     public String getName() {
@@ -120,6 +121,14 @@ public class MyNode
     public boolean containsPartition(Integer partitionNames)
     {
         return this.partitionNames.contains(partitionNames);
+    }
+
+    public boolean isSpinDown() {
+        return isSpinDown;
+    }
+
+    public void setSpinDown(boolean spinDown) {
+        isSpinDown = spinDown;
     }
 
     @Override
