@@ -1,10 +1,14 @@
 package org.cloudbus.cloudsimdisk.examples.MyRing;
 
 import org.cloudbus.cloudsimdisk.examples.MyConstants;
+import org.cloudbus.cloudsimdisk.examples.Node;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -17,6 +21,7 @@ public class MyRing
     long numberOfPartitions;
     long totalNumberOfPartitions;
     int replicas;
+    int partitionShift;
     double overloadPartition;
     Map<Integer, List<MyNode>> partitionToReplicaToNode;
     Map<MyNode, List<Integer>> nodeToPartition;
@@ -25,6 +30,7 @@ public class MyRing
     {
         this.myRegions = new HashMap();
         this.replicas = replicas;
+        this.partitionShift = 32 - partitonPower;
         this.numberOfPartitions = (long) 1<<partitonPower;
         this.totalNumberOfPartitions = this.numberOfPartitions * this.replicas;
         this.overloadPartition = this.getTotalNumberOfPartitions() * (overloadPercent/100);
@@ -80,7 +86,38 @@ public class MyRing
                 this.partitionToReplicaToNode.get(partition).add(myNode);
             }
         }
+    }
 
+    private long getUnsignedInt(int x)
+    {
+        return x & 0x00000000ffffffffL;
+    }
+
+    private long MD5(String md5)
+    {
+        try
+        {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(md5.getBytes("UTF-8"));
+            int result = ByteBuffer.wrap(array).order(ByteOrder.BIG_ENDIAN).getInt();
+            return getUnsignedInt(result) >> this.partitionShift;
+        }
+        catch (Exception e)
+        {
+            new Exception("MD5 Failed");
+        }
+        return -1l;
+    }
+
+    public int getPartition(String filePath)
+    {
+        return (int)MD5(filePath);
+    }
+
+    public List<MyNode> getPrimaryNodes(String filePath)
+    {
+        int partition = (int)MD5(filePath);
+        return this.partitionToReplicaToNode.get(partition);
     }
 
     private MyNode getNodeByWeightDistribution(Collection<MyNode> myNodeCollection, int partition)
@@ -372,6 +409,9 @@ public class MyRing
         displayPartitionMap(myRing.partitionToReplicaToNode);
 
         displayNodeMap(myRing.nodeToPartition);
+
+        System.out.println("Partition is : "+myRing.getPartition("File/Path/here"));
+        System.out.println("Nodes are : "+myRing.getPrimaryNodes("File/Path/here").toString());
     }
 
     public static void displayNodeMap(Map<MyNode, List<Integer>> nodeToPartition)
