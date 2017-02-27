@@ -14,6 +14,7 @@ import static org.cloudbus.cloudsimdisk.examples.Ring.buildRing;
  * Created by spadigi on 2/21/17.
  */
 
+
 /**
  * This program has a SET OF STAGING DISKS having the storage capacity of 5% of the entire HDDs which are part of the ring. Out of all these HDDs,
  * based on the starting files list (list of files added to disks but not as part of simulation i.e they take up memory on HDD but power consumed by these
