@@ -7,6 +7,7 @@ import java.nio.*;
 import java.io.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 
@@ -32,7 +33,6 @@ public class Ring
     private Map<Integer, List<Node>> zoneIdToNodes;
     private Map<String, List<Node>> handOffNodesMap;
     private Map<String, List<Node>> primaryNodesMap;
-
     public Ring(HashMap<Integer,Node> nodes, ArrayList<Integer> partitionToNode, int replicas)
     {
         this.nodes = nodes;
@@ -254,7 +254,7 @@ public class Ring
                 }
                 tries++;
             }
-            if(tries == 1000)
+            if(tries == 1000000)
             {
                 System.out.println("Could Not Assign the HandOff Nodes");
                 System.exit(999);
