@@ -65,33 +65,46 @@ public class MyRing
         MyRegion myRegion;
         MyZone myZone;
         MyNode myNode;
-        for(int partition=0; partition < this.getNumberOfPartitions(); partition++)
+
+        for(int replica=0; replica<this.getReplicas(); replica++)
         {
-            System.out.println(partition);
-            for(int replica=0; replica<this.getReplicas(); replica++)
+            for(int partition=0; partition < this.getNumberOfPartitions(); partition++)
             {
-                myRegion = this.getRegionByWeightDistribution();
-                myZone = this.getZoneByWeightDistribution(myRegion.getAllZones());
-                myNode = this.getNodeByWeightDistribution(myZone.getAllNodes());
+                myRegion = this.getRegionByWeightDistribution(partition);
+                myZone = this.getZoneByWeightDistribution(myRegion.getAllZones(), partition);
+                myNode = this.getNodeByWeightDistribution(myZone.getAllNodes(), partition);
                 myRegion.decrementPartition();
                 myZone.decrementPartition();
                 myNode.decrementPartition();
-                System.out.println(partition+" , "+myNode.getName()+" : "+myNode.getNumberOfPartitionsByWeight());
+                myNode.addPartitionNames(partition);
                 this.partitionToReplicaToNode.get(partition).add(myNode);
             }
         }
+
     }
 
-    private MyNode getNodeByWeightDistribution(Collection<MyNode> myNodeCollection)
+    private MyNode getNodeByWeightDistribution(Collection<MyNode> myNodeCollection, int partition)
     {
         List<MyNode> myNodeList = new ArrayList<>();
         for(MyNode myNode : myNodeCollection)
         {
-            if(myNode.getNumberOfPartitionsByWeight() > 0)
+            if(myNode.getNumberOfPartitionsByWeight() > 0 && !myNode.containsPartition(partition))
             {
                 myNodeList.add(myNode);
             }
         }
+
+        if(myNodeList.size() == 0)
+        {
+            for(MyNode myNode : myNodeCollection)
+            {
+                if(myNode.getNumberOfPartitionsByWeight() > 0)
+                {
+                    myNodeList.add(myNode);
+                }
+            }
+        }
+
         List<Double> weightDistribution = new ArrayList<>();
         for(MyNode myNode : myNodeList)
         {
@@ -101,14 +114,24 @@ public class MyRing
         return myNodeList.get(selectedIndex);
     }
 
-    private MyZone getZoneByWeightDistribution(Collection<MyZone> myZoneCollection)
+    private MyZone getZoneByWeightDistribution(Collection<MyZone> myZoneCollection, int partition)
     {
         List<MyZone> myZoneList = new ArrayList<>();
         for(MyZone myZone : myZoneCollection)
         {
-            if(myZone.getNumberOfPartitionsByWeight() > 0)
+            if(myZone.getNumberOfPartitionsByWeight() > 0 && !myZone.containsPartition(partition))
             {
                 myZoneList.add(myZone);
+            }
+        }
+        if(myZoneList.size() == 0)
+        {
+            for(MyZone myZone : myZoneCollection)
+            {
+                if(myZone.getNumberOfPartitionsByWeight() > 0)
+                {
+                    myZoneList.add(myZone);
+                }
             }
         }
         List<Double> weightDistribution = new ArrayList<>();
@@ -120,14 +143,24 @@ public class MyRing
         return myZoneList.get(selectedIndex);
     }
 
-    private MyRegion getRegionByWeightDistribution()
+    private MyRegion getRegionByWeightDistribution(int partition)
     {
         List<MyRegion> allRegions = new ArrayList<>();
         for(MyRegion myRegion : this.getAllRegions())
         {
-            if(myRegion.getNumberOfPartitionsByWeight() > 0)
+            if(myRegion.getNumberOfPartitionsByWeight() > 0 && !myRegion.contiansPartition(partition))
             {
                 allRegions.add(myRegion);
+            }
+        }
+        if(allRegions.size() == 0)
+        {
+            for(MyRegion myRegion : this.getAllRegions())
+            {
+                if(myRegion.getNumberOfPartitionsByWeight() > 0)
+                {
+                    allRegions.add(myRegion);
+                }
             }
         }
         List<Double> weightDistribution = new ArrayList<>();

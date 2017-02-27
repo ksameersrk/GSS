@@ -3,6 +3,9 @@ package org.cloudbus.cloudsimdisk.examples.MyRing;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by skulkarni9 on 2/26/17.
  */
@@ -16,6 +19,7 @@ public class MyNode
     double numberOfPartitionsByWeight;
     double numberOfPartitionsByDispersion;
     double numberOfPartitionsDifference;
+    Set<Integer> partitionNames = new HashSet<>();
 
     public String getName() {
         return name;
@@ -98,6 +102,24 @@ public class MyNode
     public void decrementPartition()
     {
         this.numberOfPartitionsByWeight--;
+    }
+
+    public Set<Integer> getPartitionNames() {
+        return partitionNames;
+    }
+
+    public void setPartitionNames(Set<Integer> partitionNames) {
+        this.partitionNames = partitionNames;
+    }
+
+    public void addPartitionNames(Integer partitionNames)
+    {
+        this.partitionNames.add(partitionNames);
+    }
+
+    public boolean containsPartition(Integer partitionNames)
+    {
+        return this.partitionNames.contains(partitionNames);
     }
 
     @Override

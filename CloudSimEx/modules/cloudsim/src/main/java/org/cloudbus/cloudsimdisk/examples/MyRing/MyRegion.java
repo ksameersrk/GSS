@@ -126,6 +126,18 @@ public class MyRegion
         this.numberOfPartitionsByWeight--;
     }
 
+    public boolean contiansPartition(Integer partition)
+    {
+        for(MyZone myZone : this.getAllZones())
+        {
+            if(myZone.containsPartition(partition))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public String toString()
     {
