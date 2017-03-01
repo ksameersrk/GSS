@@ -29,7 +29,7 @@ public class FlushEntireStagingDiskContents {
         // ==================================================================================================
         // node properties
         int totalNoOfNodes = 32;
-        int partitionPower = 4;
+        int partitionPower = 10;
         int replicas = 3;
         double overloadPercent = 10.0;
 
@@ -50,7 +50,7 @@ public class FlushEntireStagingDiskContents {
 
         int totalHddRingStorageCapacity = totalNoOfNodes * ((6000000 + 900000 + 5000000) / 3);
         int totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
-        int avgSSDCapacity = (int) ((800000 + 480000 + 512000) / 3);
+        //int avgSSDCapacity = (int) ((800000 + 480000 + 512000) / 3);
         //int noOfStagingDisks =  (int)Math.ceil((double)totalStagingDiskCapacity / avgSSDCapacity);
         int noOfStagingDisks = 1;
 
@@ -142,6 +142,8 @@ public class FlushEntireStagingDiskContents {
         // call performOperations() which performs all the CRUD operations as given in input and returns total power consumed
         performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList);
         //System.out.println("\n\nTotal Energy Consumed : " + totalEnergyConsumed);
+
+
     }
 
     public static void stagingDiskSimulate(ArrayList<String> arrivalFile, ArrayList<String> dataFile, ArrayList<String> requiredFile,
@@ -162,8 +164,11 @@ public class FlushEntireStagingDiskContents {
             stagingDiskLowerThresholdMemory.put(n, (int) (n.getHddModel().getCapacity() * 0.0));
             // initialise stagingDiskUpperThresholdMemory i.e we start the flush when on adding the given file,
             // the storage capacity is going to exceed this upper threshold capacity
-            stagingDiskUpperThresholdMemory.put(n, (int) (n.getHddModel().getCapacity() * 0.8));
+            Double upperThreshold = 0.8;
+            stagingDiskUpperThresholdMemory.put(n, (int) (n.getHddModel().getCapacity() * upperThreshold));
             stagingDiskFileList.put(n, new HashMap<String, Integer>());
+
+            System.out.println("Flushing when upper threshold of " + upperThreshold.toString() + " is reached.");
         }
 
 
