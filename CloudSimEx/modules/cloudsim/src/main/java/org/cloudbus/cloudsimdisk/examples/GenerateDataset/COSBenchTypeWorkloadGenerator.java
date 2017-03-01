@@ -50,8 +50,12 @@ public class COSBenchTypeWorkloadGenerator {
             upperSizeLimit = 0.1;
         }
         else if(objectSize.equals("large")){
+            /*
             lowerSizeLimit = 1.0;
             upperSizeLimit = 10.0;
+            */
+            lowerSizeLimit = 100.0;
+            upperSizeLimit = 1000.0;
         }
 
         Map<String, Double> uploadOps = new LinkedHashMap<>();
