@@ -19,7 +19,8 @@ public class StorageModelSsdToshibaHG6EnterpriseTHNSNJ512GCSU extends StorageMod
             case 1:
                 return "THNSNJ512GCSU"; // Model Number
             case 2:
-                return 512000; // capacity (MB)
+                //return 512000; // capacity (MB)
+                return 6346665;
             case 3:
                 return 0.0000001; // Average Rotation Latency (s)
             case 4:
