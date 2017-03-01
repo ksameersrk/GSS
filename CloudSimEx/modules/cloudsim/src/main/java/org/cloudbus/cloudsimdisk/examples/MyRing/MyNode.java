@@ -3,8 +3,7 @@ package org.cloudbus.cloudsimdisk.examples.MyRing;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by skulkarni9 on 2/26/17.
@@ -21,6 +20,7 @@ public class MyNode
     double numberOfPartitionsDifference;
     boolean isSpinDown = false;
     Set<Integer> partitionNames = new HashSet<>();
+    private ArrayList<Map<String, Integer>> spinDownIntervals = new ArrayList<Map<String, Integer>>();
 
     public String getName() {
         return name;
@@ -61,6 +61,22 @@ public class MyNode
     public void setSpunDown(boolean spunDown) {
         isSpunDown = spunDown;
     }
+
+    public void addSpunDownAt(int time){
+        Map<String, Integer> myMap = new HashMap<String, Integer>();
+        myMap.put("spun down at", time);
+        myMap.put("spun up at", -1);
+        this.spinDownIntervals.add(myMap);
+    }
+    public void setSpunUpAt(int time){
+        // update last added dict in spinDownIntervals
+        this.spinDownIntervals.get(spinDownIntervals.size() - 1).put("spun up at", time);
+    }
+    public ArrayList<Map<String, Integer>> getSpinDownIntervals(){
+        return this.spinDownIntervals;
+    }
+
+
 
     public double getNumberOfPartitionsByWeight() {
         return numberOfPartitionsByWeight;
@@ -122,6 +138,7 @@ public class MyNode
     {
         return this.partitionNames.contains(partitionNames);
     }
+/*
 
     public boolean isSpinDown() {
         return isSpinDown;
@@ -130,6 +147,7 @@ public class MyNode
     public void setSpinDown(boolean spinDown) {
         isSpinDown = spinDown;
     }
+*/
 
     @Override
     public String toString()

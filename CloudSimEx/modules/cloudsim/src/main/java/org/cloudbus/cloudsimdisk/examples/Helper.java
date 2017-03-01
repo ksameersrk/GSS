@@ -28,6 +28,7 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 import org.cloudbus.cloudsimdisk.MyCloudlet;
 import org.cloudbus.cloudsimdisk.MyDatacenter;
 import org.cloudbus.cloudsimdisk.MyPowerDatacenterBroker;
+import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.MyPowerDatacenter;
 import org.cloudbus.cloudsimdisk.power.MyPowerHarddriveStorage;
@@ -96,7 +97,7 @@ public class Helper {
 	 */
 	public DatacenterCharacteristics			datacenterCharacteristics;
 
-	public HashMap<Node, MyPowerHarddriveStorage> nmmap = new HashMap<>();
+	public HashMap<MyNode, MyPowerHarddriveStorage> nmmap = new HashMap<>();
 
 	// Methods
 	/**
@@ -187,14 +188,16 @@ public class Helper {
 		}
 	}
 
-    public void createPersistentStorage(Set<Node> nodes) throws ParameterException {
+    public void createPersistentStorage(Set<MyNode> nodes) throws ParameterException {
 		MyPowerHarddriveStorage tmp = null;
-        for (Node n : nodes) {
-        	tmp = new MyPowerHarddriveStorage(n.getID(), "Node HDD" + n.getID(), n.getStorageModel(), n.getPowerModel(), n.getIsSpunDown());
+		int i = 0;
+        for (MyNode n : nodes) {
+        	tmp = new MyPowerHarddriveStorage(i, "Node HDD" + n.getName(), n.getHddModel(), n.getHddPowerModel(), n.isSpunDown());
             storageList.add(tmp);
 
             // creating a hashmap where key is node and value is Disk, so assigning a disk to each node
             nmmap.put(n, tmp);
+            ++i;
         }
     }
 
@@ -217,7 +220,7 @@ public class Helper {
 	/**
 	 *  Create a setup for DataCenter of Nodes
 	 */
-	public void createDataCenterNodes(int node_count, int zone_count, HashMap<Node, Tasks> nodeToTaskMapping)
+	public void createDataCenterNodes(int node_count, int zone_count, HashMap<MyNode, Tasks> nodeToTaskMapping)
 	{
         this.createHostList(zone_count);
         this.createPeList(zone_count);
@@ -432,7 +435,7 @@ public class Helper {
     }
 
 
-    public void createCloudletList(HashMap<Node, Tasks> nodeToTaskMapping, ArrayList<Node> nodeList) throws ParameterException {
+    public void createCloudletList(HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<MyNode> nodeList) throws ParameterException {
 
         // local variable
         ArrayList<String> tempRequiredFilesList = null;
@@ -646,6 +649,120 @@ public class Helper {
 		 * ----------------------------------------------------------------------- */
 	}
 
+	public void printResults(double endTimeSimulation, ArrayList<MyNode> nodeList) {
+		double TotalStorageEnergy = 0;
+		List<MyPowerHarddriveStorage> tempList = new ArrayList<MyPowerHarddriveStorage>();
+		for(MyNode n : nodeList){
+			tempList.add(nmmap.get(n));
+		}
+
+		// PRINTOUT -----------------------------------------------------------------------
+		Log.printLine();
+		Log.printLine("*************************** RESULTS ***************************");
+		Log.printLine();
+
+		Log.printLine("TIME SPENT IN IDLE/ACTIVE MODE FOR EACH STORAGE");
+		for (int i = 0; i < nodeList.size(); i++) {
+			Log.printLine("Node \"" + nodeList.get(i).getName() + "\"");
+			Log.printLine("Storage \"" + tempList.get(i).getName() + "\"");
+			//Log.formatLine("\tDisk behaviour (is spun down)	: " + tempList.get(i).getIsSpunDown());
+			/*for (Double interval : tempList.get(i).getIdleIntervalsHistory()) {
+				Log.formatLine("%8sIdle intervale: %9.3f second(s)", "", interval);
+			}*/
+
+			Log.printLine();
+			// calculate total spun down time
+			double spunDowntime = 0.0;
+			ArrayList<Map<String, Integer>> spinDownIntervals = nodeList.get(i).getSpinDownIntervals();
+			if(spinDownIntervals != null)
+			{
+				for (Map<String, Integer> interval : spinDownIntervals){
+					if(interval.get("spun up at") == -1){
+						spunDowntime += endTimeSimulation - interval.get("spun down at");
+					}
+					else
+						spunDowntime += interval.get("spun up at") - interval.get("spun down at");
+
+				}
+			}
+			double activeTime = 0.0;
+			if(spunDowntime == endTimeSimulation){
+			    activeTime = 0.0;
+            }
+            else {
+			    activeTime = tempList.get(i).getInActiveDuration();
+            }
+            double activeTimeEnergy = nodeList.get(i).getHddPowerModel().getPowerActive()*activeTime;
+			double idleTime =  endTimeSimulation - activeTime - spunDowntime;
+			double idleTimeEnergy = nodeList.get(i).getHddPowerModel().getPowerIdle() * idleTime;
+			TotalStorageEnergy += idleTimeEnergy + activeTimeEnergy;
+
+			Log.formatLine("%8sTime in    Idle   mode: %9.3f second(s)", "",idleTime);
+			Log.formatLine("%8sTime in   Active  mode: %9.3f second(s)", "", activeTime);
+			Log.formatLine("%8sTime Spun Down : %9.3f second(s)", "", spunDowntime);
+			Log.formatLine("%8sTime of the simulation: %9.3f second(s)", "", endTimeSimulation);
+			Log.printLine();
+			Log.formatLine("%8sEnergy consumed in  Idle   mode: %9.3f Joule(s)", "", idleTimeEnergy);
+			Log.formatLine("%8sEnergy consumed in Active  mode: %9.3f Joule(s)", "", activeTimeEnergy);
+			Log.formatLine("%8sEnergy consumed in  total      : %9.3f Joule(s)", "", idleTimeEnergy+ activeTimeEnergy);
+			Log.printLine();
+			Log.formatLine("%8sMaximum Queue size    : %10d operation(s)", "",
+					Collections.max(tempList.get(i).getQueueLengthHistory()));
+			Log.printLine();
+			Log.printLine();
+		}
+		Log.printLine();
+		//Log.formatLine("Energy consumed by Always Active Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedByActiveAlwaysDisks());
+		//Log.formatLine("Energy consumed by Spun Down Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedBySpunDownDisks());
+		Log.formatLine("Energy consumed by Entire Persistent Storage: %.3f Joule(s)", TotalStorageEnergy);
+		Log.printLine();
+		// -----------------------------------------------------------------------
+
+/*
+		// LOGS -----------------------------------------------------------------------
+		WriteToLogFile.AddtoFile("\n");
+		WriteToLogFile.AddtoFile("*************************** RESULTS ***************************");
+		WriteToLogFile.AddtoFile("\n");
+		WriteToLogFile.AddtoFile("TIME SPENT IN IDLE/ACTIVE MODE FOR EACH STORAGE");
+		for (int i = 0; i < tempList.size(); i++) {
+			WriteToLogFile.AddtoFile("Storage \"" + tempList.get(i).getName() + "\"");
+			WriteToLogFile.AddtoFile("\tDisk behaviour (is spun down)	: " + tempList.get(i).getIsSpunDown());
+			for (Double interval : tempList.get(i).getIdleIntervalsHistory()) {
+				WriteToLogFile.AddtoFile(String.format("%8sIdle intervale: %9.3f second(s)", "", interval));
+			}
+			WriteToLogFile.AddtoFile("\n");
+			WriteToLogFile.AddtoFile(String.format("%8sTime in    Idle   mode: %9.3f second(s)", "", endTimeSimulation
+					- tempList.get(i).getInActiveDuration()));
+			WriteToLogFile.AddtoFile(String.format("%8sTime in   Active  mode: %9.3f second(s)", "", tempList.get(i)
+					.getInActiveDuration()));
+			WriteToLogFile
+					.AddtoFile(String.format("%8sTime of the simulation: %9.3f second(s)", "", endTimeSimulation));
+			WriteToLogFile.AddtoFile("\n");
+			WriteToLogFile.AddtoFile(String.format("%8sEnergy consumed in  Idle   mode: %9.3f Joule(s)", "", tempList
+					.get(i).getTotalEnergyIdle()));
+			WriteToLogFile.AddtoFile(String.format("%8sEnergy consumed in Active  mode: %9.3f Joule(s)", "", tempList
+					.get(i).getTotalEnergyActive()));
+			WriteToLogFile.AddtoFile(String.format("%8sEnergy consumed in  total      : %9.3f Joule(s)", "", tempList
+					.get(i).getTotalEnergyIdle() + tempList.get(i).getTotalEnergyActive()));
+			WriteToLogFile.AddtoFile("\n");
+			WriteToLogFile.AddtoFile(String.format("%8sMaximum Queue size    : %10d operation(s)", "",
+					Collections.max(tempList.get(i).getQueueLengthHistory())));
+			WriteToLogFile.AddtoFile("\n");
+		}
+		WriteToLogFile.AddtoFile("\n");
+		// fix this
+		WriteToLogFile.AddtoFile(String.format("Energy consumed by Always Active Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedByActiveAlwaysDisks()));
+		WriteToLogFile.AddtoFile(String.format("Energy consumed by Spun Down Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedBySpunDownDisks()));
+		WriteToLogFile.AddtoFile(String.format("Energy consumed by Persistent Storage: %.3f Joule(s)",
+				TotalStorageEnergy));
+		WriteToLogFile.AddtoFile("\n");
+		 // queue size WriteToLogFile.AddtoFile("QUEUE SIZE in Operation(s) (not sorted)"); for (int i = 0; i <
+		 // tempList.size(); i++) { WriteToLogFile.AddtoFile("For Disk" + tempList.get(i).getName()); for (int queue :
+		 // tempList.get(i).getQueueLengthHistory()) { WriteToLogFile.AddtoFile(String.format("%4d", queue)); } } //
+		 // -----------------------------------------------------------------------
+*/
+	}
+
 	public double getTotalStorageEnergyConsumed()
 	{
 		/*
@@ -707,4 +824,6 @@ public class Helper {
 		}
 		return TotalStorageEnergy ;
 	}
+
+
 }

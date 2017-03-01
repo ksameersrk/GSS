@@ -142,7 +142,7 @@ public class COSBenchTypeWorkloadGenerator {
         for(String fileName : uploadOps.keySet()){
             if(i > 0)
                 operations.append("\n");
-            operations.append("PUT,0," + fileName + "," + uploadOps.get(fileName));
+            operations.append("PUT,0," + fileName + "," + Math.round(uploadOps.get(fileName)));
             i++;
         }
 

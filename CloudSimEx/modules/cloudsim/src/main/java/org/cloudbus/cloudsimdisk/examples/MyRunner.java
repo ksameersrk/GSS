@@ -15,6 +15,7 @@ package org.cloudbus.cloudsimdisk.examples;
 
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
@@ -88,7 +89,7 @@ public class MyRunner {
 		// END
 	}
 
-	public MyRunner(HashMap<Node, Tasks> simulation, String arrivalFile, String dataFile, ArrayList<Node> seq) throws Exception
+	public MyRunner(HashMap<MyNode, Tasks> nodeToTaskMapping, String arrivalFile, String dataFile, ArrayList<MyNode> nodeList) throws Exception
     {
         Log.printLine("Starting simulation \n");
         WriteToLogFile.AddtoFile("Starting simulation \n");
@@ -100,7 +101,7 @@ public class MyRunner {
         helper.createPeList(numberOfProcessingUnits);
         helper.createHostList(numberOfProcessingUnits);
         helper.createVmList(numberOfProcessingUnits);
-        helper.createPersistentStorage(simulation.keySet());
+        helper.createPersistentStorage(nodeToTaskMapping.keySet());
         helper.createDatacenterCharacteristics();
         helper.createDatacenter();
 
@@ -110,7 +111,7 @@ public class MyRunner {
         helper.createDataFilesList(dataFile);
 
         // Cloudlets
-        helper.createCloudletList(simulation, seq);
+        helper.createCloudletList(nodeToTaskMapping, nodeList);
 
         // Logs
         helper.printPersistenStorageDetails();
@@ -124,7 +125,7 @@ public class MyRunner {
         Log.printLine("END !");
     }
 
-	public MyRunner(HashMap<Node, Tasks> simulation, String arrivalFile, String putDataFile, String getDataFile, String updateDataFile, String deleteDataFile, ArrayList<Node> seq) throws Exception
+	public MyRunner(HashMap<MyNode, Tasks> nodeToTaskMapping, String arrivalFile, String putDataFile, String getDataFile, String updateDataFile, String deleteDataFile, ArrayList<MyNode> nodeList) throws Exception
 	{
 		Log.printLine("Starting simulation \n");
 		WriteToLogFile.AddtoFile("Starting simulation \n");
@@ -136,7 +137,7 @@ public class MyRunner {
 		helper.createPeList(numberOfProcessingUnits);
 		helper.createHostList(numberOfProcessingUnits);
 		helper.createVmList(numberOfProcessingUnits);
-		helper.createPersistentStorage(simulation.keySet());
+		helper.createPersistentStorage(nodeToTaskMapping.keySet());
 		helper.createDatacenterCharacteristics();
 		helper.createDatacenter();
 
@@ -148,7 +149,7 @@ public class MyRunner {
 		helper.createDeleteFilesList(deleteDataFile);
 
 		// Cloudlets
-		helper.createCloudletList(simulation, seq);
+		helper.createCloudletList(nodeToTaskMapping, nodeList);
 
 		// Logs
 		helper.printPersistenStorageDetails();
@@ -156,8 +157,8 @@ public class MyRunner {
 
 
 		start();
-		print();
-
+		//print();
+		print(new ArrayList<MyNode>(nodeToTaskMapping.keySet()));
 		WriteToResultFile.end();
 		Log.printLine("END !");
 	}
@@ -217,6 +218,10 @@ public class MyRunner {
 	 */
 	public void print() {
 		helper.printResults(endTimeSimulation);
+	}
+
+	public void print(ArrayList<MyNode> nodeList) {
+		helper.printResults(endTimeSimulation, nodeList);
 	}
 
 	public double getTotalStorageEnergyConsumed()

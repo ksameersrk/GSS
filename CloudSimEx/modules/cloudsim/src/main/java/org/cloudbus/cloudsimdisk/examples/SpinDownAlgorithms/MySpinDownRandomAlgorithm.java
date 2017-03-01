@@ -27,7 +27,7 @@ public class MySpinDownRandomAlgorithm
                 nodeCount, partitionPower, replicas, overloadPercent);
 
         String operationsInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/"+
-                "examples/SpinDownAlgorithms/largeDataset.txt";
+                "examples/SpinDownAlgorithms/smallDataset.txt";
         int numberOfInputLines = 400;
         Map<MyNode, List<String>> nodeToFileList = getNodeToFileList(operationsInputPath, myRing, numberOfInputLines);
         display(nodeToFileList);

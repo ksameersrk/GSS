@@ -1,5 +1,7 @@
 package org.cloudbus.cloudsimdisk.examples;
 
+import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
+
 import java.util.ArrayList;
 
 /**
@@ -14,9 +16,9 @@ public class Tasks {
     ArrayList<String> updateFiles = new ArrayList<String>();
     ArrayList<String> DELETErequestArrivalTimesSource = new ArrayList<String>();
     ArrayList<String> deleteFiles = new ArrayList<String>();
-    Node node;
+    MyNode node;
 
-    public Tasks(Node node, String newTask)
+    public Tasks(MyNode node, String newTask)
     {
         dataFiles = new ArrayList<>();
         reqdFiles = new ArrayList<>();
@@ -45,7 +47,7 @@ public class Tasks {
         this.node = node;
     }
 
-    public Node getNode()
+    public MyNode getNode()
     {
         return this.node;
     }

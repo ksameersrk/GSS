@@ -2,6 +2,8 @@ package org.cloudbus.cloudsimdisk.examples.MyRing;
 
 import org.cloudbus.cloudsimdisk.examples.MyConstants;
 import org.cloudbus.cloudsimdisk.examples.Node;
+import org.cloudbus.cloudsimdisk.models.hdd.*;
+import org.cloudbus.cloudsimdisk.power.models.hdd.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -400,6 +402,65 @@ public class MyRing
                 myZone.addNode(myNode);
                 myRegion.addZone(myZone);
                 myRing.addRegion(myRegion);
+            }
+            myRing.createRing();
+        }
+        catch (Exception e)
+        {
+            new Exception("Main");
+        }
+        return myRing;
+    }
+
+    public static MyRing buildRing(String fileName, int nodeCount, int partitionPower, int replicas, double overloadPercent, boolean isStagingDisk)
+    {
+        MyRing myRing = new MyRing(partitionPower, replicas, overloadPercent);
+        File file = new File(fileName);
+        // HDD specs
+        StorageModelHdd[] storageModelHdds = new StorageModelHdd[]{ new StorageModelHddSeagateEnterpriseST6000VN0001() , new StorageModelHddHGSTUltrastarHUC109090CSS600(), new StorageModelHddToshibaEnterpriseMG04SCA500E() };
+        PowerModelHdd[] powerModelHdds = new PowerModelHdd[]{ new PowerModeHddSeagateEnterpriseST6000VN0001() , new PowerModeHddHGSTUltrastarHUC109090CSS600() , new PowerModeHddToshibaEnterpriseMG04SCA500E() };
+
+
+        // SSD specs
+        StorageModelHdd[] storageModelSSDs = new StorageModelHdd[]{ new StorageModelSsdToshibaHG6EnterpriseTHNSNJ512GCSU() , new
+                StorageModelSsdSeagate600ProEnterpriseST480FP0021(), new StorageModelSsdIntelDCS3500EnterpriseSC2BB800G401() };
+        PowerModelHdd[] powerModelSSDs = new PowerModelHdd[]{ new PowerModelSsdToshibaHG6EnterpriseTHNSNJ512GCSU() , new
+                PowerModelSsdSeagate600ProEnterpriseST480FP0021() , new PowerModelSsdIntelDCS3500EnterpriseSC2BB800G401() };
+
+        try (BufferedReader in = new BufferedReader(new FileReader(file)))
+        {
+            for(int line=0; line<nodeCount; line++)
+            {
+                String data[] = in.readLine().trim().split(",");
+                String regionName = data[0];
+                String zoneName = data[1];
+                String nodeName = data[2];
+                double weight = Double.parseDouble(data[3]);
+
+                MyRegion myRegion;
+                MyZone myZone;
+                MyNode myNode;
+
+                myRegion = myRing.containsByName(regionName) ? myRing.getRegionByName(regionName) : new MyRegion(regionName);
+                myZone = myRegion.containsByName(zoneName) ? myRegion.getZoneByName(zoneName) : new MyZone(zoneName);
+
+                myNode = new MyNode();
+                myNode.setName(nodeName);
+                myNode.setWeight(weight);
+                myNode.setSpunDown(false);
+
+                myZone.addNode(myNode);
+                myRegion.addZone(myZone);
+                myRing.addRegion(myRegion);
+
+                if(isStagingDisk){
+                    myNode.setHddModel(storageModelSSDs[line%3]);
+                    myNode.setHddPowerModel(powerModelSSDs[line%3]);
+                }
+                else {
+                    myNode.setHddModel(storageModelHdds[line%3]);
+                    myNode.setHddPowerModel(powerModelHdds[line%3]);
+                }
             }
             myRing.createRing();
         }
