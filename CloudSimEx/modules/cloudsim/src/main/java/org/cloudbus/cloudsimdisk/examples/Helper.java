@@ -718,49 +718,58 @@ public class Helper {
 		Log.printLine();
 		// -----------------------------------------------------------------------
 
-/*
 		// LOGS -----------------------------------------------------------------------
-		WriteToLogFile.AddtoFile("\n");
 		WriteToLogFile.AddtoFile("*************************** RESULTS ***************************");
-		WriteToLogFile.AddtoFile("\n");
+
 		WriteToLogFile.AddtoFile("TIME SPENT IN IDLE/ACTIVE MODE FOR EACH STORAGE");
-		for (int i = 0; i < tempList.size(); i++) {
+		for (int i = 0; i < nodeList.size(); i++) {
+			WriteToLogFile.AddtoFile("Node \"" + nodeList.get(i).getName() + "\"");
 			WriteToLogFile.AddtoFile("Storage \"" + tempList.get(i).getName() + "\"");
-			WriteToLogFile.AddtoFile("\tDisk behaviour (is spun down)	: " + tempList.get(i).getIsSpunDown());
-			for (Double interval : tempList.get(i).getIdleIntervalsHistory()) {
-				WriteToLogFile.AddtoFile(String.format("%8sIdle intervale: %9.3f second(s)", "", interval));
+			//Log.formatLine("\tDisk behaviour (is spun down)	: " + tempList.get(i).getIsSpunDown());
+			/*for (Double interval : tempList.get(i).getIdleIntervalsHistory()) {
+				Log.formatLine("%8sIdle intervale: %9.3f second(s)", "", interval);
+			}*/
+
+			// calculate total spun down time
+			double spunDowntime = 0.0;
+			ArrayList<Map<String, Integer>> spinDownIntervals = nodeList.get(i).getSpinDownIntervals();
+			if(spinDownIntervals != null)
+			{
+				for (Map<String, Integer> interval : spinDownIntervals){
+					if(interval.get("spun up at") == -1){
+						spunDowntime += endTimeSimulation - interval.get("spun down at");
+					}
+					else
+						spunDowntime += interval.get("spun up at") - interval.get("spun down at");
+
+				}
 			}
-			WriteToLogFile.AddtoFile("\n");
-			WriteToLogFile.AddtoFile(String.format("%8sTime in    Idle   mode: %9.3f second(s)", "", endTimeSimulation
-					- tempList.get(i).getInActiveDuration()));
-			WriteToLogFile.AddtoFile(String.format("%8sTime in   Active  mode: %9.3f second(s)", "", tempList.get(i)
-					.getInActiveDuration()));
-			WriteToLogFile
-					.AddtoFile(String.format("%8sTime of the simulation: %9.3f second(s)", "", endTimeSimulation));
-			WriteToLogFile.AddtoFile("\n");
-			WriteToLogFile.AddtoFile(String.format("%8sEnergy consumed in  Idle   mode: %9.3f Joule(s)", "", tempList
-					.get(i).getTotalEnergyIdle()));
-			WriteToLogFile.AddtoFile(String.format("%8sEnergy consumed in Active  mode: %9.3f Joule(s)", "", tempList
-					.get(i).getTotalEnergyActive()));
-			WriteToLogFile.AddtoFile(String.format("%8sEnergy consumed in  total      : %9.3f Joule(s)", "", tempList
-					.get(i).getTotalEnergyIdle() + tempList.get(i).getTotalEnergyActive()));
-			WriteToLogFile.AddtoFile("\n");
+			double activeTime = 0.0;
+			if(spunDowntime == endTimeSimulation){
+				activeTime = 0.0;
+			}
+			else {
+				activeTime = tempList.get(i).getInActiveDuration();
+			}
+			double activeTimeEnergy = nodeList.get(i).getHddPowerModel().getPowerActive()*activeTime;
+			double idleTime =  endTimeSimulation - activeTime - spunDowntime;
+			double idleTimeEnergy = nodeList.get(i).getHddPowerModel().getPowerIdle() * idleTime;
+			TotalStorageEnergy += idleTimeEnergy + activeTimeEnergy;
+
+			WriteToLogFile.AddtoFile(String.format("%8sTime in    Idle   mode: %9.3f second(s)", "",idleTime));
+			WriteToLogFile.AddtoFile(String.format("%8sTime in   Active  mode: %9.3f second(s)", "", activeTime));
+			WriteToLogFile.AddtoFile(String.format("%8sTime Spun Down : %9.3f second(s)", "", spunDowntime));
+			WriteToLogFile.AddtoFile(String.format("%8sTime of the simulation: %9.3f second(s)", "", endTimeSimulation));
+			WriteToLogFile.AddtoFile(String.format("%8sEnergy consumed in  Idle   mode: %9.3f Joule(s)", "", idleTimeEnergy));
+			WriteToLogFile.AddtoFile(String.format("%8sEnergy consumed in Active  mode: %9.3f Joule(s)", "", activeTimeEnergy));
+			WriteToLogFile.AddtoFile(String.format("%8sEnergy consumed in  total      : %9.3f Joule(s)", "", idleTimeEnergy+ activeTimeEnergy));
 			WriteToLogFile.AddtoFile(String.format("%8sMaximum Queue size    : %10d operation(s)", "",
 					Collections.max(tempList.get(i).getQueueLengthHistory())));
-			WriteToLogFile.AddtoFile("\n");
+
 		}
-		WriteToLogFile.AddtoFile("\n");
-		// fix this
-		WriteToLogFile.AddtoFile(String.format("Energy consumed by Always Active Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedByActiveAlwaysDisks()));
-		WriteToLogFile.AddtoFile(String.format("Energy consumed by Spun Down Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedBySpunDownDisks()));
-		WriteToLogFile.AddtoFile(String.format("Energy consumed by Persistent Storage: %.3f Joule(s)",
-				TotalStorageEnergy));
-		WriteToLogFile.AddtoFile("\n");
-		 // queue size WriteToLogFile.AddtoFile("QUEUE SIZE in Operation(s) (not sorted)"); for (int i = 0; i <
-		 // tempList.size(); i++) { WriteToLogFile.AddtoFile("For Disk" + tempList.get(i).getName()); for (int queue :
-		 // tempList.get(i).getQueueLengthHistory()) { WriteToLogFile.AddtoFile(String.format("%4d", queue)); } } //
-		 // -----------------------------------------------------------------------
-*/
+		//Log.formatLine("Energy consumed by Always Active Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedByActiveAlwaysDisks());
+		//Log.formatLine("Energy consumed by Spun Down Disks : %.3f Joule(s)", getTotalStorageEnergyConsumedBySpunDownDisks());
+		WriteToLogFile.AddtoFile(String.format("Energy consumed by Entire Persistent Storage: %.3f Joule(s)", TotalStorageEnergy));
 	}
 
 	public double getTotalStorageEnergyConsumed()

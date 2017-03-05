@@ -8,6 +8,7 @@ import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 import org.cloudbus.cloudsimdisk.examples.MyRunner;
 import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownRandomAlgorithm;
 import org.cloudbus.cloudsimdisk.examples.Tasks;
+import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
 
 import java.io.*;
 import java.util.*;
@@ -28,8 +29,8 @@ public class FlushEntireStagingDiskContents {
 
         // ==================================================================================================
         // node properties
-        int totalNoOfNodes = 32;
-        int partitionPower = 10;
+        int totalNoOfNodes = 16;
+        int partitionPower = 4;
         int replicas = 3;
         double overloadPercent = 10.0;
 
@@ -50,20 +51,20 @@ public class FlushEntireStagingDiskContents {
 
         int totalHddRingStorageCapacity = totalNoOfNodes * ((6000000 + 900000 + 5000000) / 3);
         int totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
-        //int avgSSDCapacity = (int) ((800000 + 480000 + 512000) / 3);
+        int avgSSDCapacity = (int) ((800000 + 480000 + 512000) / 3);
         //int noOfStagingDisks =  (int)Math.ceil((double)totalStagingDiskCapacity / avgSSDCapacity);
         int noOfStagingDisks = 1;
-
         /*
         int totalStagingDiskCapacity = 100; // 5% capacity
         int avgSSDCapacity = 100;
         int noOfStagingDisks = 1;
         */
+
         MyRing stagingDiskRing = MyRing.buildRing("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/stagingDiskRings.txt",
                 noOfStagingDisks
                 , 1, 1, 10.0, true);
 
-
+        WriteToLogFile.AddtoFile(String.format("%8sTotal no. of HDDs = %10d ", "", totalNoOfNodes));
         // ==================================================================================================
 
         String ringInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/rings.txt";
@@ -74,7 +75,7 @@ public class FlushEntireStagingDiskContents {
             MySpinDownRandomAlgorithm spinDownRandomAlgorithm = new MySpinDownRandomAlgorithm();
             String startingOperationsInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/" +
                     "examples/SpinDownAlgorithms/smallDataset.txt";
-            int numberOfInputLines = 400;
+            int numberOfInputLines = 99;
             Map<MyNode, List<String>> nodeToFileList = spinDownRandomAlgorithm.getNodeToFileList(startingOperationsInputPath, myRing, numberOfInputLines);
             spinDownRandomAlgorithm.display(nodeToFileList);
 
@@ -91,6 +92,8 @@ public class FlushEntireStagingDiskContents {
                 tmp.sort(Comparator.comparing(String::hashCode));
 
                 System.out.println("Operation No : "+((result.size()-1)+1)+", No of Nodes spunDownAble : "+tmp.size()+" are : "+tmp);
+                WriteToLogFile.AddtoFile(String.format("%8s Operation No. : %10d, No of Nodes spunDownAble :  %10d . They are : %s", "", ((result.size()-1)
+                        +1), tmp.size(), tmp));
             }
 
             List<MyNode> ringNodeList = myRing.getAllNodes();
@@ -118,12 +121,14 @@ public class FlushEntireStagingDiskContents {
 
         // if there is no staging disk
         if (addStagingDisk == false) {
+            WriteToLogFile.AddtoFile("Staging Disk : False");
             // pass the operation name to this getOperationFileList() method and it will return the op file to be passed to MyRunner
             dataFile = getOperationFileList(inputLog, "PUT", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
             requiredFile = getOperationFileList(inputLog, "GET", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
             updateFile = getOperationFileList(inputLog, "UPDATE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
             deleteFile = getOperationFileList(inputLog, "DELETE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
         } else {
+            WriteToLogFile.AddtoFile("Staging Disk : True");
             // if there a staging disk included
             stagingDiskSimulate(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, inputLog, nodeToTaskMapping, nodeList,
                     noOfActiveAlwaysDisks, myRing, noOfSpunDownDisks, stagingDiskRing);
@@ -161,14 +166,18 @@ public class FlushEntireStagingDiskContents {
         for (MyNode n : stagingDiskNodes) {
             stagingDiskMemoryUsed.put(n, 0);
             // initialise stagingDiskLowerThresholdMemory i.e during a flush we keep deleting files till we reach this lower threshold
-            stagingDiskLowerThresholdMemory.put(n, (int) (n.getHddModel().getCapacity() * 0.0));
+            Double lowerThreshold = 0.0;
+            stagingDiskLowerThresholdMemory.put(n, (int) (n.getHddModel().getCapacity() * lowerThreshold));
             // initialise stagingDiskUpperThresholdMemory i.e we start the flush when on adding the given file,
             // the storage capacity is going to exceed this upper threshold capacity
-            Double upperThreshold = 0.8;
+            Double upperThreshold = 1.0;
             stagingDiskUpperThresholdMemory.put(n, (int) (n.getHddModel().getCapacity() * upperThreshold));
             stagingDiskFileList.put(n, new HashMap<String, Integer>());
 
             System.out.println("Flushing when upper threshold of " + upperThreshold.toString() + " is reached.");
+            WriteToLogFile.AddtoFile(String.format("%8sFlushing when upper threshold of %9.3f is reached", "", upperThreshold));
+            WriteToLogFile.AddtoFile(String.format("%8sFlushing till lower threshold of %9.3f is reached", "", lowerThreshold));
+
         }
 
 
