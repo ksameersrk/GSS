@@ -720,7 +720,7 @@ public class Helper {
 
 		// LOGS -----------------------------------------------------------------------
 		WriteToLogFile.AddtoFile("*************************** RESULTS ***************************");
-
+		TotalStorageEnergy = 0;
 		WriteToLogFile.AddtoFile("TIME SPENT IN IDLE/ACTIVE MODE FOR EACH STORAGE");
 		for (int i = 0; i < nodeList.size(); i++) {
 			WriteToLogFile.AddtoFile("Node \"" + nodeList.get(i).getName() + "\"");
