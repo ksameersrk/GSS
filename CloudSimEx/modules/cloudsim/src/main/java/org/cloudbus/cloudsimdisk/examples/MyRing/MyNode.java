@@ -62,6 +62,7 @@ public class MyNode
         isSpunDown = spunDown;
     }
 
+    /*
     public void addSpunDownAt(int time){
         Map<String, Integer> myMap = new HashMap<String, Integer>();
         myMap.put("spun down at", time);
@@ -72,10 +73,12 @@ public class MyNode
         // update last added dict in spinDownIntervals
         this.spinDownIntervals.get(spinDownIntervals.size() - 1).put("spun up at", time);
     }
+
     public ArrayList<Map<String, Integer>> getSpinDownIntervals(){
         return this.spinDownIntervals;
     }
 
+    */
 
 
     public double getNumberOfPartitionsByWeight() {
