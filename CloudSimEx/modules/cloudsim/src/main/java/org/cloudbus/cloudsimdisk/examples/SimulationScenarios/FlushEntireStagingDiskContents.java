@@ -342,7 +342,7 @@ public class FlushEntireStagingDiskContents {
         int stagingDiskMemoryToBeAdded = 0;
         // if staging disk occupied more the stagingDiskMemoryUsed upper threshold
         if (stagingDiskMemoryUsed + Integer.parseInt(data[3]) > stagingDiskThresholdMemory) {
-            stagingDiskMemoryToBeAdded += freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDiskThresholdMemory, tmpToBeDeletedList,
+            stagingDiskMemoryToBeAdded += freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDisk, tmpToBeDeletedList,
                     stagingDiskFileList,
                     stagingDiskLowerThreshold, noOfSpunDownDisks, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, newOperationsSinceLastSpinDown);
         }
@@ -383,7 +383,7 @@ public class FlushEntireStagingDiskContents {
 
     }
 
-    public static int freeUpStagingDiskMemory(String data[], int stagingDiskMemoryUsed, int stagingDiskThresholdMemory,
+    public static int freeUpStagingDiskMemory(String data[], int stagingDiskMemoryUsed, MyNode stagingDisk,
                                               Map<String, Integer> tmpToBeDeletedList, Map<String, Integer> stagingDiskFileList,
                                               int stagingDiskLowerThreshold, int noOfSpunDownDisks, ArrayList<String> tmpOpFile,
                                               ArrayList<String> tmpdeleteFile, ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping,
@@ -402,21 +402,18 @@ public class FlushEntireStagingDiskContents {
             }
         }
 
+        // READ from staging disk
         for (String file : tmpToBeAddedToSpunDownFiles.keySet()) {
+            tmpOpFile.add("READ,"+data[1]+","+file);
+            nodeList.add(stagingDisk);
             stagingDiskFileList.remove(file);
         }
-
-        // update stagingDiskMemoryUsed after removing old files
-        int stagingDiskMemoryToBeAdded = 0;
-        stagingDiskMemoryToBeAdded -= memoryToBeFreed;
 
         // now add those files to spun down disks
         for (String file : tmpToBeAddedToSpunDownFiles.keySet()) {
             for (int i = 0; i < noOfSpunDownDisks; i++)
                 tmpOpFile.add("PUT," + data[1] + "," + file + "," + tmpToBeAddedToSpunDownFiles.get(file)); // tmpOpFile is tmpdataFile for PUT and
             // tmpupdateFile for Update
-
-            List<MyNode> primaryNodes = ring.getPrimaryNodes(data[2]);
 
             for (MyNode n : ring.getPrimaryNodes(data[2])) {
                 if(n.isSpunDown()){
@@ -429,6 +426,18 @@ public class FlushEntireStagingDiskContents {
                 }
             }
         }
+
+        // DELETE from staging disk
+        for (String file : tmpToBeAddedToSpunDownFiles.keySet()) {
+            tmpOpFile.add("DELETE,"+data[1]+","+file);
+            nodeList.add(stagingDisk);
+            stagingDiskFileList.remove(file);
+        }
+
+        // update stagingDiskMemoryUsed after removing old files
+        int stagingDiskMemoryToBeAdded = 0;
+        stagingDiskMemoryToBeAdded -= memoryToBeFreed;
+
 
 /*
         // delete on handoff
