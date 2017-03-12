@@ -35,7 +35,7 @@ public class FlushEntireStagingDiskContents {
         double overloadPercent = 10.0;
 
         // staging disk properties
-        boolean addStagingDisk = false;
+        boolean addStagingDisk = true;
 
         // node properties
         int noOfReplicas = 3;
@@ -48,17 +48,16 @@ public class FlushEntireStagingDiskContents {
         else {
             noOfActiveAlwaysDisks = noOfReplicas;
         }
-
+        /*
         int totalHddRingStorageCapacity = totalNoOfNodes * ((6000000 + 900000 + 5000000) / 3);
         int totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
         int avgSSDCapacity = (int) ((800000 + 480000 + 512000) / 3);
         //int noOfStagingDisks =  (int)Math.ceil((double)totalStagingDiskCapacity / avgSSDCapacity);
         int noOfStagingDisks = 1;
-        /*
+        */
         int totalStagingDiskCapacity = 100; // 5% capacity
         int avgSSDCapacity = 100;
         int noOfStagingDisks = 1;
-        */
 
         MyRing stagingDiskRing = MyRing.buildRing("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/stagingDiskRings.txt",
                 noOfStagingDisks
@@ -99,8 +98,8 @@ public class FlushEntireStagingDiskContents {
             List<MyNode> ringNodeList = myRing.getAllNodes();
             for (MyNode n : ringNodeList) {
                 if (tmp.contains(n.getName())) {
-                    n.setSpunDown(false);
-                    n.addSpunDownAt(0);
+                    n.setSpunDown(true);
+                    //n.addSpunDownAt(0);
                 }
             }
 
@@ -367,12 +366,14 @@ public class FlushEntireStagingDiskContents {
             nodeToTaskMapping.put(stagingDisk, new Tasks(stagingDisk, op));
         }
 
-        for (MyNode n : ring.getPrimaryNodes(data[2]).subList(0,noOfActiveAlwaysDisks)) {
-            nodeList.add(n);
-            if (nodeToTaskMapping.containsKey(n)) {
-                nodeToTaskMapping.get(n).addTask(op);
-            } else {
-                nodeToTaskMapping.put(n, new Tasks(n, op));
+        for (MyNode n : ring.getPrimaryNodes(data[2])) {
+            if(n.isSpunDown() == false){
+                nodeList.add(n);
+                if (nodeToTaskMapping.containsKey(n)) {
+                    nodeToTaskMapping.get(n).addTask(op);
+                } else {
+                    nodeToTaskMapping.put(n, new Tasks(n, op));
+                }
             }
         }
 
@@ -387,6 +388,8 @@ public class FlushEntireStagingDiskContents {
                                               int stagingDiskLowerThreshold, int noOfSpunDownDisks, ArrayList<String> tmpOpFile,
                                               ArrayList<String> tmpdeleteFile, ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping,
                                               MyRing ring, ArrayList<String> newOperationsSinceLastSpinDown) {
+        System.out.println("Flushing staging disk contents at time = " + data[1]);
+        WriteToLogFile.AddtoFile(String.format("%8sFlushing staging disk contents at time = %8s ", "", data[1]));
         // remove oldest unused files such after removing them only 60% of stagingDisk mem is occupied
         // before removing add them to respective spun down disks
         Map<String, Integer> tmpToBeAddedToSpunDownFiles = new LinkedHashMap<String, Integer>();
@@ -413,12 +416,16 @@ public class FlushEntireStagingDiskContents {
                 tmpOpFile.add("PUT," + data[1] + "," + file + "," + tmpToBeAddedToSpunDownFiles.get(file)); // tmpOpFile is tmpdataFile for PUT and
             // tmpupdateFile for Update
 
-            for (MyNode n : ring.getPrimaryNodes(data[2]).subList(ring.getPrimaryNodes(data[2]).size() - noOfSpunDownDisks,ring.getPrimaryNodes(data[2]).size())) {
-                nodeList.add(n);
-                if (nodeToTaskMapping.containsKey(n)) {
-                    nodeToTaskMapping.get(n).addTask("PUT," + data[1] + "," + file + "," + tmpToBeAddedToSpunDownFiles.get(file));
-                } else {
-                    nodeToTaskMapping.put(n, new Tasks(n, "PUT," + data[1] + "," + file + "," + tmpToBeAddedToSpunDownFiles.get(file)));
+            List<MyNode> primaryNodes = ring.getPrimaryNodes(data[2]);
+
+            for (MyNode n : ring.getPrimaryNodes(data[2])) {
+                if(n.isSpunDown()){
+                    nodeList.add(n);
+                    if (nodeToTaskMapping.containsKey(n)) {
+                        nodeToTaskMapping.get(n).addTask("PUT," + data[1] + "," + file + "," + tmpToBeAddedToSpunDownFiles.get(file));
+                    } else {
+                        nodeToTaskMapping.put(n, new Tasks(n, "PUT," + data[1] + "," + file + "," + tmpToBeAddedToSpunDownFiles.get(file)));
+                    }
                 }
             }
         }
@@ -443,12 +450,15 @@ public class FlushEntireStagingDiskContents {
         for (String file : tmpToBeDeletedList.keySet()) {
             for (int i = 0; i < noOfSpunDownDisks; i++)
                 tmpdeleteFile.add("DELETE," + data[1] + "," + file);
-            for (MyNode n : ring.getPrimaryNodes(data[2]).subList(ring.getPrimaryNodes(data[2]).size() - noOfSpunDownDisks,ring.getPrimaryNodes(data[2]).size())) {
-                nodeList.add(n);
-                if (nodeToTaskMapping.containsKey(n)) {
-                    nodeToTaskMapping.get(n).addTask("DELETE," + data[1] + "," + file);
-                } else {
-                    nodeToTaskMapping.put(n, new Tasks(n, "DELETE," + data[1] + "," + file));
+            for (MyNode n : ring.getPrimaryNodes(data[2])) {
+                if(n.isSpunDown()){
+                    nodeList.add(n);
+                    if (nodeToTaskMapping.containsKey(n)) {
+                        nodeToTaskMapping.get(n).addTask("DELETE," + data[1] + "," + file);
+                    } else {
+                        nodeToTaskMapping.put(n, new Tasks(n, "DELETE," + data[1] + "," + file));
+                    }
+
                 }
             }
         }
