@@ -454,12 +454,23 @@ public class MyRing
                 myRing.addRegion(myRegion);
 
                 if(isStagingDisk){
+                    /*
                     myNode.setHddModel(storageModelSSDs[line%3]);
                     myNode.setHddPowerModel(powerModelSSDs[line%3]);
+                    */
+                    // for benchmarking purpose keeping power, storage model across all SSDs constant
+                    myNode.setHddModel(storageModelSSDs[1]);
+                    myNode.setHddPowerModel(powerModelSSDs[1]);
+
                 }
                 else {
+                    /*
                     myNode.setHddModel(storageModelHdds[line%3]);
                     myNode.setHddPowerModel(powerModelHdds[line%3]);
+                    */
+                    // for benchmarking purpose keeping power, storage model across all HDDs constant
+                    myNode.setHddModel(storageModelHdds[0]);
+                    myNode.setHddPowerModel(powerModelHdds[0]);
                 }
             }
             myRing.createRing();
