@@ -102,12 +102,11 @@ public class FlushEntireStagingDiskContents {
                     //n.addSpunDownAt(0);
                 }
             }
-
         }
 
         String inputLog = "files/basic/SimulationScenarios/FlushEntireStagingDiskContentsInputLog.txt";
         COSBenchTypeWorkloadGenerator workloadGenerator = new COSBenchTypeWorkloadGenerator();
-        workloadGenerator.generateWorkload("upload intensive", "large", inputLog, totalStagingDiskCapacity, 2 );
+        workloadGenerator.generateWorkload("upload intensive", "large", inputLog, totalStagingDiskCapacity, 2.0 );
 
         ArrayList<String> arrivalFile = new ArrayList<>();
         ArrayList<MyNode> nodeList = new ArrayList<>();
@@ -249,13 +248,19 @@ public class FlushEntireStagingDiskContents {
                         // go to active always node
                         tmprequiredFile.add(op);
                         List<MyNode> nodes = ring.getPrimaryNodes(data[2]); // get needs only one node
-                        MyNode n = nodes.get(0);
-                        nodeList.add(n);
-                        if (nodeToTaskMapping.containsKey(n)) {
-                            nodeToTaskMapping.get(n).addTask(op);
-                        } else {
-                            nodeToTaskMapping.put(n, new Tasks(n, op));
+                        for(MyNode n : nodes){
+                            if(n.isSpunDown() == false)
+                            {
+                                nodeList.add(n);
+                                if (nodeToTaskMapping.containsKey(n)) {
+                                    nodeToTaskMapping.get(n).addTask(op);
+                                } else {
+                                    nodeToTaskMapping.put(n, new Tasks(n, op));
+                                }
+                                break;
+                            }
                         }
+
                         /*
                         // THIS BLOCK OF CODE IS REQUIRED FOR LRU ONLY
                         // also when file not in stagingDisk and we get it from end node, should we add it to stagingDisk for future use
@@ -308,14 +313,19 @@ public class FlushEntireStagingDiskContents {
                         }
                     }
                     // remove from active always disks
+                    /*
                     for (int i = 0; i < noOfActiveAlwaysDisks; i++)
                         tmpdeleteFile.add(op);
-                    for (MyNode n : ring.getPrimaryNodes(data[2]).subList(0,noOfActiveAlwaysDisks)) {
-                        nodeList.add(n);
-                        if (nodeToTaskMapping.containsKey(n)) {
-                            nodeToTaskMapping.get(n).addTask(op);
-                        } else {
-                            nodeToTaskMapping.put(n, new Tasks(n, op));
+                    */
+                    for (MyNode n : ring.getPrimaryNodes(data[2])) {
+                        if(n.isSpunDown() == false){
+                            tmpdeleteFile.add(op);
+                            nodeList.add(n);
+                            if (nodeToTaskMapping.containsKey(n)) {
+                                nodeToTaskMapping.get(n).addTask(op);
+                            } else {
+                                nodeToTaskMapping.put(n, new Tasks(n, op));
+                            }
                         }
                     }
 
@@ -356,9 +366,10 @@ public class FlushEntireStagingDiskContents {
         // add to stagingDiskFileList
         stagingDiskFileList.put(data[2], Integer.parseInt(data[3])); // key : name of file, value : size  of file
         // add file to staging disk and activeAlways nodes
-
+        /*
         for (int i = 0; i < noOfActiveAlwaysDisks; i++)
             tmpOpFile.add(op);
+        */
         // need to do nodeTask mapping for these tasks
         if (nodeToTaskMapping.containsKey(stagingDisk)) {
             nodeToTaskMapping.get(stagingDisk).addTask(op);
@@ -368,6 +379,7 @@ public class FlushEntireStagingDiskContents {
 
         for (MyNode n : ring.getPrimaryNodes(data[2])) {
             if(n.isSpunDown() == false){
+                tmpOpFile.add(op);
                 nodeList.add(n);
                 if (nodeToTaskMapping.containsKey(n)) {
                     nodeToTaskMapping.get(n).addTask(op);
@@ -401,14 +413,16 @@ public class FlushEntireStagingDiskContents {
                 break;
             }
         }
-
         // READ from staging disk
         for (String file : tmpToBeAddedToSpunDownFiles.keySet()) {
             tmpOpFile.add("READ,"+data[1]+","+file);
-            nodeList.add(stagingDisk);
-            stagingDiskFileList.remove(file);
+            nodeToTaskMapping.get(stagingDisk).addTask("READ,"+data[1]+","+file);
+            if (nodeToTaskMapping.containsKey(stagingDisk)) {
+                nodeToTaskMapping.get(stagingDisk).addTask("READ,"+data[1]+","+file);
+            } else {
+                nodeToTaskMapping.put(stagingDisk, new Tasks(stagingDisk, "READ,"+data[1]+","+file));
+            }
         }
-
         // now add those files to spun down disks
         for (String file : tmpToBeAddedToSpunDownFiles.keySet()) {
             for (int i = 0; i < noOfSpunDownDisks; i++)
@@ -426,14 +440,16 @@ public class FlushEntireStagingDiskContents {
                 }
             }
         }
-
         // DELETE from staging disk
         for (String file : tmpToBeAddedToSpunDownFiles.keySet()) {
             tmpOpFile.add("DELETE,"+data[1]+","+file);
             nodeList.add(stagingDisk);
-            stagingDiskFileList.remove(file);
+            if (nodeToTaskMapping.containsKey(stagingDisk)) {
+                nodeToTaskMapping.get(stagingDisk).addTask("DELETE,"+data[1]+","+file);
+            } else {
+                nodeToTaskMapping.put(stagingDisk, new Tasks(stagingDisk, "DELETE,"+data[1]+","+file));
+            }
         }
-
         // update stagingDiskMemoryUsed after removing old files
         int stagingDiskMemoryToBeAdded = 0;
         stagingDiskMemoryToBeAdded -= memoryToBeFreed;
