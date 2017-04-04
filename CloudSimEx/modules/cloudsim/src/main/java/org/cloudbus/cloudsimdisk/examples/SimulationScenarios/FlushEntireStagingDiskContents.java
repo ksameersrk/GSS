@@ -25,17 +25,18 @@ import java.util.*;
 
 public class FlushEntireStagingDiskContents {
 
-    public static void main(String args[]) throws Exception{
+    //public static void main(String args[]) throws Exception{
+    public static void startSimulation(int totalNoOfNodes, boolean addStagingDisk) throws Exception{
 
         // ==================================================================================================
         // node properties
-        int totalNoOfNodes = 16;
+        //int totalNoOfNodes = 16;
         int partitionPower = 4;
         int replicas = 3;
         double overloadPercent = 10.0;
 
         // staging disk properties
-        boolean addStagingDisk = true;
+        //boolean addStagingDisk = true;
 
         // node properties
         int noOfReplicas = 3;
@@ -106,7 +107,7 @@ public class FlushEntireStagingDiskContents {
 
         String inputLog = "files/basic/SimulationScenarios/FlushEntireStagingDiskContentsInputLog.txt";
         COSBenchTypeWorkloadGenerator workloadGenerator = new COSBenchTypeWorkloadGenerator();
-        workloadGenerator.generateWorkload("upload intensive", "large", inputLog, totalStagingDiskCapacity, 2.0 );
+        workloadGenerator.generateWorkload("upload intensive", "large", inputLog, totalStagingDiskCapacity, 0.3 );
 
         ArrayList<String> arrivalFile = new ArrayList<>();
         ArrayList<MyNode> nodeList = new ArrayList<>();
@@ -723,5 +724,15 @@ public class FlushEntireStagingDiskContents {
         MyRunner run = new MyRunner(nodeToTaskMapping, arrival, putData, getData, updateData, deleteData, nodeList);
         //System.out.println("Energy Consumed : " + run.getTotalStorageEnergyConsumed() + " Joules()");
         //return run.getTotalStorageEnergyConsumed();
+    }
+
+    public static void main(String args[]) throws Exception{
+        // node properties
+        int totalNoOfNodes = 16;
+
+        // staging disk properties
+        boolean addStagingDisk = true;
+
+        startSimulation(totalNoOfNodes, addStagingDisk);
     }
 }

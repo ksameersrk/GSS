@@ -4,6 +4,7 @@ import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 import org.cloudbus.cloudsimdisk.examples.Node;
 import org.cloudbus.cloudsimdisk.examples.Ring;
+import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,6 +35,8 @@ public class MySpinDownRandomAlgorithm
 
         System.out.println("Simulating After Each Operation : ");
         List<List<MyNode>> result = simulate(operationsInputPath, myRing, numberOfInputLines);
+        WriteToLogFile.AddtoFile("*************************** RESULTS ***************************");
+
 
         for(int i=0; i<result.size(); ++i)
         {

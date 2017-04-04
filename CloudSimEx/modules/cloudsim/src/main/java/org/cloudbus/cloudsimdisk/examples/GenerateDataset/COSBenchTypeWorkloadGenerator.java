@@ -20,7 +20,8 @@ import java.util.concurrent.ThreadLocalRandom;
 */
 public class COSBenchTypeWorkloadGenerator {
 
-    public static  void generateWorkload(String typeOfWorkload, String objectSize, String outputFilePath, int stagingDiskCapacity, int minNoOfFlushes) throws Exception
+    public static  void generateWorkload(String typeOfWorkload, String objectSize, String outputFilePath, int stagingDiskCapacity, double minNoOfFlushes)
+            throws Exception
     {
 
         /*
@@ -31,7 +32,7 @@ public class COSBenchTypeWorkloadGenerator {
         * String objectSize -> small(size range:1KB-100KB), large(size range:1MB – 10MB)
         */
 
-        int totalUploadCapacity = stagingDiskCapacity * minNoOfFlushes;
+        int totalUploadCapacity = (int)(stagingDiskCapacity * minNoOfFlushes);
 
         Map<String, Double> uploadOps = getUploadOps(totalUploadCapacity, objectSize);
 
@@ -51,12 +52,10 @@ public class COSBenchTypeWorkloadGenerator {
             upperSizeLimit = 0.1;
         }
         else if(objectSize.equals("large")){
-            /*
             lowerSizeLimit = 1.0;
             upperSizeLimit = 10.0;
-            */
-            lowerSizeLimit = 100.0;
-            upperSizeLimit = 2000.0;
+            /*lowerSizeLimit = 100.0;
+            upperSizeLimit = 2000.0;*/
         }
 
         Map<String, Double> uploadOps = new LinkedHashMap<>();
