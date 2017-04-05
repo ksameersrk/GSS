@@ -8,10 +8,10 @@ import static org.cloudbus.cloudsimdisk.examples.SimulationScenarios.FlushEntire
 public class InterfaceDriver {
     public static void main(String args[]) throws Exception{
         // node properties
-        int totalNoOfNodes = 16;
+        int totalNoOfNodes = Integer.parseInt(args[0]);
 
         // staging disk properties
-        boolean addStagingDisk = true;
+        boolean addStagingDisk = Boolean.parseBoolean(args[1]);
 
         startSimulation(totalNoOfNodes, addStagingDisk);
     }
