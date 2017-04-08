@@ -26,7 +26,8 @@ import java.util.*;
 public class FlushEntireStagingDiskContents {
 
     //public static void main(String args[]) throws Exception{
-    public static void startSimulation(int totalNoOfNodes, boolean addStagingDisk) throws Exception{
+    public static void startSimulation(int totalNoOfNodes, boolean addStagingDisk, int numberOfOperations, int predefindedWorkloadNumber, int noOfReplicas_,
+                                       String cachingMechanism, int diskType) throws Exception{
 
         // ==================================================================================================
         // node properties
@@ -107,7 +108,7 @@ public class FlushEntireStagingDiskContents {
 
         String inputLog = "files/basic/SimulationScenarios/FlushEntireStagingDiskContentsInputLog.txt";
         COSBenchTypeWorkloadGenerator workloadGenerator = new COSBenchTypeWorkloadGenerator();
-        workloadGenerator.generateWorkload("upload intensive", "large", inputLog, totalStagingDiskCapacity, 0.3 );
+        workloadGenerator.generateWorkload("upload intensive", "large", inputLog, totalStagingDiskCapacity, 0.1 );
 
         ArrayList<String> arrivalFile = new ArrayList<>();
         ArrayList<MyNode> nodeList = new ArrayList<>();
@@ -733,6 +734,18 @@ public class FlushEntireStagingDiskContents {
         // staging disk properties
         boolean addStagingDisk = true;
 
-        startSimulation(totalNoOfNodes, addStagingDisk);
+        int numberOfOperations = 10;
+        String distribution = "read intensive";
+
+        // will have a set of predefined workloads , user selects one of them,
+        // predefindedWorkloadNumber variable stores the workload id
+        int predefindedWorkloadNumber = 1;
+
+        int noOfReplicas = 3; //default 3
+        String cachingMechanism = "LRU"; // FIFO also possible
+        int diskType = 1; // basicallly this number is the id for storage and power model, will assign ids to them
+        //Scenarios : this part is to be done in front end
+
+        startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, diskType);
     }
 }
