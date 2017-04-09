@@ -8,9 +8,9 @@ def execute_java(args):
 	stdin=PIPE
 	compile_comand = open("command.txt", "r").readline().strip()
 	#print(compile_comand)
-	cmd2 = compile_comand.strip().split(" ")
-	proc = subprocess.Popen(cmd2, stdout=PIPE, stderr=STDOUT, cwd='/Users/skulkarni9/Desktop/8thSem/GSS/CloudSimEx')
-	stdout,stderr = proc.communicate(args)
+	cmd2 = compile_comand.strip().split(" ")+args
+	proc = subprocess.Popen(cmd2, stdin=PIPE, stdout=PIPE, stderr=STDOUT, cwd='/Users/skulkarni9/Desktop/8thSem/GSS/CloudSimEx')
+	stdout,stderr = proc.communicate()
 	return stdout.decode("utf-8")
 
 @app.route('/')
@@ -22,9 +22,14 @@ def hello_world():
 @app.route('/start_simulation', methods=['POST'])
 def start_simulation():
 	data = request.get_json()
-	print("Request : "+data['totalNoOfNodes']+" : "+data['addStagingDisk'])
+	filepath = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/input_data.json"
+	with open(filepath, "w") as f:
+		f.write(str(data))
 
-	output = execute_java([data['totalNoOfNodes'], data['addStagingDisk']])
+	args = [str(x) for x in data.values()]
+	print("Request : "+str(args))
+
+	output = execute_java(args)
 	return 'Output : '+output
 
 if __name__ == '__main__':

@@ -1,17 +1,28 @@
 package org.cloudbus.cloudsimdisk.examples.UI;
 
+import com.google.gson.Gson;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+
 import static org.cloudbus.cloudsimdisk.examples.SimulationScenarios.FlushEntireStagingDiskContents.startSimulation;
 
 /**
  * Created by spadigi on 4/4/17.
  */
 public class InterfaceDriver {
-    public static void main(String args[]) throws Exception{
+    public static void main(String args[]) throws Exception
+    {
+        Gson jsonParser = new Gson();
+        String filePathToJson = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/input_data.json";
+        String jsonData = FileUtils.readFileToString(new File(filePathToJson));
+        InputJSONObject inputObject = jsonParser.fromJson(jsonData, InputJSONObject.class);
+
         // node properties
-        int totalNoOfNodes = Integer.parseInt(args[0]);
+        int totalNoOfNodes = inputObject.getTotalNoOfNodes();
 
         // staging disk properties
-        boolean addStagingDisk = Boolean.parseBoolean(args[1]);
+        boolean addStagingDisk = inputObject.getAddStagingDisk();
 
         /*
         int numberOfOperations = 10;
@@ -27,16 +38,16 @@ public class InterfaceDriver {
         //Scenarios : this part is to be done in front end
         */
 
-        int numberOfOperations = Integer.parseInt(args[2]);
-        String distribution = args[3];
+        int numberOfOperations = inputObject.getNumberOfOperations();
+        String distribution = inputObject.getDistribution();
 
         // will have a set of predefined workloads , user selects one of them,
         // predefindedWorkloadNumber variable stores the workload id
-        int predefindedWorkloadNumber = Integer.parseInt(args[4]);
+        int predefindedWorkloadNumber = inputObject.getPredefindedWorkloadNumber();
 
-        int noOfReplicas = Integer.parseInt(args[5]); //default 3
-        String cachingMechanism = args[5]; // FIFO also possible
-        int diskType = Integer.parseInt(args[6]); // basicallly this number is the id for storage and power model, will assign ids to them
+        int noOfReplicas = inputObject.getNoOfReplicas(); //default 3
+        String cachingMechanism = inputObject.getCachingMechanism(); // FIFO also possible
+        int diskType = inputObject.getDiskType(); // basicallly this number is the id for storage and power model, will assign ids to them
 
         startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, diskType);
     }
