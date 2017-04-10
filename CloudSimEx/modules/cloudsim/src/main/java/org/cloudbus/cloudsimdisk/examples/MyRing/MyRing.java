@@ -40,13 +40,18 @@ public class MyRing
         nodeToPartition = new HashMap<>();
     }
 
-    public void createRing()
+    private void createRing()
     {
         this.calculatePartitions();
         this.initialzePartitionToReplicaToNode();
         this.allocatePartitionToReplicaToNode();
         this.createNodeToPartitionMapping();
         this.setAllNodes();
+    }
+
+    public Map<MyNode, List<Integer>> getNodeToPartition()
+    {
+        return this.nodeToPartition;
     }
 
     private void setAllNodes()
