@@ -61,11 +61,12 @@ public class MySpinDownRandomAlgorithm
             map.put(n, new ArrayList<>());
         }
         File file = new File(filename);
+        String line;
         try (BufferedReader in = new BufferedReader(new FileReader(file)))
         {
-            for(int i=0; i<N; i++)
+            while ( (line = in.readLine()) != null)
             {
-                String object = in.readLine().trim().split(",")[2];
+                String object = line.trim().split(",")[0];
                 for(MyNode n : ring.getPrimaryNodes(object))
                 {
                     map.get(n).add(object);
@@ -159,13 +160,15 @@ public class MySpinDownRandomAlgorithm
             map.put(n, new ArrayList<>());
         }
         File file = new File(filename);
+        String line;
         try (BufferedReader in = new BufferedReader(new FileReader(file)))
         {
-            for(int i=0; i<N; i++)
+            while((line = in.readLine()) != null)
             {
-                String data[] = in.readLine().trim().split(",");
-                String ops = data[0];
-                String object = data[2];
+                String data[] = line.trim().split(",");
+                //String ops = data[0];
+                String object = data[0];
+                /*
                 if(ops.equalsIgnoreCase("PUT"))
                 {
                     for(MyNode n : ring.getPrimaryNodes(object))
@@ -181,12 +184,18 @@ public class MySpinDownRandomAlgorithm
                         map.get(n).remove(object);
                     }
                 }
+                */
+                for(MyNode n : ring.getPrimaryNodes(object))
+                {
+                    map.get(n).add(object);
+                }
+                fileCountMap.put(object, 3);
                 Map<String, Integer> tmpFileCountMap = new HashMap<>();
                 for(String str : fileCountMap.keySet())
                 {
                     tmpFileCountMap.put(str, fileCountMap.get(str));
                 }
-                spunDownSeq.add(analyze(map, tmpFileCountMap, i+1));
+                spunDownSeq.add(analyze(map, tmpFileCountMap, 1));
             }
         }
         catch (Exception e)

@@ -38,6 +38,6 @@ public class InterfaceDriver {
         String cachingMechanism = args[5]; // FIFO also possible
         int diskType = Integer.parseInt(args[6]); // basicallly this number is the id for storage and power model, will assign ids to them
 
-        startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, diskType);
+        //startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, diskType);
     }
 }

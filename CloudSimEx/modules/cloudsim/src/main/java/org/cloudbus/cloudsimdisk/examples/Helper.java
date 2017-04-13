@@ -29,6 +29,7 @@ import org.cloudbus.cloudsimdisk.MyCloudlet;
 import org.cloudbus.cloudsimdisk.MyDatacenter;
 import org.cloudbus.cloudsimdisk.MyPowerDatacenterBroker;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
+import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.MyPowerDatacenter;
 import org.cloudbus.cloudsimdisk.power.MyPowerHarddriveStorage;
@@ -188,7 +189,7 @@ public class Helper {
 		}
 	}
 
-    public void createPersistentStorage(Set<MyNode> nodes) throws ParameterException {
+    public void createPersistentStorage(List<MyNode> nodes) throws ParameterException {
 		MyPowerHarddriveStorage tmp = null;
 		int i = 0;
         for (MyNode n : nodes) {
@@ -503,12 +504,14 @@ public class Helper {
     }
 
 	/**
-	 * @param startingFilesList
-	 */
-	public void addFiles(String startingFilesList) {
+     * @param startingFilesList
+     * @param allNodeList
+     */
+	public void addFiles(String startingFilesList, MyRing ring, List<MyNode> allNodeList) {
 
 		if (startingFilesList != "") {
 			try {
+
 				// instantiate a reader
 				BufferedReader input = new BufferedReader(new FileReader("files/" + startingFilesList));
 
@@ -520,14 +523,14 @@ public class Helper {
 				while ((line = input.readLine()) != null) {
 
 					// retrieve fileName and fileSize
-					lineSplited = line.split("\\s+"); // regular expression
+					lineSplited = line.split(","); // regular expression
 														// quantifiers for
 														// whitespace
 					fileName = lineSplited[0];
 					fileSize = lineSplited[1];
 
 					// add file to datacenter
-					datacenter.addFile(new File(fileName, Integer.parseInt(fileSize)));
+					datacenter.addFile(new File(fileName, Integer.parseInt(fileSize)),ring, allNodeList, nmmap);
 				}
 
 				// close the reader
@@ -652,13 +655,13 @@ public class Helper {
 	public void printResults(double endTimeSimulation, ArrayList<MyNode> nodeList) {
 		double TotalStorageEnergy = 0;
 		List<MyPowerHarddriveStorage> tempList = new ArrayList<MyPowerHarddriveStorage>();
-		for(MyNode n : nodeList){
+		for(MyNode n : nmmap.keySet()){
 			tempList.add(nmmap.get(n));
 		}
 
 		double totalSimulationTime = 0.0;
 		double maxSpunDownDiskActiveTime = 0.0;
-		for(int i = 0; i < nodeList.size(); i++)
+		for(int i = 0; i < tempList.size(); i++)
 		{
 			if(tempList.get(i).getInActiveDuration() > maxSpunDownDiskActiveTime)
 				maxSpunDownDiskActiveTime = tempList.get(i).getInActiveDuration();

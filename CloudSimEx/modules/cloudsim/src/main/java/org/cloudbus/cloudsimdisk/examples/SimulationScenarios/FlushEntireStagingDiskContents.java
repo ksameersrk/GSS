@@ -26,21 +26,22 @@ import java.util.*;
 public class FlushEntireStagingDiskContents {
 
     //public static void main(String args[]) throws Exception{
-    public static void startSimulation(int totalNoOfNodes, boolean addStagingDisk, int numberOfOperations, int predefindedWorkloadNumber, int noOfReplicas_,
-                                       String cachingMechanism, int diskType) throws Exception{
+    public static void startSimulation(int totalNoOfNodes, boolean addStagingDisk, int numberOfOperations, int predefindedWorkloadNumber, int noOfReplicas,
+                                       String cachingMechanism, int HDDType, int SSDType,
+                                       int percentageFlushAt, int percentageFlushTill, boolean realisticSSD) throws Exception{
 
         // ==================================================================================================
         // node properties
         //int totalNoOfNodes = 16;
         int partitionPower = 4;
-        int replicas = 3;
+        int replicas = noOfReplicas;
         double overloadPercent = 10.0;
 
         // staging disk properties
         //boolean addStagingDisk = true;
 
         // node properties
-        int noOfReplicas = 3;
+        //int noOfReplicas = 3;
         int noOfSpunDownDisks = 1;
         int noOfActiveAlwaysDisks;
 
@@ -50,32 +51,45 @@ public class FlushEntireStagingDiskContents {
         else {
             noOfActiveAlwaysDisks = noOfReplicas;
         }
-        /*
-        int totalHddRingStorageCapacity = totalNoOfNodes * ((6000000 + 900000 + 5000000) / 3);
-        int totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
-        int avgSSDCapacity = (int) ((800000 + 480000 + 512000) / 3);
-        //int noOfStagingDisks =  (int)Math.ceil((double)totalStagingDiskCapacity / avgSSDCapacity);
-        int noOfStagingDisks = 1;
-        */
-        int totalStagingDiskCapacity = 100; // 5% capacity
-        int avgSSDCapacity = 100;
-        int noOfStagingDisks = 1;
+
+        int totalHddRingStorageCapacity, totalStagingDiskCapacity, avgSSDCapacity, noOfStagingDisks = 0;
+        if(realisticSSD) {
+            int[] HDDCapacities = {6000000, 900000, 5000000};
+            int[] SSDCapacities = {512000, 480000, 800000};
+            totalHddRingStorageCapacity = totalNoOfNodes * (HDDCapacities[HDDType%3]);
+            totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
+            avgSSDCapacity = SSDCapacities[SSDType%3];
+            noOfStagingDisks =  (int)Math.ceil((double)totalStagingDiskCapacity / avgSSDCapacity);
+            //int noOfStagingDisks = 1;
+        }
+        else {
+            // this section requires us to go and set the capacity of that type of SSD in StorageModelSSD* classes to be equal to totalStagingDiskCapacity
+            int[] HDDCapacities = {6000000, 900000, 5000000};
+            int[] SSDCapacities = {512000, 480000, 800000};
+            //totalHddRingStorageCapacity = totalNoOfNodes * (HDDCapacities[HDDType%3]);
+            //totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
+
+            // for quick execution
+            totalStagingDiskCapacity = 100; // 5% capacity
+            avgSSDCapacity = 100;
+
+            noOfStagingDisks = 1;
+        }
 
         MyRing stagingDiskRing = MyRing.buildRing("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/stagingDiskRings.txt",
                 noOfStagingDisks
-                , 1, 1, 10.0, true);
+                , 1, 1, 10.0, true, SSDType);
 
         WriteToLogFile.AddtoFile(String.format("%8sTotal no. of HDDs = %10d ", "", totalNoOfNodes));
         // ==================================================================================================
 
         String ringInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/rings.txt";
-        MyRing myRing = MyRing.buildRing(ringInputPath, totalNoOfNodes, partitionPower, replicas, overloadPercent, false);
+        MyRing myRing = MyRing.buildRing(ringInputPath, totalNoOfNodes, partitionPower, replicas, overloadPercent, false, HDDType);
 
         if (addStagingDisk == true) {
 
             MySpinDownRandomAlgorithm spinDownRandomAlgorithm = new MySpinDownRandomAlgorithm();
-            String startingOperationsInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/" +
-                    "examples/SpinDownAlgorithms/smallDataset.txt";
+            String startingOperationsInputPath = "files/basic/operations/startingFileList.txt";
             int numberOfInputLines = 99;
             Map<MyNode, List<String>> nodeToFileList = spinDownRandomAlgorithm.getNodeToFileList(startingOperationsInputPath, myRing, numberOfInputLines);
             spinDownRandomAlgorithm.display(nodeToFileList);
@@ -107,8 +121,8 @@ public class FlushEntireStagingDiskContents {
         }
 
         String inputLog = "files/basic/SimulationScenarios/FlushEntireStagingDiskContentsInputLog.txt";
-        COSBenchTypeWorkloadGenerator workloadGenerator = new COSBenchTypeWorkloadGenerator();
-        workloadGenerator.generateWorkload("upload intensive", "large", inputLog, totalStagingDiskCapacity, 0.1 );
+//        COSBenchTypeWorkloadGenerator workloadGenerator = new COSBenchTypeWorkloadGenerator();
+//        workloadGenerator.generateWorkload("download intensive", "large", inputLog, totalStagingDiskCapacity, 0.2 );
 
         ArrayList<String> arrivalFile = new ArrayList<>();
         ArrayList<MyNode> nodeList = new ArrayList<>();
@@ -131,21 +145,24 @@ public class FlushEntireStagingDiskContents {
             WriteToLogFile.AddtoFile("Staging Disk : True");
             // if there a staging disk included
             stagingDiskSimulate(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, inputLog, nodeToTaskMapping, nodeList,
-                    noOfActiveAlwaysDisks, myRing, noOfSpunDownDisks, stagingDiskRing);
+                    noOfActiveAlwaysDisks, myRing, noOfSpunDownDisks, stagingDiskRing, percentageFlushAt, percentageFlushTill, cachingMechanism);
 
         }
 
         // list of all nodes on which operations are to be performed
-        ArrayList<MyNode> allNodes = new ArrayList<MyNode>(nodeToTaskMapping.keySet());
+        ArrayList<MyNode> allNodes = new ArrayList<MyNode>(myRing.getAllNodes());
+        allNodes.addAll(stagingDiskRing.getAllNodes());
         allNodes.sort(Comparator.comparing(MyNode::getName));
         System.out.println("Check the mapping with assignment : ");
         for (MyNode n : allNodes) {
-            System.out.println(n.getName() + " : " + nodeToTaskMapping.get(n).getFiles());
+            if (nodeToTaskMapping.containsKey(n)) {
+                System.out.println(n.getName() + " : " + nodeToTaskMapping.get(n).getFiles());
+            }
         }
 
         Double totalEnergyConsumed = 0.0;
         // call performOperations() which performs all the CRUD operations as given in input and returns total power consumed
-        performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList);
+        performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing);
         //System.out.println("\n\nTotal Energy Consumed : " + totalEnergyConsumed);
 
 
@@ -155,7 +172,8 @@ public class FlushEntireStagingDiskContents {
                                            ArrayList<String> updateFile, ArrayList<String> deleteFile, String inputLog,
                                            HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<MyNode> nodeList, int noOfActiveAlwaysDisks,
                                            MyRing ring, int noOfSpunDownDisks,
-                                           MyRing stagingDiskRing) throws Exception {
+                                           MyRing stagingDiskRing, int percentageToFlushAt, int percentageToFlushTill, String cachingMechanism) throws
+            Exception {
         List<MyNode> stagingDiskNodes = stagingDiskRing.getAllNodes();
         Map<MyNode, Integer> stagingDiskMemoryUsed = new LinkedHashMap<MyNode, Integer>();
         Map<MyNode, Integer> stagingDiskUpperThresholdMemory = new LinkedHashMap<MyNode, Integer>();
@@ -166,11 +184,11 @@ public class FlushEntireStagingDiskContents {
         for (MyNode n : stagingDiskNodes) {
             stagingDiskMemoryUsed.put(n, 0);
             // initialise stagingDiskLowerThresholdMemory i.e during a flush we keep deleting files till we reach this lower threshold
-            Double lowerThreshold = 0.0;
+            Double lowerThreshold = (percentageToFlushTill*1.0)/10;
             stagingDiskLowerThresholdMemory.put(n, (int) (n.getHddModel().getCapacity() * lowerThreshold));
             // initialise stagingDiskUpperThresholdMemory i.e we start the flush when on adding the given file,
             // the storage capacity is going to exceed this upper threshold capacity
-            Double upperThreshold = 1.0;
+            Double upperThreshold = (percentageToFlushAt*1.0)/10;
             stagingDiskUpperThresholdMemory.put(n, (int) (n.getHddModel().getCapacity() * upperThreshold));
             stagingDiskFileList.put(n, new HashMap<String, Integer>());
 
@@ -238,13 +256,16 @@ public class FlushEntireStagingDiskContents {
                             nodeToTaskMapping.put(stagingDisk, new Tasks(stagingDisk, op));
                         }
                         int fileSize = stagingDiskFileList.get(stagingDisk).get(data[2]);
-                        // in order to support the LRU algo for placement of files on staging disk, we need to keep updating the positioning a file in the
-                        // stagingDiskFileList, so we remove this entry and put it in beginning now that we have called an operation on that file
-                        // remove from file list
-                        stagingDiskFileList.get(stagingDisk).remove(data[2]);
-                        // update position of file in list
-                        //stagingDiskFileList = addToBeginning(data[2], fileSize, stagingDiskFileList);
-                        stagingDiskFileList.get(stagingDisk).put(data[2], fileSize);
+
+                        if(cachingMechanism.equals("LRU")) {
+                            // in order to support the LRU algo for placement of files on staging disk, we need to keep updating the positioning a file in the
+                            // stagingDiskFileList, so we remove this entry and put it in beginning now that we have called an operation on that file
+                            // remove from file list
+                            stagingDiskFileList.get(stagingDisk).remove(data[2]);
+                            // update position of file in list
+                            //stagingDiskFileList = addToBeginning(data[2], fileSize, stagingDiskFileList);
+                            stagingDiskFileList.get(stagingDisk).put(data[2], fileSize);
+                        }
                     } else {
                         // if file not on staging disk
                         // go to active always node
@@ -263,21 +284,25 @@ public class FlushEntireStagingDiskContents {
                             }
                         }
 
-                        /*
+
                         // THIS BLOCK OF CODE IS REQUIRED FOR LRU ONLY
                         // also when file not in stagingDisk and we get it from end node, should we add it to stagingDisk for future use
-                        String putOp = "PUT," + data[1] + "," + data[2] + "," + allFilesUploaded.get(data[2]);
-                        int memToBeAdded = stagingDiskPutOperation(putOp, stagingDisk, noOfActiveAlwaysDisks, putOp.split(","), stagingDiskMemoryUsed.get
-                                        (stagingDisk),
-                                stagingDiskUpperThresholdMemory.get(stagingDisk),
-                                tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
-                                tmpdataFile,
-                                tmpdeleteFile,
-                                nodeList,
-                                nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown);
+                        if(cachingMechanism.equals("LRU")) {
 
-                        stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) + memToBeAdded);
-                        */
+                            String putOp = "PUT," + data[1] + "," + data[2] + "," + allFilesUploaded.get(data[2]);
+                            int memToBeAdded = stagingDiskPutOperation(putOp, stagingDisk, noOfActiveAlwaysDisks, putOp.split(","), stagingDiskMemoryUsed.get
+                                            (stagingDisk),
+                                    stagingDiskUpperThresholdMemory.get(stagingDisk),
+                                    tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
+
+                                    tmpdataFile,
+                                    tmpdeleteFile,
+                                    nodeList,
+                                    nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown);
+
+                            stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) + memToBeAdded);
+                        }
+
                     }
                 } else if (data[0].equals("UPDATE")) {
                     // if old version also present, then remove old version before proceeding
@@ -293,10 +318,7 @@ public class FlushEntireStagingDiskContents {
                             stagingDiskMemoryUsed.get(stagingDisk),
                             stagingDiskUpperThresholdMemory.get(stagingDisk),
                             tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
-                            tmpupdateFile,
-                            tmpdeleteFile,
-                            nodeList,
-                            nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown);
+                            tmpupdateFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown);
                 } else if (data[0].equals("DELETE")) {
                     // delete everywhere
                     // if file in staging disk, then remove it and make note that it has been removed so that we can remove it from spun Down disk as well
@@ -654,7 +676,7 @@ public class FlushEntireStagingDiskContents {
     // does the task of send the cloudlets and starting the simulation
     public static void performOperations(HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile,
                                            ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<MyNode>
-                                                   nodeList) throws Exception {
+                                                   nodeList, MyRing myRing) throws Exception {
         Runnable monitor = new Runnable() {
             @Override
             public void run() {
@@ -721,8 +743,10 @@ public class FlushEntireStagingDiskContents {
         FileUtils.writeStringToFile(new File("files/" + getData), getOpData.toString());
         FileUtils.writeStringToFile(new File("files/" + updateData), updateOpData.toString());
         FileUtils.writeStringToFile(new File("files/" + deleteData), deleteOpData.toString());
+        String startingFilelist = "basic/operations/startingFileList.txt";
 
-        MyRunner run = new MyRunner(nodeToTaskMapping, arrival, putData, getData, updateData, deleteData, nodeList);
+        MyRunner run = new MyRunner(nodeToTaskMapping, arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing,  myRing
+                .getAllNodes());
         //System.out.println("Energy Consumed : " + run.getTotalStorageEnergyConsumed() + " Joules()");
         //return run.getTotalStorageEnergyConsumed();
     }
@@ -742,10 +766,16 @@ public class FlushEntireStagingDiskContents {
         int predefindedWorkloadNumber = 1;
 
         int noOfReplicas = 3; //default 3
-        String cachingMechanism = "LRU"; // FIFO also possible
-        int diskType = 1; // basicallly this number is the id for storage and power model, will assign ids to them
+        String cachingMechanism = "FIFO"; // FIFO also possible
+        int HDDType = 0; // basicallly this number is the id for storage and power model, will assign ids to them
         //Scenarios : this part is to be done in front end
+        int SSDType = 1;
+        int percentageFlushAt = 90;
+        int percentageFlushTill = 0;
+        boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
-        startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, diskType);
+
+        startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, HDDType, SSDType,
+                percentageFlushAt, percentageFlushTill, realisticSSD);
     }
 }

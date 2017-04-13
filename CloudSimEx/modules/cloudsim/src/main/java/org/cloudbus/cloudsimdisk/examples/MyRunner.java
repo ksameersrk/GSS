@@ -16,6 +16,7 @@ package org.cloudbus.cloudsimdisk.examples;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
+import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
@@ -23,6 +24,7 @@ import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A Runner to run storage examples.
@@ -101,12 +103,12 @@ public class MyRunner {
         helper.createPeList(numberOfProcessingUnits);
         helper.createHostList(numberOfProcessingUnits);
         helper.createVmList(numberOfProcessingUnits);
-        helper.createPersistentStorage(nodeToTaskMapping.keySet());
+        //helper.createPersistentStorage(nodeToTaskMapping.keySet());
         helper.createDatacenterCharacteristics();
         helper.createDatacenter();
 
         // Files
-        helper.addFiles("");
+        //helper.addFiles("");
         helper.createRequiredFilesList("");
         helper.createDataFilesList(dataFile);
 
@@ -125,7 +127,8 @@ public class MyRunner {
         Log.printLine("END !");
     }
 
-	public MyRunner(HashMap<MyNode, Tasks> nodeToTaskMapping, String arrivalFile, String putDataFile, String getDataFile, String updateDataFile, String deleteDataFile, ArrayList<MyNode> nodeList) throws Exception
+	public MyRunner(HashMap<MyNode, Tasks> nodeToTaskMapping, String arrivalFile, String putDataFile, String getDataFile, String updateDataFile, String
+			deleteDataFile, ArrayList<MyNode> nodeList, String startingFileList, MyRing ring, List<MyNode> AllnodesList) throws Exception
 	{
 		Log.printLine("Starting simulation \n");
 		WriteToLogFile.AddtoFile("Starting simulation \n");
@@ -137,12 +140,12 @@ public class MyRunner {
 		helper.createPeList(numberOfProcessingUnits);
 		helper.createHostList(numberOfProcessingUnits);
 		helper.createVmList(numberOfProcessingUnits);
-		helper.createPersistentStorage(nodeToTaskMapping.keySet());
+		helper.createPersistentStorage(AllnodesList);
 		helper.createDatacenterCharacteristics();
 		helper.createDatacenter();
 
 		// Files
-		helper.addFiles("");
+		helper.addFiles(startingFileList, ring, AllnodesList);
 		helper.createRequiredFilesList(getDataFile);
 		helper.createDataFilesList(putDataFile);
 		helper.createUpdateFilesList(updateDataFile);
@@ -195,7 +198,7 @@ public class MyRunner {
 		helper.createDatacenter();
 
 		// Files
-		helper.addFiles(startingFilesList);
+		//helper.addFiles(startingFilesList);
 		helper.createRequiredFilesList(requiredFiles);
 		helper.createDataFilesList(dataFiles);
 

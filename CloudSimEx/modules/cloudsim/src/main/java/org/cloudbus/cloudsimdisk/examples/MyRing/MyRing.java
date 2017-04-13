@@ -412,7 +412,8 @@ public class MyRing
         return myRing;
     }
 
-    public static MyRing buildRing(String fileName, int nodeCount, int partitionPower, int replicas, double overloadPercent, boolean isStagingDisk)
+    public static MyRing buildRing(String fileName, int nodeCount, int partitionPower, int replicas, double overloadPercent, boolean isStagingDisk, int
+            diskType)
     {
         MyRing myRing = new MyRing(partitionPower, replicas, overloadPercent);
         File file = new File(fileName);
@@ -459,8 +460,8 @@ public class MyRing
                     myNode.setHddPowerModel(powerModelSSDs[line%3]);
                     */
                     // for benchmarking purpose keeping power, storage model across all SSDs constant
-                    myNode.setHddModel(storageModelSSDs[1]);
-                    myNode.setHddPowerModel(powerModelSSDs[1]);
+                    myNode.setHddModel(storageModelSSDs[diskType]);
+                    myNode.setHddPowerModel(powerModelSSDs[diskType]);
 
                 }
                 else {
@@ -469,8 +470,8 @@ public class MyRing
                     myNode.setHddPowerModel(powerModelHdds[line%3]);
                     */
                     // for benchmarking purpose keeping power, storage model across all HDDs constant
-                    myNode.setHddModel(storageModelHdds[0]);
-                    myNode.setHddPowerModel(powerModelHdds[0]);
+                    myNode.setHddModel(storageModelHdds[diskType]);
+                    myNode.setHddPowerModel(powerModelHdds[diskType]);
                 }
             }
             myRing.createRing();

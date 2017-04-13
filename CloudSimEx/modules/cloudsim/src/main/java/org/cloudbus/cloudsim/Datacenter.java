@@ -951,11 +951,11 @@ public class Datacenter extends SimEntity {
 		if (file == null) {
 			return DataCloudTags.FILE_ADD_ERROR_EMPTY;
 		}
-
+		/*
 		if (contains(file.getName())) {
 			return DataCloudTags.FILE_ADD_ERROR_EXIST_READ_ONLY;
 		}
-
+		*/
 		// check storage space first
 		if (getStorageList().size() <= 0) {
 			return DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;

@@ -1,7 +1,1 @@
-PUT,0,File0,4
-PUT,0,File1,4
-PUT,0,File2,2
-PUT,0,File3,2
-PUT,0,File4,8
-PUT,0,File5,4
-PUT,0,File6,9
+PUT,0,File0,7

@@ -30,6 +30,10 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.ex.DatacenterEX;
 import org.cloudbus.cloudsimdisk.core.MyCloudSimTags;
+import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
+import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
+import org.cloudbus.cloudsimdisk.examples.Node;
+import org.cloudbus.cloudsimdisk.examples.Ring;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.MyPowerHarddriveStorage;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
@@ -346,12 +350,12 @@ public class MyDatacenter extends DatacenterEX {
 	 * 
 	 * @see org.cloudbus.cloudsim.Datacenter#addFile(org.cloudbus.cloudsim.File) */
 	@SuppressWarnings("javadoc")
-	@Override
-	public int addFile(File file) {
+	//@Override
+	public int addFile(File file, MyRing ring, List<MyNode> allNodeList, HashMap<MyNode, MyPowerHarddriveStorage> nmmap) {
 
 		/************ HDD POOL MANAGEMENT ******/
 		/* Select the storage algorithm */
-		int key = 3;
+		int key = 4;
 		/*************************************/
 
 		// test if the file is NULL
@@ -443,6 +447,21 @@ public class MyDatacenter extends DatacenterEX {
 			/*--------------------------------------------------------------------------------------
 			 |SCALABILITY: write your own algorithm to manage request to the persistent storage
 			 *--------------------------------------------------------------------------------------*/
+
+			case 4:
+				//tempStorage = ring.getPrimaryNodes();
+				for(MyNode node : ring.getPrimaryNodes(file.getName())) {
+					MyPowerHarddriveStorage tmpStorage = nmmap.get(node);
+					if (tmpStorage.getFreeSpace() >= file.getSize()) {
+						tmpStorage.addFile(file);
+						msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
+						System.out.println("Starting file " + file.getName() + " on " + node.getName());
+					} else {
+						msg = DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
+					}
+				}
+				// ****************************************************************
+				break;
 
 			default:
 				System.out.println("ERROR: no algorithm corresponding to this key.");
