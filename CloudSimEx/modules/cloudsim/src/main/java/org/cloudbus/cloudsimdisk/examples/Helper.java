@@ -530,7 +530,7 @@ public class Helper {
 					fileSize = lineSplited[1];
 
 					// add file to datacenter
-					datacenter.addFile(new File(fileName, Integer.parseInt(fileSize)),ring, allNodeList, nmmap);
+					datacenter.addStartingFile(new File(fileName, Integer.parseInt(fileSize)),ring, allNodeList, nmmap);
 				}
 
 				// close the reader

@@ -347,11 +347,121 @@ public class MyDatacenter extends DatacenterEX {
 	}
 
 	/* (non-Javadoc)
+	 *
+	 * @see org.cloudbus.cloudsim.Datacenter#addFile(org.cloudbus.cloudsim.File) */
+	@SuppressWarnings("javadoc")
+	@Override
+	public int addFile(File file) {
+
+		/************ HDD POOL MANAGEMENT ******/
+		/* Select the storage algorithm */
+		int key = 3;
+		/*************************************/
+
+		// test if the file is NULL
+		if (file == null) {
+			return DataCloudTags.FILE_ADD_ERROR_EMPTY;
+		}
+
+		// test if the File is already stored
+        /*
+		if (contains(file.getName())) {
+			return DataCloudTags.FILE_ADD_ERROR_EXIST_READ_ONLY;
+		}
+		*/
+
+		// test if some persistent storage is available
+		if (getStorageList().size() <= 0) {
+			return DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
+		}
+
+		// prepare algorithms
+		int msg = DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
+		Storage tempStorage = null;
+
+		switch (key) {
+			case 1:
+				/* ****************************************************************
+				 * FIRST-FOUND (DEFAULT): scan the list of available HDD storage
+				 * and add the file on the first one which have enough free space
+				 * for the file. */
+				for (int i = 0; i < getStorageList().size(); i++) {
+					tempStorage = getStorageList().get(i);
+					if (tempStorage.getFreeSpace() >= file.getSize()) {
+						tempStorage.addFile(file);
+						msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
+						break;
+					}
+				}
+				// ****************************************************************
+				break;
+
+			case 2:
+				/* ****************************************************************
+				 * ROUND-ROBIN: adding the first file on the first disk, the second
+				 * file on the second disk, etc. When no more disk are in the pool,
+				 * restart from the first disk. */
+				int numberOfTries = 0;
+
+				// if we arrived to the end of the list, restart at the beginning.
+				if (tempRR + 1 >= getStorageList().size()) {
+					tempRR = -1;
+				}
+
+				do {
+					// select the next HDD
+					tempRR++;
+					tempStorage = getStorageList().get(tempRR);
+
+					// count the number of tries
+					numberOfTries++;
+
+					// while "no space on the selected HDD" or "all HDD tested"
+				} while ((tempStorage.getFreeSpace() < file.getSize())
+						|| (numberOfTries > getStorageList().size()));
+
+				// if the algorithm found one HDD with enough space, add the file.
+				if (numberOfTries <= getStorageList().size()) {
+					tempStorage.addFile(file);
+					msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
+				} else {
+					msg = DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
+				}
+
+				// ****************************************************************
+				break;
+
+			case 3:
+				tempStorage = (Storage)csmap.get(curr);
+				if (tempStorage != null) {
+                    if (tempStorage.getFreeSpace() >= file.getSize()) {
+                        tempStorage.addFile(file);
+                        msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
+                    } else {
+                        msg = DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
+                    }
+                }
+				// ****************************************************************
+				break;
+
+			/*--------------------------------------------------------------------------------------
+			 |SCALABILITY: write your own algorithm to manage request to the persistent storage
+			 *--------------------------------------------------------------------------------------*/
+
+			default:
+				System.out.println("ERROR: no algorithm corresponding to this key.");
+				break;
+		}
+
+		return msg;
+	}
+
+	/* (non-Javadoc)
 	 * 
 	 * @see org.cloudbus.cloudsim.Datacenter#addFile(org.cloudbus.cloudsim.File) */
 	@SuppressWarnings("javadoc")
 	//@Override
-	public int addFile(File file, MyRing ring, List<MyNode> allNodeList, HashMap<MyNode, MyPowerHarddriveStorage> nmmap) {
+	public int addStartingFile(File file, MyRing ring, List<MyNode> allNodeList, HashMap<MyNode, MyPowerHarddriveStorage> nmmap) {
 
 		/************ HDD POOL MANAGEMENT ******/
 		/* Select the storage algorithm */

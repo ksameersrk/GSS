@@ -162,7 +162,7 @@ public class FlushEntireStagingDiskContents {
 
         Double totalEnergyConsumed = 0.0;
         // call performOperations() which performs all the CRUD operations as given in input and returns total power consumed
-        performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing);
+        performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing, stagingDiskRing);
         //System.out.println("\n\nTotal Energy Consumed : " + totalEnergyConsumed);
 
 
@@ -676,7 +676,7 @@ public class FlushEntireStagingDiskContents {
     // does the task of send the cloudlets and starting the simulation
     public static void performOperations(HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile,
                                            ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<MyNode>
-                                                   nodeList, MyRing myRing) throws Exception {
+                                                   nodeList, MyRing myRing, MyRing stagingDiskRing) throws Exception {
         Runnable monitor = new Runnable() {
             @Override
             public void run() {
@@ -745,8 +745,9 @@ public class FlushEntireStagingDiskContents {
         FileUtils.writeStringToFile(new File("files/" + deleteData), deleteOpData.toString());
         String startingFilelist = "basic/operations/startingFileList.txt";
 
-        MyRunner run = new MyRunner(nodeToTaskMapping, arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing,  myRing
-                .getAllNodes());
+        ArrayList<MyNode> allNodes = new ArrayList<MyNode>(myRing.getAllNodes());
+        allNodes.addAll(stagingDiskRing.getAllNodes());
+        MyRunner run = new MyRunner(nodeToTaskMapping, arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
         //System.out.println("Energy Consumed : " + run.getTotalStorageEnergyConsumed() + " Joules()");
         //return run.getTotalStorageEnergyConsumed();
     }
