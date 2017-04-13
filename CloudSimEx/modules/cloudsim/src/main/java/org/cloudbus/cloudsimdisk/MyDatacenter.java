@@ -206,10 +206,29 @@ public class MyDatacenter extends DatacenterEX {
 
 			while (iter.hasNext()) {
 				String fileName = iter.next();
+                curr = cl;
+                Storage tempStorage = (Storage)csmap.get(curr);
+                File tempFile = tempStorage.getFile(fileName);
+                if (tempFile != null) {
 
+                    // find where the file has been added
+                    for (MyPowerHarddriveStorage storage : this.<MyPowerHarddriveStorage> getStorageList()) {
+
+                        // test if the storage id EQUAL the file ResourceID
+                        if (storage.getId() == tempFile.getResourceID()) {
+
+                            // update HDD variables
+                            processOperationWithStorage(storage, tempFile, cl, "retrieved");
+                        }
+                    }
+                } else {
+                    Log.printLine("Error while retrieving " + fileName + "from : " + tempStorage.getName());
+                }
+
+                /*
 				for (MyPowerHarddriveStorage storage : this.<MyPowerHarddriveStorage> getStorageList()) {
+                    if()
 					File tempFile = storage.getFile(fileName);
-
 					if (tempFile != null) {
 
 						// update HDD variables
@@ -217,6 +236,7 @@ public class MyDatacenter extends DatacenterEX {
 						break;
 					}
 				}
+				*/
 			}
 		}
 
@@ -232,6 +252,7 @@ public class MyDatacenter extends DatacenterEX {
 
 			while (iter.hasNext()){
 				String fileName = iter.next();
+                curr = cl;
 
 				for (MyPowerHarddriveStorage storage : this.<MyPowerHarddriveStorage> getStorageList()) {
 					File tempFile = storage.deleteFile(fileName);
@@ -474,11 +495,11 @@ public class MyDatacenter extends DatacenterEX {
 		}
 
 		// test if the File is already stored
-        /*
+
 		if (contains(file.getName())) {
 			return DataCloudTags.FILE_ADD_ERROR_EXIST_READ_ONLY;
 		}
-		*/
+
 
 		// test if some persistent storage is available
 		if (getStorageList().size() <= 0) {

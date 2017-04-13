@@ -6,12 +6,16 @@ import org.cloudbus.cloudsimdisk.examples.GenerateDataset.COSBenchTypeWorkloadGe
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 import org.cloudbus.cloudsimdisk.examples.MyRunner;
+import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownOptimalAlgorithm;
+import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.OptimalHelper;
 import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownRandomAlgorithm;
 import org.cloudbus.cloudsimdisk.examples.Tasks;
 import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
 
 import java.io.*;
 import java.util.*;
+
+import static org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownOptimalAlgorithm.*;
 
 /**
  * Created by spadigi on 2/28/17.
@@ -87,9 +91,10 @@ public class FlushEntireStagingDiskContents {
         MyRing myRing = MyRing.buildRing(ringInputPath, totalNoOfNodes, partitionPower, replicas, overloadPercent, false, HDDType);
 
         if (addStagingDisk == true) {
-
+            /*
             MySpinDownRandomAlgorithm spinDownRandomAlgorithm = new MySpinDownRandomAlgorithm();
             String startingOperationsInputPath = "files/basic/operations/startingFileList.txt";
+
             int numberOfInputLines = 99;
             Map<MyNode, List<String>> nodeToFileList = spinDownRandomAlgorithm.getNodeToFileList(startingOperationsInputPath, myRing, numberOfInputLines);
             spinDownRandomAlgorithm.display(nodeToFileList);
@@ -114,6 +119,32 @@ public class FlushEntireStagingDiskContents {
             List<MyNode> ringNodeList = myRing.getAllNodes();
             for (MyNode n : ringNodeList) {
                 if (tmp.contains(n.getName())) {
+                    n.setSpunDown(true);
+                    //n.addSpunDownAt(0);
+                }
+            }
+            */
+
+            MySpinDownOptimalAlgorithm spinDownOptimalAlgorithm = new MySpinDownOptimalAlgorithm();
+            int numberOfPartition = (int)myRing.getNumberOfPartitions();
+            spinDownOptimalAlgorithm.displayNodeMap(myRing.getNodeToPartition());
+            Map<MyNode, List<Integer>> newMap = spinDownOptimalAlgorithm.getSortedNodeMap(myRing.getNodeToPartition(), numberOfPartition);
+//            for(MyNode myNode : newMap.keySet())
+//            {
+//                System.out.println(myNode+" : "+newMap.get(myNode));
+//            }
+
+            OptimalHelper optimalHelper = new OptimalHelper();
+            optimalHelper.setMaxNodes(0);
+            optimalHelper.setNodes(new ArrayList<>());
+            System.out.println("Results : ");
+            spinDownOptimalAlgorithm.findOptimalSolution(powerSet(newMap.keySet()), optimalHelper, newMap, numberOfPartition);
+            System.out.println("Spun Down Disks : " + optimalHelper);
+
+            List<MyNode> spunDownNodes = optimalHelper.getNodes();
+
+            for (MyNode n : myRing.getAllNodes()) {
+                if (spunDownNodes.contains(n)) {
                     n.setSpunDown(true);
                     //n.addSpunDownAt(0);
                 }
@@ -757,7 +788,7 @@ public class FlushEntireStagingDiskContents {
         int totalNoOfNodes = 16;
 
         // staging disk properties
-        boolean addStagingDisk = true;
+        boolean addStagingDisk = false;
 
         int numberOfOperations = 10;
         String distribution = "read intensive";

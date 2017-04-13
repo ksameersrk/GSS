@@ -161,7 +161,8 @@ public class MyRunner {
 
 		start();
 		//print();
-		print(new ArrayList<MyNode>(nodeToTaskMapping.keySet()));
+		//print(new ArrayList<MyNode>(nodeToTaskMapping.keySet()));
+		print(new ArrayList<MyNode>(AllnodesList));
 		WriteToResultFile.end();
 		Log.printLine("END !");
 	}
