@@ -207,10 +207,15 @@ public class MyDatacenter extends DatacenterEX {
 			while (iter.hasNext()) {
 				String fileName = iter.next();
                 curr = cl;
+                /*
                 Storage tempStorage = (Storage)csmap.get(curr);
+                File tempFile = tempStorage.getFile(fileName);
+                */
+                MyPowerHarddriveStorage tempStorage = csmap.get(curr);
                 File tempFile = tempStorage.getFile(fileName);
                 if (tempFile != null) {
 
+                    /*
                     // find where the file has been added
                     for (MyPowerHarddriveStorage storage : this.<MyPowerHarddriveStorage> getStorageList()) {
 
@@ -221,6 +226,17 @@ public class MyDatacenter extends DatacenterEX {
                             processOperationWithStorage(storage, tempFile, cl, "retrieved");
                         }
                     }
+                    */
+                    /*
+                    if (tempStorage.getId() == tempFile.getResourceID()) {
+
+                        // update HDD variables
+                        processOperationWithStorage(tempStorage, tempFile, cl, "retrieved");
+                    }
+                    */
+
+                    processOperationWithStorage(tempStorage, tempFile, cl, "retrieved");
+
                 } else {
                     Log.printLine("Error while retrieving " + fileName + "from : " + tempStorage.getName());
                 }
