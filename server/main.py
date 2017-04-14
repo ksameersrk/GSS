@@ -33,8 +33,28 @@ def start_simulation():
 	args = [str(x) for x in data.values()]
 	print("Request : "+str(args))
 
-	output = execute_java(args)
-	return 'Output : '+output
+	logs = execute_java(args)
+
+	piePath = '/Users/skulkarni9/Desktop/8thSem/GSS/server/data/pie_chart.json';
+	linePath = '/Users/skulkarni9/Desktop/8thSem/GSS/server/data/line_chart.json';
+
+
+	result = {};
+	with open("/Users/skulkarni9/Desktop/8thSem/GSS/server/data/output_logs.txt", "w") as f:
+		f.write(logs)
+
+	result['logs'] = '/Users/skulkarni9/Desktop/8thSem/GSS/server/data/output_logs.txt'
+	print("Logs came in")
+
+
+	with open(piePath) as f:
+		result['pieChart'] = json.load(f)
+		
+
+	with open(linePath) as f:
+		result['lineChart'] = json.load(f)
+
+	return json.dumps(result)
 
 if __name__ == '__main__':
 	app.run(
