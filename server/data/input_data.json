@@ -1,1 +1,1 @@
-{'totalNoOfNodes': '16', 'addStagingDisk': 'true', 'numberOfOperations': '10', 'distribution': 'read intensive', 'predefindedWorkloadNumber': '1', 'noOfReplicas': '3', 'cachingMechanism': 'LRU', 'diskType': '1'}
+{'totalNoOfNodes': '5', 'addStagingDisk': False, 'numberOfOperations': '10', 'distribution': 'read intensive', 'noOfReplicas': '3', 'cachingMechanism': 'LRU', 'diskType': '1', 'workloadType': 'predefined_workload', 'predefindedWorkloadNumber': '1'}
