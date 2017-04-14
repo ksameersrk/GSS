@@ -32,7 +32,8 @@ public class FlushEntireStagingDiskContents {
     //public static void main(String args[]) throws Exception{
     public static void startSimulation(int totalNoOfNodes, boolean addStagingDisk, int numberOfOperations, int predefindedWorkloadNumber, int noOfReplicas,
                                        String cachingMechanism, int HDDType, int SSDType,
-                                       int percentageFlushAt, int percentageFlushTill, boolean realisticSSD) throws Exception{
+                                       int percentageFlushAt, int percentageFlushTill, boolean realisticSSD, String pathToWorkload, String pathToStartingFileList,
+                                       String pathToInputLog, boolean generateInputLog) throws Exception{
 
         // ==================================================================================================
         // node properties
@@ -805,9 +806,16 @@ public class FlushEntireStagingDiskContents {
         int percentageFlushAt = 90;
         int percentageFlushTill = 0;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
+        String pathToWorkload = "";
+        String pathToStartingFileList = "";
+        String pathToInputLog = "";
+        boolean generateInputLog = false;
+
+
 
 
         startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, HDDType, SSDType,
-                percentageFlushAt, percentageFlushTill, realisticSSD);
+                percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+
     }
 }

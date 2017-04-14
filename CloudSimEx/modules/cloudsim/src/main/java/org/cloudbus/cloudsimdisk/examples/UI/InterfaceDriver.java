@@ -66,9 +66,16 @@ public class InterfaceDriver {
         int percentageFlushTill = 0;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
+        String pathToWorkload = "";
+        String pathToStartingFileList = "";
+        String pathToInputLog = "";
+        boolean generateInputLog = false;
+
+
+
 
         startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, HDDType, SSDType,
-                percentageFlushAt, percentageFlushTill, realisticSSD);
+                percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
 
     }
 }
