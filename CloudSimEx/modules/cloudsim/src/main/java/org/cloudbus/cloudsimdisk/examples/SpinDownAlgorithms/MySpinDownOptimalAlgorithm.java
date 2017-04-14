@@ -92,10 +92,11 @@ public class MySpinDownOptimalAlgorithm
     public static List<Integer> sumList(List<List<Integer>> a, int numberOfPartition)
     {
         List<Integer> result = new ArrayList<>();
-        for(int i=0; i<16; i++)
+        for(int i=0; i<numberOfPartition; i++)
         {
             result.add(0);
         }
+        //System.out.println("a"+result.size());
         for(int i=0; i<a.size(); i++)
         {
             for(int j=0; j<numberOfPartition; j++)
@@ -103,6 +104,7 @@ public class MySpinDownOptimalAlgorithm
                 result.set(j, result.get(j)+a.get(i).get(j));
             }
         }
+        //System.out.println("b"+result.size());
         return result;
     }
 
@@ -146,7 +148,7 @@ public class MySpinDownOptimalAlgorithm
             for(int j=0; j<nodeToPartition.get(myNode).size(); j++)
             {
                 int index = nodeToPartition.get(myNode).get(j);
-                tmp.add(index, tmp.get(index)+1);
+                tmp.set(index, tmp.get(index)+1);
             }
             result.put(myNode, tmp);
         }

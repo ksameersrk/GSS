@@ -2,7 +2,11 @@ import json
 import os.path,subprocess
 from subprocess import STDOUT,PIPE
 from flask import Flask, request
+from flask.ext.cors import CORS, cross_origin
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 
 def execute_java(args):
 	stdin=PIPE
@@ -15,11 +19,11 @@ def execute_java(args):
 
 @app.route('/')
 def hello_world():
-	output = execute_java()
-	return 'Output : '+output
+	return 'Hello!'
 
 
 @app.route('/start_simulation', methods=['POST'])
+@cross_origin()
 def start_simulation():
 	data = request.get_json()
 	filepath = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/input_data.json"
