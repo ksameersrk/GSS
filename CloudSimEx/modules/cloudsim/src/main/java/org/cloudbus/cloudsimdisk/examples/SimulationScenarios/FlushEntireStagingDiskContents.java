@@ -152,7 +152,8 @@ public class FlushEntireStagingDiskContents {
             }
         }
 
-        String inputLog = "files/basic/SimulationScenarios/FlushEntireStagingDiskContentsInputLog.txt";
+        //String inputLog = "files/basic/SimulationScenarios/FlushEntireStagingDiskContentsInputLog.txt";
+        //String inputLog = pathToInputLog;
 //        COSBenchTypeWorkloadGenerator workloadGenerator = new COSBenchTypeWorkloadGenerator();
 //        workloadGenerator.generateWorkload("download intensive", "large", inputLog, totalStagingDiskCapacity, 0.2 );
 
@@ -169,14 +170,14 @@ public class FlushEntireStagingDiskContents {
         if (addStagingDisk == false) {
             WriteToLogFile.AddtoFile("Staging Disk : False");
             // pass the operation name to this getOperationFileList() method and it will return the op file to be passed to MyRunner
-            dataFile = getOperationFileList(inputLog, "PUT", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
-            requiredFile = getOperationFileList(inputLog, "GET", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
-            updateFile = getOperationFileList(inputLog, "UPDATE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
-            deleteFile = getOperationFileList(inputLog, "DELETE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
+            dataFile = getOperationFileList(pathToInputLog, "PUT", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
+            requiredFile = getOperationFileList(pathToInputLog, "GET", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
+            updateFile = getOperationFileList(pathToInputLog, "UPDATE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
+            deleteFile = getOperationFileList(pathToInputLog, "DELETE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
         } else {
             WriteToLogFile.AddtoFile("Staging Disk : True");
             // if there a staging disk included
-            stagingDiskSimulate(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, inputLog, nodeToTaskMapping, nodeList,
+            stagingDiskSimulate(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, pathToInputLog, nodeToTaskMapping, nodeList,
                     noOfActiveAlwaysDisks, myRing, noOfSpunDownDisks, stagingDiskRing, percentageFlushAt, percentageFlushTill, cachingMechanism);
 
         }
@@ -806,9 +807,9 @@ public class FlushEntireStagingDiskContents {
         int percentageFlushAt = 90;
         int percentageFlushTill = 0;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
-        String pathToWorkload = "";
-        String pathToStartingFileList = "";
-        String pathToInputLog = "";
+        String pathToWorkload = "files/basic/operations/workload.txt";
+        String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
+        String pathToInputLog = "files/basic/operations/idealInputLog.txt";
         boolean generateInputLog = false;
 
 

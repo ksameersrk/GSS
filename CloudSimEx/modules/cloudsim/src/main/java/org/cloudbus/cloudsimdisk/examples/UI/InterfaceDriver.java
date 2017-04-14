@@ -66,9 +66,9 @@ public class InterfaceDriver {
         int percentageFlushTill = 0;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
-        String pathToWorkload = "";
-        String pathToStartingFileList = "";
-        String pathToInputLog = "";
+        String pathToWorkload = "files/basic/operations/workload.txt";
+        String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
+        String pathToInputLog = "files/basic/operations/idealInputLog.txt";
         boolean generateInputLog = false;
 
 
