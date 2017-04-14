@@ -9,6 +9,7 @@ import org.cloudbus.cloudsimdisk.examples.MyRunner;
 import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownOptimalAlgorithm;
 import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.OptimalHelper;
 import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownRandomAlgorithm;
+import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.StartingFileListGenerator;
 import org.cloudbus.cloudsimdisk.examples.Tasks;
 import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
 
@@ -50,6 +51,10 @@ public class FlushEntireStagingDiskContents {
         int noOfSpunDownDisks = 1;
         int noOfActiveAlwaysDisks;
 
+        if(generateInputLog == true) {
+            StartingFileListGenerator startingFileListGenerator = new StartingFileListGenerator();
+            startingFileListGenerator.generateStartingFile(pathToWorkload, pathToStartingFileList, pathToInputLog);
+        }
         if(addStagingDisk == true) {
             noOfActiveAlwaysDisks = noOfReplicas - noOfSpunDownDisks;
         }
@@ -195,7 +200,7 @@ public class FlushEntireStagingDiskContents {
 
         Double totalEnergyConsumed = 0.0;
         // call performOperations() which performs all the CRUD operations as given in input and returns total power consumed
-        performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing, stagingDiskRing);
+        performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing, stagingDiskRing, pathToStartingFileList);
         //System.out.println("\n\nTotal Energy Consumed : " + totalEnergyConsumed);
 
 
@@ -709,7 +714,7 @@ public class FlushEntireStagingDiskContents {
     // does the task of send the cloudlets and starting the simulation
     public static void performOperations(HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile,
                                            ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<MyNode>
-                                                   nodeList, MyRing myRing, MyRing stagingDiskRing) throws Exception {
+                                                   nodeList, MyRing myRing, MyRing stagingDiskRing, String pathToStartingFileList) throws Exception {
         Runnable monitor = new Runnable() {
             @Override
             public void run() {
@@ -776,7 +781,7 @@ public class FlushEntireStagingDiskContents {
         FileUtils.writeStringToFile(new File("files/" + getData), getOpData.toString());
         FileUtils.writeStringToFile(new File("files/" + updateData), updateOpData.toString());
         FileUtils.writeStringToFile(new File("files/" + deleteData), deleteOpData.toString());
-        String startingFilelist = "basic/operations/startingFileList.txt";
+        String startingFilelist = pathToStartingFileList.split("files/")[1];
 
         ArrayList<MyNode> allNodes = new ArrayList<MyNode>(myRing.getAllNodes());
         allNodes.addAll(stagingDiskRing.getAllNodes());
@@ -810,7 +815,7 @@ public class FlushEntireStagingDiskContents {
         String pathToWorkload = "files/basic/operations/workload.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
         String pathToInputLog = "files/basic/operations/idealInputLog.txt";
-        boolean generateInputLog = false;
+        boolean generateInputLog = true;
 
 
 
