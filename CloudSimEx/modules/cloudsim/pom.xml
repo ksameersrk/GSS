@@ -78,6 +78,11 @@
         	<artifactId>opencsv</artifactId>
         	<version>3.7</version>
         </dependency>
+        <dependency>
+            <groupId>org.cloudbus.cloudsim</groupId>
+            <artifactId>modules</artifactId>
+            <version>4.0</version>
+        </dependency>
     </dependencies>
     <reporting>
 	<plugins>
