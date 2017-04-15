@@ -31,7 +31,7 @@ import static org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownOp
 public class FlushEntireStagingDiskContents {
 
     //public static void main(String args[]) throws Exception{
-    public static void startSimulation(int totalNoOfNodes, boolean addStagingDisk, int numberOfOperations, int predefindedWorkloadNumber, int noOfReplicas,
+    public static MyRunner startSimulation(int totalNoOfNodes, boolean addStagingDisk, int numberOfOperations, int predefindedWorkloadNumber, int noOfReplicas,
                                        String cachingMechanism, int HDDType, int SSDType,
                                        int percentageFlushAt, int percentageFlushTill, boolean realisticSSD, String pathToWorkload, String pathToStartingFileList,
                                        String pathToInputLog, boolean generateInputLog) throws Exception{
@@ -200,7 +200,10 @@ public class FlushEntireStagingDiskContents {
 
         Double totalEnergyConsumed = 0.0;
         // call performOperations() which performs all the CRUD operations as given in input and returns total power consumed
-        performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing, stagingDiskRing, pathToStartingFileList);
+        MyRunner runner = performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing, stagingDiskRing,
+                pathToStartingFileList);
+
+        return runner;
         //System.out.println("\n\nTotal Energy Consumed : " + totalEnergyConsumed);
 
 
@@ -712,7 +715,7 @@ public class FlushEntireStagingDiskContents {
 
 
     // does the task of send the cloudlets and starting the simulation
-    public static void performOperations(HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile,
+    public static MyRunner performOperations(HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile,
                                            ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<MyNode>
                                                    nodeList, MyRing myRing, MyRing stagingDiskRing, String pathToStartingFileList) throws Exception {
         Runnable monitor = new Runnable() {
@@ -785,7 +788,9 @@ public class FlushEntireStagingDiskContents {
 
         ArrayList<MyNode> allNodes = new ArrayList<MyNode>(myRing.getAllNodes());
         allNodes.addAll(stagingDiskRing.getAllNodes());
-        MyRunner run = new MyRunner(nodeToTaskMapping, arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
+        MyRunner runner = new MyRunner(nodeToTaskMapping, arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
+
+        return runner;
         //System.out.println("Energy Consumed : " + run.getTotalStorageEnergyConsumed() + " Joules()");
         //return run.getTotalStorageEnergyConsumed();
     }
