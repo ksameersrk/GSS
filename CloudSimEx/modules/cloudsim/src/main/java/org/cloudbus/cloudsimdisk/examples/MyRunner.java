@@ -25,6 +25,7 @@ import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A Runner to run storage examples.
@@ -209,6 +210,10 @@ public class MyRunner {
 		// Logs
 		helper.printPersistenStorageDetails();
 	}
+
+	public List<Map<String,Object>> getDiskStats(){
+	    return helper.getDiskStats();
+    }
 
 	/**
 	 * Start the simulation.

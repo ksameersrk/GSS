@@ -100,6 +100,10 @@ public class Helper {
 
 	public HashMap<MyNode, MyPowerHarddriveStorage> nmmap = new HashMap<>();
 
+    // for graph purpose
+    List<Map<String,Object>> diskStats = new ArrayList<Map<String,Object>>();
+
+
 	// Methods
 	/**
 	 * Initialize CloudSim.
@@ -671,7 +675,8 @@ public class Helper {
 		double TotalStorageEnergyConsumedBySpunDownDisks = 0.0;
 		double TotalStorageEnergyConsumedByActiveAlwaysDisks = 0.0;
 
-		// PRINTOUT -----------------------------------------------------------------------
+
+        // PRINTOUT -----------------------------------------------------------------------
 		Log.printLine();
 		Log.printLine("*************************** RESULTS ***************************");
 		Log.printLine();
@@ -713,8 +718,8 @@ public class Helper {
 			    activeTime = tempList.get(i).getInActiveDuration();
             }*/
 			double activeTime = tempList.get(i).getInActiveDuration();
-			double idleTime =  0;
-			double spunDowntime = 0;
+			double idleTime =  0.0;
+			double spunDowntime = 0.0;
 			if(tempList.get(i).getIsSpunDown()){
 				spunDowntime = totalSimulationTime - activeTime;
 				idleTime = 0;
@@ -757,6 +762,20 @@ public class Helper {
 			WriteToLogFile.AddtoFile(String.format("%8sEnergy consumed in  total      : %9.3f Joule(s)", "", idleTimeEnergy+ activeTimeEnergy));
 			WriteToLogFile.AddtoFile(String.format("%8sMaximum Queue size    : %10d operation(s)", "",
 					Collections.max(tempList.get(i).getQueueLengthHistory())));
+
+			// for graph purpose
+            Map<String,Object> map = new HashMap<String, Object>();
+            map.put("disk name", tempList.get(i).getName().split("HDDNode")[1]);
+            map.put("idle time", idleTime);
+            map.put("active time",activeTime);
+            map.put("spun down time",spunDowntime);
+            map.put("total simulation time",totalSimulationTime);
+            map.put("idle energy",idleTimeEnergy);
+            map.put("active energy",activeTimeEnergy);
+            map.put("total energy",idleTimeEnergy+ activeTimeEnergy);
+            map.put("max queue size",Collections.max(tempList.get(i).getQueueLengthHistory())*1.0);
+
+            diskStats.add(map);
 		}
 
 		Log.printLine();
@@ -768,6 +787,7 @@ public class Helper {
 		WriteToLogFile.AddtoFile(String.format("Energy consumed by Always Active Disks : %.3f Joule(s)", TotalStorageEnergyConsumedByActiveAlwaysDisks));
 		WriteToLogFile.AddtoFile(String.format("Energy consumed by Spun Down Disks : %.3f Joule(s)", TotalStorageEnergyConsumedBySpunDownDisks));
 		WriteToLogFile.AddtoFile(String.format("Energy consumed by Entire Persistent Storage: %.3f Joule(s)", TotalStorageEnergy));
+
 
 		// -----------------------------------------------------------------------
 
@@ -890,4 +910,8 @@ public class Helper {
 		}
 		return TotalStorageEnergy ;
 	}
+
+	public List<Map<String,Object>> getDiskStats(){
+	    return diskStats;
+    }
 }

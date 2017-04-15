@@ -2,8 +2,11 @@ package org.cloudbus.cloudsimdisk.examples.UI;
 
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
+import org.cloudbus.cloudsimdisk.examples.MyRunner;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.util.*;
 
 import static org.cloudbus.cloudsimdisk.examples.SimulationScenarios.FlushEntireStagingDiskContents.startSimulation;
 
@@ -71,11 +74,69 @@ public class InterfaceDriver {
         String pathToInputLog = "files/basic/operations/idealInputLog.txt";
         boolean generateInputLog = false;
 
+        int scenario = 1;
+        if(scenario == 1){
+            addStagingDisk = false;
+            MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
+                    HDDType,
+                    SSDType,
+                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+
+            List<Map<String,Object>> diskStats = runner.getDiskStats();
+            //System.out.println(diskStats.toString());
+
+            Collections.sort(diskStats, new Comparator<Map<String, Object>>() {
+                public int compare(final Map<String, Object> o1, final Map<String, Object> o2) {
+                    int s1 = Integer.parseInt(o1.get("disk name").toString());
+                    int s2 = Integer.parseInt(o2.get("disk name").toString());
+                    return s1 - s2;
+                }
+            });
+
+            Map<String, Object> graphJson = new HashMap<>();
+            List<String> xAxisLabels = new ArrayList<>();
+            List<Double> yAxisLabel = new ArrayList<>();
+            for(Map<String,Object> map : diskStats){
+
+                if(Integer.parseInt(map.get("disk name").toString()) >= 1000){
+                    map.put("disk name", "SSD" +map.get("disk name").toString());
+                } else {
+                    map.put("disk name", "HDD" +map.get("disk name").toString());
+                }
+                xAxisLabels.add(map.get("disk name").toString());
+                yAxisLabel.add(Double.parseDouble(map.get("total energy").toString()));
 
 
 
-        startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, HDDType, SSDType,
-                percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+            }
+
+            List<List<Double>> data = new ArrayList<>();
+            List<String> series = new ArrayList<>();
+            series.add("with staging disk");
+            data.add(yAxisLabel);
+            graphJson.put("label", xAxisLabels);
+            graphJson.put("data", yAxisLabel);
+            graphJson.put("series", series);
+
+
+            Gson gson = new Gson();
+            //gson.toJson(diskStats, new FileWriter("/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/dataStat.json"));
+            String jsonInString = gson.toJson(graphJson);
+            //System.out.println(jsonInString);
+            FileUtils.writeStringToFile(new File("/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/line_chart.json"), jsonInString);
+        }
+        else if(scenario == 2) {
+            addStagingDisk = true;
+            MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
+                    HDDType, SSDType,
+                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+        }
+        else if(scenario == 3){
+
+        }
+
+
+
 
     }
 }
