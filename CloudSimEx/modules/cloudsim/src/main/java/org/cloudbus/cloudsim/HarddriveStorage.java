@@ -195,8 +195,8 @@ public class HarddriveStorage implements Storage {
 	 * @return <tt>true</tt> if enough space available, <tt>false</tt> otherwise
 	 */
 	@Override
-	public boolean hasPotentialAvailableSpace(int fileSize) {
-		if (fileSize <= 0) {
+	public boolean hasPotentialAvailableSpace(Double fileSize) {
+		if (fileSize <= 0.0) {
 			return false;
 		}
 
@@ -207,7 +207,7 @@ public class HarddriveStorage implements Storage {
 
 		Iterator<File> it = fileList.iterator();
 		File file = null;
-		int deletedFileSize = 0;
+		Double deletedFileSize = 0.0;
 
 		// if not enough space, then if want to clear/delete some files
 		// then check whether it still have space or not
@@ -345,7 +345,7 @@ public class HarddriveStorage implements Storage {
 		}
 
 		Iterator<File> it = fileList.iterator();
-		int size = 0;
+		Double size = 0.0;
 		int index = 0;
 		boolean found = false;
 		File tempFile = null;
@@ -393,7 +393,7 @@ public class HarddriveStorage implements Storage {
 	 * @param fileSize the size of a file in MB
 	 * @return the seek time in seconds
 	 */
-	private double getSeekTime(int fileSize) { //Baptiste Louis
+	private double getSeekTime(Double fileSize) { //Baptiste Louis
 		double result = 0;
 
 		if (gen != null) {
@@ -413,7 +413,7 @@ public class HarddriveStorage implements Storage {
 	 * @param fileSize the size of the transferred file
 	 * @return the transfer time in seconds
 	 */
-	private double getTransferTime(int fileSize) {
+	private double getTransferTime(Double fileSize) {
 		double result = 0;
 		if (fileSize > 0 && capacity != 0) {
 			result = (fileSize * maxTransferRate) / capacity;

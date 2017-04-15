@@ -222,8 +222,8 @@ public class MyHarddriveStorage implements Storage {
 	 *            the size of the transferred file
 	 * @return the transfer time in seconds
 	 */
-	protected double getTransferTime(int fileSize) {
-		double result = 0;
+	protected double getTransferTime(Double fileSize) {
+		double result = 0.0;
 		if (fileSize > 0 && maxInternalDataTransferRate != 0) {
 			result = fileSize / maxInternalDataTransferRate;
 		}
@@ -520,7 +520,7 @@ public class MyHarddriveStorage implements Storage {
 	 * @return <tt>true</tt> if enough space available, <tt>false</tt> otherwise
 	 */
 	@Override
-	public boolean hasPotentialAvailableSpace(int fileSize) {
+	public boolean hasPotentialAvailableSpace(Double fileSize) {
 		if (fileSize <= 0) {
 			return false;
 		}
@@ -647,7 +647,7 @@ public class MyHarddriveStorage implements Storage {
 		double seekTime = getSeekTime();
 		double rotationLatency = getRotLatency();
 		//double transferTime = getTransferTime(file.getSize());
-		double transferTime = getTransferTime(0);
+		double transferTime = getTransferTime(0.0);
 
 		// check if the file is in the storage
 		if (contains(file)) {

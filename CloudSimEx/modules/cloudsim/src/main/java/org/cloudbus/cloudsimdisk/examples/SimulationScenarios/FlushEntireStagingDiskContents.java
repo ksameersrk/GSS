@@ -213,22 +213,22 @@ public class FlushEntireStagingDiskContents {
                                            MyRing stagingDiskRing, int percentageToFlushAt, int percentageToFlushTill, String cachingMechanism) throws
             Exception {
         List<MyNode> stagingDiskNodes = stagingDiskRing.getAllNodes();
-        Map<MyNode, Integer> stagingDiskMemoryUsed = new LinkedHashMap<MyNode, Integer>();
-        Map<MyNode, Integer> stagingDiskUpperThresholdMemory = new LinkedHashMap<MyNode, Integer>();
-        Map<MyNode, Integer> stagingDiskLowerThresholdMemory = new LinkedHashMap<MyNode, Integer>();
-        Map<MyNode, Map<String, Integer>> stagingDiskFileList = new LinkedHashMap<MyNode, Map<String, Integer>>();
+        Map<MyNode, Double> stagingDiskMemoryUsed = new LinkedHashMap<MyNode, Double>();
+        Map<MyNode, Double> stagingDiskUpperThresholdMemory = new LinkedHashMap<MyNode, Double>();
+        Map<MyNode, Double> stagingDiskLowerThresholdMemory = new LinkedHashMap<MyNode, Double>();
+        Map<MyNode, Map<String, Double>> stagingDiskFileList = new LinkedHashMap<MyNode, Map<String, Double>>();
         ArrayList<String> newOperationsSinceLastSpinDown = new ArrayList<>();
         // initialise used memory for all nodes as 0
         for (MyNode n : stagingDiskNodes) {
-            stagingDiskMemoryUsed.put(n, 0);
+            stagingDiskMemoryUsed.put(n, 0.0);
             // initialise stagingDiskLowerThresholdMemory i.e during a flush we keep deleting files till we reach this lower threshold
             Double lowerThreshold = (percentageToFlushTill*1.0)/10;
-            stagingDiskLowerThresholdMemory.put(n, (int) (n.getHddModel().getCapacity() * lowerThreshold));
+            stagingDiskLowerThresholdMemory.put(n, (Double) (n.getHddModel().getCapacity() * lowerThreshold));
             // initialise stagingDiskUpperThresholdMemory i.e we start the flush when on adding the given file,
             // the storage capacity is going to exceed this upper threshold capacity
             Double upperThreshold = (percentageToFlushAt*1.0)/10;
-            stagingDiskUpperThresholdMemory.put(n, (int) (n.getHddModel().getCapacity() * upperThreshold));
-            stagingDiskFileList.put(n, new HashMap<String, Integer>());
+            stagingDiskUpperThresholdMemory.put(n, (Double) (n.getHddModel().getCapacity() * upperThreshold));
+            stagingDiskFileList.put(n, new HashMap<String, Double>());
 
             System.out.println("Flushing when upper threshold of " + upperThreshold.toString() + " is reached.");
             WriteToLogFile.AddtoFile(String.format("%8sFlushing when upper threshold of %9.3f is reached", "", upperThreshold));
@@ -238,21 +238,21 @@ public class FlushEntireStagingDiskContents {
 
 
         // get the entire list of operations in chronological order , time : list of operations to be performed at that time mapping
-        Map<Integer, ArrayList<String>> chronologicallyOrderedOperations = getChronologicallyOrderedOperations(inputLog);
+        Map<Double, ArrayList<String>> chronologicallyOrderedOperations = getChronologicallyOrderedOperations(inputLog);
         ArrayList<String> tmpdataFile = new ArrayList<>();
         ArrayList<String> tmprequiredFile = new ArrayList<>();
         ArrayList<String> tmpupdateFile = new ArrayList<>();
         ArrayList<String> tmpdeleteFile = new ArrayList<>();
 
-        Map<String, Integer> allFilesUploaded = new LinkedHashMap<String, Integer>();
+        Map<String, Double> allFilesUploaded = new LinkedHashMap<String, Double>();
         // those files which have been uploaded at any point of time and are
         // still in system(either on staging or background HDDS). This dictionary having filename as key and file size as value is required in particular
         // scenario when we do a get and file is not in staging disk, so when we get it from always active HDD we need to PUT it into staging disk, for this
         // we need to know the file size. Hence we use this dict to store it
-        Map<String, Integer> tmpToBeDeletedList = new LinkedHashMap<String, Integer>();
+        Map<String, Double> tmpToBeDeletedList = new LinkedHashMap<String, Double>();
 
         // iterate through the operations chronologically
-        for (Integer key : chronologicallyOrderedOperations.keySet()) {
+        for (Double key : chronologicallyOrderedOperations.keySet()) {
             ArrayList<String> operations = chronologicallyOrderedOperations.get(key);
             for (String op : operations) {
                 op = op.trim();
@@ -273,7 +273,7 @@ public class FlushEntireStagingDiskContents {
                     // DELETE operations on spun down disks)
                     //          b) free up staging disk(go on removing least recently used files till occupied space goes below staging disk lower threshold)
                     //          c) then add file to staging disk
-                    int memToBeAdded = stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data, stagingDiskMemoryUsed.get
+                    Double memToBeAdded = stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data, stagingDiskMemoryUsed.get
                                     (stagingDisk),
                             stagingDiskUpperThresholdMemory.get(stagingDisk),
                             tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
@@ -293,7 +293,7 @@ public class FlushEntireStagingDiskContents {
                         } else {
                             nodeToTaskMapping.put(stagingDisk, new Tasks(stagingDisk, op));
                         }
-                        int fileSize = stagingDiskFileList.get(stagingDisk).get(data[2]);
+                        Double fileSize = stagingDiskFileList.get(stagingDisk).get(data[2]);
 
                         if(cachingMechanism.equals("LRU")) {
                             // in order to support the LRU algo for placement of files on staging disk, we need to keep updating the positioning a file in the
@@ -328,7 +328,7 @@ public class FlushEntireStagingDiskContents {
                         if(cachingMechanism.equals("LRU")) {
 
                             String putOp = "PUT," + data[1] + "," + data[2] + "," + allFilesUploaded.get(data[2]);
-                            int memToBeAdded = stagingDiskPutOperation(putOp, stagingDisk, noOfActiveAlwaysDisks, putOp.split(","), stagingDiskMemoryUsed.get
+                            Double memToBeAdded = stagingDiskPutOperation(putOp, stagingDisk, noOfActiveAlwaysDisks, putOp.split(","), stagingDiskMemoryUsed.get
                                             (stagingDisk),
                                     stagingDiskUpperThresholdMemory.get(stagingDisk),
                                     tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
@@ -345,14 +345,14 @@ public class FlushEntireStagingDiskContents {
                 } else if (data[0].equals("UPDATE")) {
                     // if old version also present, then remove old version before proceeding
                     if (stagingDiskFileList.get(stagingDisk).containsKey(data[2])) {
-                        int memoryToBeFreed = stagingDiskFileList.get(stagingDisk).get(data[2]);
+                        Double memoryToBeFreed = stagingDiskFileList.get(stagingDisk).get(data[2]);
                         stagingDiskFileList.get(stagingDisk).remove(data[2]);
                         stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) - memoryToBeFreed);
 
                     }
                     // now same as PUT
 
-                    int memToBeAdded = stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data,
+                    Double memToBeAdded = stagingDiskPutOperation(op, stagingDisk, noOfActiveAlwaysDisks, data,
                             stagingDiskMemoryUsed.get(stagingDisk),
                             stagingDiskUpperThresholdMemory.get(stagingDisk),
                             tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
@@ -362,7 +362,7 @@ public class FlushEntireStagingDiskContents {
                     // if file in staging disk, then remove it and make note that it has been removed so that we can remove it from spun Down disk as well
                     // during the next staging disk free up
                     if (stagingDiskFileList.get(stagingDisk).containsKey(data[2])) {
-                        int memoryToBeFreed = stagingDiskFileList.get(stagingDisk).get(data[2]);
+                        Double memoryToBeFreed = stagingDiskFileList.get(stagingDisk).get(data[2]);
                         stagingDiskFileList.get(stagingDisk).remove(data[2]);
                         stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) - memoryToBeFreed);
                         // remove from staging disk
@@ -393,7 +393,7 @@ public class FlushEntireStagingDiskContents {
 
                     // how to take care of delete on spunDown disks coz file will be removed from stagingDisk and old version could continue existing on
                     // spunDown disk
-                    tmpToBeDeletedList.put(data[2], Integer.parseInt(data[1]));
+                    tmpToBeDeletedList.put(data[2], Double.parseDouble(data[1]));
 
                 }
             }
@@ -405,15 +405,15 @@ public class FlushEntireStagingDiskContents {
 
     // this method takes care of all actions to be taken when there is a PUT operation required to be done when there is a staging disk
 
-    public static int stagingDiskPutOperation(String op, MyNode stagingDisk, int noOfActiveAlwaysDisks, String data[], int stagingDiskMemoryUsed,
-                                              int stagingDiskThresholdMemory, Map<String, Integer> tmpToBeDeletedList,
-                                              Map<String, Integer> stagingDiskFileList, int stagingDiskLowerThreshold,
+    public static Double stagingDiskPutOperation(String op, MyNode stagingDisk, int noOfActiveAlwaysDisks, String data[], Double stagingDiskMemoryUsed,
+                                                 Double stagingDiskThresholdMemory, Map<String, Double> tmpToBeDeletedList,
+                                              Map<String, Double> stagingDiskFileList, Double stagingDiskLowerThreshold,
                                               int noOfSpunDownDisks, ArrayList<String> tmpOpFile, ArrayList<String> tmpdeleteFile,
-                                              ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping, MyRing ring, Map<String, Integer>
+                                              ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping, MyRing ring, Map<String, Double>
                                                       allFilesUploaded, ArrayList<String> newOperationsSinceLastSpinDown) {
-        int stagingDiskMemoryToBeAdded = 0;
+        Double stagingDiskMemoryToBeAdded = 0.0;
         // if staging disk occupied more the stagingDiskMemoryUsed upper threshold
-        if (stagingDiskMemoryUsed + Integer.parseInt(data[3]) > stagingDiskThresholdMemory) {
+        if (stagingDiskMemoryUsed + Double.parseDouble(data[3]) > stagingDiskThresholdMemory) {
             stagingDiskMemoryToBeAdded += freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDisk, tmpToBeDeletedList,
                     stagingDiskFileList,
                     stagingDiskLowerThreshold, noOfSpunDownDisks, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, newOperationsSinceLastSpinDown);
@@ -422,11 +422,11 @@ public class FlushEntireStagingDiskContents {
         tmpOpFile.add(op);
         nodeList.add(stagingDisk);
 
-        stagingDiskMemoryToBeAdded += Integer.parseInt(data[3]);
+        stagingDiskMemoryToBeAdded += Double.parseDouble(data[3]);
 
         //stagingDiskFileList.put()
         // add to stagingDiskFileList
-        stagingDiskFileList.put(data[2], Integer.parseInt(data[3])); // key : name of file, value : size  of file
+        stagingDiskFileList.put(data[2], Double.parseDouble(data[3])); // key : name of file, value : size  of file
         // add file to staging disk and activeAlways nodes
         /*
         for (int i = 0; i < noOfActiveAlwaysDisks; i++)
@@ -452,22 +452,22 @@ public class FlushEntireStagingDiskContents {
         }
 
         // add file to allFilesUploaded file list
-        allFilesUploaded.put(data[2], Integer.parseInt(data[3])); // this takes care of both operations(update and add)
+        allFilesUploaded.put(data[2], Double.parseDouble(data[3])); // this takes care of both operations(update and add)
         return stagingDiskMemoryToBeAdded;
 
     }
 
-    public static int freeUpStagingDiskMemory(String data[], int stagingDiskMemoryUsed, MyNode stagingDisk,
-                                              Map<String, Integer> tmpToBeDeletedList, Map<String, Integer> stagingDiskFileList,
-                                              int stagingDiskLowerThreshold, int noOfSpunDownDisks, ArrayList<String> tmpOpFile,
+    public static Double freeUpStagingDiskMemory(String data[], Double stagingDiskMemoryUsed, MyNode stagingDisk,
+                                              Map<String, Double> tmpToBeDeletedList, Map<String, Double> stagingDiskFileList,
+                                              Double stagingDiskLowerThreshold, int noOfSpunDownDisks, ArrayList<String> tmpOpFile,
                                               ArrayList<String> tmpdeleteFile, ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping,
                                               MyRing ring, ArrayList<String> newOperationsSinceLastSpinDown) {
         System.out.println("Flushing staging disk contents at time = " + data[1]);
         WriteToLogFile.AddtoFile(String.format("%8sFlushing staging disk contents at time = %8s ", "", data[1]));
         // remove oldest unused files such after removing them only 60% of stagingDisk mem is occupied
         // before removing add them to respective spun down disks
-        Map<String, Integer> tmpToBeAddedToSpunDownFiles = new LinkedHashMap<String, Integer>();
-        int memoryToBeFreed = 0;
+        Map<String, Double> tmpToBeAddedToSpunDownFiles = new LinkedHashMap<String, Double>();
+        Double memoryToBeFreed = 0.0;
         for (String file : stagingDiskFileList.keySet()) {
             tmpToBeAddedToSpunDownFiles.put(file, stagingDiskFileList.get(file));
             memoryToBeFreed += stagingDiskFileList.get(file);
@@ -513,7 +513,7 @@ public class FlushEntireStagingDiskContents {
             }
         }
         // update stagingDiskMemoryUsed after removing old files
-        int stagingDiskMemoryToBeAdded = 0;
+        Double stagingDiskMemoryToBeAdded = 0.0;
         stagingDiskMemoryToBeAdded -= memoryToBeFreed;
 
 
@@ -632,17 +632,17 @@ public class FlushEntireStagingDiskContents {
 
 
     // return map of time to operation mapping where keys indicating time are chronologically ordered
-    public static Map<Integer, ArrayList<String>> getChronologicallyOrderedOperations(String inputLog) throws Exception {
-        Map<Integer, ArrayList<String>> chronologicallyOrderedOperations = new LinkedHashMap<Integer, ArrayList<String>>();
+    public static Map<Double, ArrayList<String>> getChronologicallyOrderedOperations(String inputLog) throws Exception {
+        Map<Double, ArrayList<String>> chronologicallyOrderedOperations = new LinkedHashMap<Double, ArrayList<String>>();
         try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
                 String data[] = line.split(",");
-                if (chronologicallyOrderedOperations.containsKey(Integer.parseInt(data[1]))) {
-                    chronologicallyOrderedOperations.get(Integer.parseInt(data[1])).add(line);
+                if (chronologicallyOrderedOperations.containsKey(Double.parseDouble(data[1]))) {
+                    chronologicallyOrderedOperations.get(Double.parseDouble(data[1])).add(line);
                 } else {
-                    chronologicallyOrderedOperations.put(Integer.parseInt(data[1]), new ArrayList<String>(Arrays.asList(line)));
+                    chronologicallyOrderedOperations.put(Double.parseDouble(data[1]), new ArrayList<String>(Arrays.asList(line)));
                 }
 
 

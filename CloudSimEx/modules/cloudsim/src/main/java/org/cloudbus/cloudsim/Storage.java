@@ -104,7 +104,7 @@ public interface Storage {
 	 *            a FileAttribute object to compare to
 	 * @return <tt>true</tt> if enough space available, <tt>false</tt> otherwise
 	 */
-	boolean hasPotentialAvailableSpace(int fileSize);
+	boolean hasPotentialAvailableSpace(Double fileSize);
 
 	/**
 	 * Gets the file with the specified name. The time taken (in seconds) for getting the specified file can also be

@@ -274,7 +274,7 @@ public class Helper {
 				fileSize = lineSplited[1];
 
 				// add file to the List
-				dataFiles.add(new File(fileName, Integer.parseInt(fileSize)));
+				dataFiles.add(new File(fileName, Double.parseDouble(fileSize)));
 			}
 
 			// close the reader
@@ -340,7 +340,7 @@ public class Helper {
 				fileSize = lineSplited[1];
 
 				// add file to the List
-				updateFiles.add(new File(fileName, Integer.parseInt(fileSize)));
+				updateFiles.add(new File(fileName, Double.parseDouble(fileSize)));
 			}
 
 			// close the reader
@@ -530,7 +530,7 @@ public class Helper {
 					fileSize = lineSplited[1];
 
 					// add file to datacenter
-					datacenter.addStartingFile(new File(fileName, Integer.parseInt(fileSize)),ring, allNodeList, nmmap);
+					datacenter.addStartingFile(new File(fileName, Double.parseDouble(fileSize)),ring, allNodeList, nmmap);
 				}
 
 				// close the reader
