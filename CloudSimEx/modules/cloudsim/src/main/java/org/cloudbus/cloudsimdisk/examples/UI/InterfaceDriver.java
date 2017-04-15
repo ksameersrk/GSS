@@ -89,6 +89,18 @@ public class InterfaceDriver {
             getSortedAndDiskNameChangedDiskStats(diskStats);
 
             drawLineGraph(diskStats, "without staging disk");
+
+            Map<String, Double> scenarioStat = runner.getScenarioStats();
+            Map<String, Object> pieChartJSON = new HashMap<>();
+            List<String> label = new ArrayList<>();
+            List<Double> diskPower = new ArrayList<>();
+            label.add("Always Active Disks");
+            label.add("Spun Down Disks");
+            diskPower.add(scenarioStat.get("always active disk power consumption"));
+            diskPower.add(scenarioStat.get("spun down disk power consumption"));
+            pieChartJSON.put("label", label);
+            pieChartJSON.put("data", diskPower);
+            dumpToFile(pieChartJSON, "pieChartActiveVsSpundown");
         }
         else if(scenario == 2) {
             addStagingDisk = true;
@@ -99,6 +111,18 @@ public class InterfaceDriver {
             List<Map<String,Object>> diskStats = runner.getDiskStats();
             //System.out.println(diskStats.toString());
             drawLineGraph(diskStats, "with staging disk");
+
+            Map<String, Double> scenarioStat = runner.getScenarioStats();
+            Map<String, Object> pieChartJSON = new HashMap<>();
+            List<String> label = new ArrayList<>();
+            List<Double> diskPower = new ArrayList<>();
+            label.add("Always Active Disks");
+            label.add("Spun Down Disks");
+            diskPower.add(scenarioStat.get("always active disk power consumption"));
+            diskPower.add(scenarioStat.get("spun down disk power consumption"));
+            pieChartJSON.put("label", label);
+            pieChartJSON.put("data", diskPower);
+            dumpToFile(pieChartJSON, "pieChartActiveVsSpundown");
 
         }
         else if(scenario == 3){
@@ -150,7 +174,39 @@ public class InterfaceDriver {
             dumpToFile(graphJsonIdleEnergy,"line_chart_idle_energy");
             dumpToFile(graphJsonActiveEnergy,"line_chart_active_energy");
 
+            Map<String, Double> scenarioStat = runner.getScenarioStats();
+            Map<String, Object> pieChartJSON = new HashMap<>();
+            List<String> label = new ArrayList<>();
+            List<Double> diskPower = new ArrayList<>();
+            label.add("Always Active Disks");
+            label.add("Spun Down Disks");
+            diskPower.add(scenarioStat.get("always active disk power consumption"));
+            diskPower.add(scenarioStat.get("spun down disk power consumption"));
+            pieChartJSON.put("label", label);
+            pieChartJSON.put("data", diskPower);
+            dumpToFile(pieChartJSON, "pieChartActiveVsSpundownWithoutStagingDisk");
 
+
+
+            Map<String, Double> scenarioStatSSD = runnerSSD.getScenarioStats();
+            Map<String, Object> pieChartJSONswiftVsGSS = new HashMap<>();
+
+            List<Double> diskPowerWithStagingDisk = new ArrayList<>();
+            diskPowerWithStagingDisk.add(scenarioStatSSD.get("always active disk power consumption"));
+            diskPowerWithStagingDisk.add(scenarioStatSSD.get("spun down disk power consumption"));
+            pieChartJSON.put("label", label);
+            pieChartJSON.put("data", diskPower);
+            dumpToFile(pieChartJSON, "pieChartActiveVsSpundownWithStagingDisk");
+
+            List<String> labelSwiftVsGSS = new ArrayList<>();
+            List<Double> diskPowerSwiftVsGSS = new ArrayList<>();
+            labelSwiftVsGSS.add("Without Staging Disk");
+            labelSwiftVsGSS.add("With Staging Disk");
+            diskPowerSwiftVsGSS.add(scenarioStat.get("all disk power consumption"));
+            diskPowerSwiftVsGSS.add(scenarioStatSSD.get("all disk power consumption"));
+            pieChartJSONswiftVsGSS.put("label", labelSwiftVsGSS);
+            pieChartJSONswiftVsGSS.put("data", diskPowerSwiftVsGSS);
+            dumpToFile(pieChartJSONswiftVsGSS, "pieChartWithVsWithoutSSD");
 
         }
 

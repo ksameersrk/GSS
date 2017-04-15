@@ -215,6 +215,9 @@ public class MyRunner {
 	    return helper.getDiskStats();
     }
 
+    public Map<String, Double> getScenarioStats(){
+	    return helper.getScenarioStats();
+    }
 	/**
 	 * Start the simulation.
 	 */
