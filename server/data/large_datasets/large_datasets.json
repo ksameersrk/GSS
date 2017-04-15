@@ -1,0 +1,24 @@
+[
+	{
+		"id":"1",
+		"title":"Sample 1",
+		"totalNumberOfNodes":"16",
+		"scenario":"With Staging Disk",
+		"noOfOperation":"10",
+		"noOfReplicas":"3",
+		"cachingMechanism":"LRU",
+		"sddType":"Some SSD type",
+		"hddType":"Some HDD type"
+	},
+	{
+		"id":"2",
+		"title":"Sample 2",
+		"totalNumberOfNodes":"16",
+		"scenario":"With Staging Disk",
+		"noOfOperation":"10",
+		"noOfReplicas":"3",
+		"cachingMechanism":"LRU",
+		"sddType":"Some SSD type",
+		"hddType":"Some HDD type"
+	}
+]

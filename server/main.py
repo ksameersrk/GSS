@@ -21,6 +21,30 @@ def execute_java(args):
 def hello_world():
 	return 'Hello!'
 
+@app.route('/get_large_datasets', methods=['GET'])
+def large_datasets():
+	result = {}
+	rootJson = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/large_datasets/large_datasets.json"
+	rootPath = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/large_datasets/"
+
+	with open(rootJson) as f:
+		result["tableData"] = json.load(f)
+		for entry in result["tableData"]:
+			id_ = entry["id"]
+			piePath = rootPath+id_+"/pie_chart.json"
+			linePath = rootPath+id_+"/line_chart.json"
+			logsPath = rootPath+id_+"/output_logs.txt"
+
+			entry["logs"] = logsPath
+
+			with open(piePath) as f:
+				entry['pieChart'] = json.load(f)
+
+			with open(linePath) as f:
+				entry['lineChart'] = json.load(f)
+
+	return json.dumps(result)
+
 
 @app.route('/start_simulation', methods=['POST'])
 @cross_origin()
@@ -35,8 +59,8 @@ def start_simulation():
 
 	logs = execute_java(args)
 
-	piePath = '/Users/skulkarni9/Desktop/8thSem/GSS/server/data/pie_chart.json';
-	linePath = '/Users/skulkarni9/Desktop/8thSem/GSS/server/data/line_chart.json';
+	piePath = '/Users/skulkarni9/Desktop/8thSem/GSS/server/data/pie_chart.json'
+	linePath = '/Users/skulkarni9/Desktop/8thSem/GSS/server/data/line_chart.json'
 
 
 	result = {};
