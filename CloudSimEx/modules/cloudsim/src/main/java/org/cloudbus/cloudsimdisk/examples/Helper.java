@@ -102,6 +102,7 @@ public class Helper {
 
     // for graph purpose
     List<Map<String,Object>> diskStats = new ArrayList<Map<String,Object>>();
+    Map<String, Double> scenarioStat = new HashMap<>();
 
 
 	// Methods
@@ -776,6 +777,8 @@ public class Helper {
             map.put("max queue size",Collections.max(tempList.get(i).getQueueLengthHistory())*1.0);
 
             diskStats.add(map);
+
+
 		}
 
 		Log.printLine();
@@ -788,6 +791,9 @@ public class Helper {
 		WriteToLogFile.AddtoFile(String.format("Energy consumed by Spun Down Disks : %.3f Joule(s)", TotalStorageEnergyConsumedBySpunDownDisks));
 		WriteToLogFile.AddtoFile(String.format("Energy consumed by Entire Persistent Storage: %.3f Joule(s)", TotalStorageEnergy));
 
+        scenarioStat.put("always active disk power consumption", TotalStorageEnergyConsumedByActiveAlwaysDisks);
+        scenarioStat.put("spun down disk power consumption", TotalStorageEnergyConsumedBySpunDownDisks);
+        scenarioStat.put("all disk power consumption", TotalStorageEnergy);
 
 		// -----------------------------------------------------------------------
 
@@ -913,5 +919,9 @@ public class Helper {
 
 	public List<Map<String,Object>> getDiskStats(){
 	    return diskStats;
+    }
+
+    public Map<String, Double> getScenarioStats(){
+	    return scenarioStat;
     }
 }
