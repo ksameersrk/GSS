@@ -19,6 +19,7 @@ public class InterfaceDriver {
     {
         Gson jsonParser = new Gson();
         String filePathToJson = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/input_data.json";
+        //String filePathToJson = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/input_data.json";
         String jsonData = FileUtils.readFileToString(new File(filePathToJson));
         InputJSONObject inputObject = jsonParser.fromJson(jsonData, InputJSONObject.class);
 
@@ -85,7 +86,7 @@ public class InterfaceDriver {
         //Scenarios : this part is to be done in front end
         int SSDType = inputObject.getSsdDiskType();
         int percentageFlushAt = 90;
-        int percentageFlushTill = 0;
+        int percentageFlushTill = 70;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
         String pathToWorkload = "files/basic/operations/workload.txt";
@@ -242,7 +243,8 @@ public class InterfaceDriver {
     public static void dumpToFile(Map<String, Object> graphJson, String filename) throws IOException{
         Gson gson = new Gson();
         String jsonInString = gson.toJson(graphJson);
-        String path = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/scenario2/" + filename + ".json";
+        String path = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/" + filename + ".json";
+        //String path = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/scenario2/" + filename + ".json";
         FileUtils.writeStringToFile(new File(path), jsonInString);
     }
 
