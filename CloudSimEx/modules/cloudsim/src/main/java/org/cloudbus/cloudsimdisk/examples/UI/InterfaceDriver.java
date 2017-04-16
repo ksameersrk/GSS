@@ -15,10 +15,15 @@ import static org.cloudbus.cloudsimdisk.examples.SimulationScenarios.FlushEntire
  * Created by spadigi on 4/4/17.
  */
 public class InterfaceDriver {
+
+    //public static String base_directory = "/Users/skulkarni9/Desktop/8thSem/GSS/";
+    public static String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+
     public static void main(String args[]) throws Exception
     {
         Gson jsonParser = new Gson();
-        String filePathToJson = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/input_data.json";
+
+                String filePathToJson = base_directory + "server/data/input_data.json";
         //String filePathToJson = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/input_data.json";
         String jsonData = FileUtils.readFileToString(new File(filePathToJson));
         InputJSONObject inputObject = jsonParser.fromJson(jsonData, InputJSONObject.class);
@@ -109,7 +114,7 @@ public class InterfaceDriver {
 
             getSortedAndDiskNameChangedDiskStats(diskStats);
 
-            drawLineGraph(diskStats, "without staging disk");
+            drawLineGraph(diskStats, "without staging disk", scenario);
 
             Map<String, Double> scenarioStat = runner.getScenarioStats();
             Map<String, Object> pieChartJSON = new HashMap<>();
@@ -121,7 +126,7 @@ public class InterfaceDriver {
             diskPower.add(scenarioStat.get("spun down disk power consumption"));
             pieChartJSON.put("label", label);
             pieChartJSON.put("data", diskPower);
-            dumpToFile(pieChartJSON, "pieChartActiveVsSpundown");
+            dumpToFile(pieChartJSON, "pieChartActiveVsSpundown", scenario);
         }
         else if(scenario == 2) {
             addStagingDisk = true;
@@ -132,7 +137,7 @@ public class InterfaceDriver {
             List<Map<String,Object>> diskStats = runner.getDiskStats();
             getSortedAndDiskNameChangedDiskStats(diskStats);
             //System.out.println(diskStats.toString());
-            drawLineGraph(diskStats, "with staging disk");
+            drawLineGraph(diskStats, "with staging disk", scenario);
 
             Map<String, Double> scenarioStat = runner.getScenarioStats();
             Map<String, Object> pieChartJSON = new HashMap<>();
@@ -144,7 +149,7 @@ public class InterfaceDriver {
             diskPower.add(scenarioStat.get("spun down disk power consumption"));
             pieChartJSON.put("label", label);
             pieChartJSON.put("data", diskPower);
-            dumpToFile(pieChartJSON, "pieChartActiveVsSpundown");
+            dumpToFile(pieChartJSON, "pieChartActiveVsSpundown", scenario);
 
         }
         else if(scenario == 3){
@@ -188,18 +193,22 @@ public class InterfaceDriver {
             System.out.println(yAxisLabelTotalPowerSSD.toString());
             System.out.println(xAxisLabels.toString());
             System.out.println(yAxisLabelTotalPower.toString());
-            Map<String, Object> graphJsonTotalPower = getLineGraphJSON(xAxisLabels,yAxisLabelTotalPower,yAxisLabelTotalPowerSSD,"without staging disk",
+            Map<String, Object> graphJsonTotalPower = getLineGraphJSON(xAxisLabelsSSD,yAxisLabelTotalPower,yAxisLabelTotalPowerSSD,"without staging disk",
                     "with staging disk");
-            Map<String, Object> graphJsonIdleTime = getLineGraphJSON(xAxisLabels,yAxisLabelIdleTime,yAxisLabelIdleTimeSSD,"without staging disk","with staging disk");
-            Map<String, Object> graphJsonActiveTime = getLineGraphJSON(xAxisLabels,yAxisLabelActiveTime,yAxisLabelActiveTimeSSD,"without staging disk", "with staging disk");
-            Map<String, Object> graphJsonIdleEnergy = getLineGraphJSON(xAxisLabels,yAxisLabelIdleEnergy,yAxisLabelIdleEnergySSD,"without staging disk", "with staging disk");
-            Map<String, Object> graphJsonActiveEnergy = getLineGraphJSON(xAxisLabels,yAxisLabelActiveEnergy,yAxisLabelActiveEnergySSD,"without staging disk", "with staging disk");
+            Map<String, Object> graphJsonIdleTime = getLineGraphJSON(xAxisLabelsSSD,yAxisLabelIdleTime,yAxisLabelIdleTimeSSD,"without staging disk","with " +
+                    "staging disk");
+            Map<String, Object> graphJsonActiveTime = getLineGraphJSON(xAxisLabelsSSD,yAxisLabelActiveTime,yAxisLabelActiveTimeSSD,"without staging disk",
+                    "with staging disk");
+            Map<String, Object> graphJsonIdleEnergy = getLineGraphJSON(xAxisLabelsSSD,yAxisLabelIdleEnergy,yAxisLabelIdleEnergySSD,"without staging disk",
+                    "with staging disk");
+            Map<String, Object> graphJsonActiveEnergy = getLineGraphJSON(xAxisLabelsSSD,yAxisLabelActiveEnergy,yAxisLabelActiveEnergySSD,"without staging " +
+                    "disk", "with staging disk");
 
-            dumpToFile(graphJsonTotalPower, "line_chart_total_power");
-            dumpToFile(graphJsonIdleTime,"line_chart_idle_time");
-            dumpToFile(graphJsonActiveTime,"line_chart_active_time");
-            dumpToFile(graphJsonIdleEnergy,"line_chart_idle_energy");
-            dumpToFile(graphJsonActiveEnergy,"line_chart_active_energy");
+            dumpToFile(graphJsonTotalPower, "line_chart_total_power", scenario);
+            dumpToFile(graphJsonIdleTime,"line_chart_idle_time", scenario);
+            dumpToFile(graphJsonActiveTime,"line_chart_active_time", scenario);
+            dumpToFile(graphJsonIdleEnergy,"line_chart_idle_energy", scenario);
+            dumpToFile(graphJsonActiveEnergy,"line_chart_active_energy", scenario);
 
             Map<String, Double> scenarioStat = runner.getScenarioStats();
             Map<String, Object> pieChartJSON = new HashMap<>();
@@ -211,7 +220,7 @@ public class InterfaceDriver {
             diskPower.add(scenarioStat.get("spun down disk power consumption"));
             pieChartJSON.put("label", label);
             pieChartJSON.put("data", diskPower);
-            dumpToFile(pieChartJSON, "pieChartActiveVsSpundownWithoutStagingDisk");
+            dumpToFile(pieChartJSON, "pieChartActiveVsSpundownWithoutStagingDisk", scenario);
 
 
 
@@ -223,7 +232,7 @@ public class InterfaceDriver {
             diskPowerWithStagingDisk.add(scenarioStatSSD.get("spun down disk power consumption"));
             pieChartJSON.put("label", label);
             pieChartJSON.put("data", diskPower);
-            dumpToFile(pieChartJSON, "pieChartActiveVsSpundownWithStagingDisk");
+            dumpToFile(pieChartJSON, "pieChartActiveVsSpundownWithStagingDisk", scenario);
 
             List<String> labelSwiftVsGSS = new ArrayList<>();
             List<Double> diskPowerSwiftVsGSS = new ArrayList<>();
@@ -233,7 +242,7 @@ public class InterfaceDriver {
             diskPowerSwiftVsGSS.add(scenarioStatSSD.get("all disk power consumption"));
             pieChartJSONswiftVsGSS.put("label", labelSwiftVsGSS);
             pieChartJSONswiftVsGSS.put("data", diskPowerSwiftVsGSS);
-            dumpToFile(pieChartJSONswiftVsGSS, "pieChartWithVsWithoutSSD");
+            dumpToFile(pieChartJSONswiftVsGSS, "pieChartWithVsWithoutSSD", scenario);
 
         }
 
@@ -242,15 +251,16 @@ public class InterfaceDriver {
 
     }
 
-    public static void dumpToFile(Map<String, Object> graphJson, String filename) throws IOException{
+    public static void dumpToFile(Map<String, Object> graphJson, String filename, int scenario) throws IOException{
         Gson gson = new Gson();
         String jsonInString = gson.toJson(graphJson);
-        String path = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/scenario2/" + filename + ".json";
-        //String path = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/scenario3/" + filename + ".json";
+        //String path = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/scenario2/" + filename + ".json";
+        //String path = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/scenario2/" + filename + ".json";
+        String path = base_directory + "server/data/scenario" + Integer.toString(scenario) + "/" + filename + ".json";
         FileUtils.writeStringToFile(new File(path), jsonInString);
     }
 
-    public static void drawLineGraph(List<Map<String,Object>> diskStats, String seriesName) throws IOException{
+    public static void drawLineGraph(List<Map<String,Object>> diskStats, String seriesName, int scenario) throws IOException{
 
         List<String> xAxisLabels = getXaxisLabels(diskStats, "disk name");
         List<Double> yAxisLabelTotalPower = getYaxisLabels(diskStats, "total energy");
@@ -259,17 +269,19 @@ public class InterfaceDriver {
         List<Double> yAxisLabelIdleEnergy = getYaxisLabels(diskStats, "idle energy");
         List<Double> yAxisLabelActiveEnergy = getYaxisLabels(diskStats, "active energy");
 
+        System.out.println(xAxisLabels.toString());
+        System.out.println(yAxisLabelTotalPower.toString());
         Map<String, Object> graphJsonTotalPower = getLineGraphJSON(xAxisLabels,yAxisLabelTotalPower,seriesName);
         Map<String, Object> graphJsonIdleTime = getLineGraphJSON(xAxisLabels,yAxisLabelIdleTime,seriesName);
         Map<String, Object> graphJsonActiveTime = getLineGraphJSON(xAxisLabels,yAxisLabelActiveTime,seriesName);
         Map<String, Object> graphJsonIdleEnergy = getLineGraphJSON(xAxisLabels,yAxisLabelIdleEnergy,seriesName);
         Map<String, Object> graphJsonActiveEnergy = getLineGraphJSON(xAxisLabels,yAxisLabelActiveEnergy,seriesName);
 
-        dumpToFile(graphJsonTotalPower, "line_chart_total_power");
-        dumpToFile(graphJsonIdleTime,"line_chart_idle_time");
-        dumpToFile(graphJsonActiveTime,"line_chart_active_time");
-        dumpToFile(graphJsonIdleEnergy,"line_chart_idle_energy");
-        dumpToFile(graphJsonActiveEnergy,"line_chart_active_energy");
+        dumpToFile(graphJsonTotalPower, "line_chart_total_power", scenario);
+        dumpToFile(graphJsonIdleTime,"line_chart_idle_time", scenario);
+        dumpToFile(graphJsonActiveTime,"line_chart_active_time", scenario);
+        dumpToFile(graphJsonIdleEnergy,"line_chart_idle_energy", scenario);
+        dumpToFile(graphJsonActiveEnergy,"line_chart_active_energy", scenario);
     }
 
     public static Map<String, Object> getLineGraphJSON(List<String> xAxisLabels, List<Double> yAxisLabels, String series_name){
