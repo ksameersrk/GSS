@@ -660,9 +660,13 @@ public class Helper {
 	public void printResults(double endTimeSimulation, ArrayList<MyNode> nodeList) {
 		double TotalStorageEnergy = 0;
 		List<MyPowerHarddriveStorage> tempList = new ArrayList<MyPowerHarddriveStorage>();
-		for(MyNode n : nmmap.keySet()){
-			tempList.add(nmmap.get(n));
-		}
+//		for(MyNode n : nmmap.keySet()){
+//			tempList.add(nmmap.get(n));
+//		}
+
+        for(MyNode n : nodeList){
+            tempList.add(nmmap.get(n));
+        }
 
 		double totalSimulationTime = 0.0;
 		double maxSpunDownDiskActiveTime = 0.0;
@@ -766,7 +770,8 @@ public class Helper {
 
 			// for graph purpose
             Map<String,Object> map = new HashMap<String, Object>();
-            map.put("disk name", tempList.get(i).getName().split("HDDNode")[1]);
+            //map.put("disk name", tempList.get(i).getName().split("HDDNode")[1]);
+            map.put("disk name", nodeList.get(i).getName().split("Node")[1]);
             map.put("idle time", idleTime);
             map.put("active time",activeTime);
             map.put("spun down time",spunDowntime);

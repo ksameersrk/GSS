@@ -184,7 +184,8 @@ public class FlushEntireStagingDiskContents {
             WriteToLogFile.AddtoFile("Staging Disk : True");
             // if there a staging disk included
             stagingDiskSimulate(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, pathToInputLog, nodeToTaskMapping, nodeList,
-                    noOfActiveAlwaysDisks, myRing, noOfSpunDownDisks, stagingDiskRing, percentageFlushAt, percentageFlushTill, cachingMechanism, numberOfOperations);
+                    noOfActiveAlwaysDisks, myRing, noOfSpunDownDisks, stagingDiskRing, percentageFlushAt, percentageFlushTill, cachingMechanism,
+                    numberOfOperations, pathToStartingFileList);
 
         }
 
@@ -211,12 +212,35 @@ public class FlushEntireStagingDiskContents {
 
     }
 
+    public static void updateAllFilesUploadedWithStartingFileList(Map<String, Double> allFilesUploaded, String pathToStartingFileList, int numberOfOperations)
+            throws IOException{
+        // key : filenaem, value : filesize
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(pathToStartingFileList)))) {
+            int count = 0;
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                String data[] = line.split(",");
+                allFilesUploaded.put(data[0], Double.parseDouble(data[1]));
+                if(numberOfOperations > 0){
+                    if(count == numberOfOperations){
+                        break;
+                    }
+                    else {
+                        count = count + 1;
+                    }
+                }
+            }
+        }
+
+    }
+
     public static void stagingDiskSimulate(ArrayList<String> arrivalFile, ArrayList<String> dataFile, ArrayList<String> requiredFile,
                                            ArrayList<String> updateFile, ArrayList<String> deleteFile, String inputLog,
                                            HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<MyNode> nodeList, int noOfActiveAlwaysDisks,
                                            MyRing ring, int noOfSpunDownDisks,
                                            MyRing stagingDiskRing, int percentageToFlushAt, int percentageToFlushTill, String cachingMechanism, int
-                                                   noOfOperations) throws
+                                                   noOfOperations, String pathToStartingFileList) throws
             Exception {
         List<MyNode> stagingDiskNodes = stagingDiskRing.getAllNodes();
         Map<MyNode, Double> stagingDiskMemoryUsed = new LinkedHashMap<MyNode, Double>();
@@ -236,7 +260,7 @@ public class FlushEntireStagingDiskContents {
             stagingDiskUpperThresholdMemory.put(n, (Double) (n.getHddModel().getCapacity() * upperThreshold));
             stagingDiskFileList.put(n, new HashMap<String, Double>());
 
-            System.out.println("Flushing when upper threshold of " + upperThreshold.toString() + " is reached.");
+            //System.out.println("Flushing when upper threshold of " + upperThreshold.toString() + " is reached.");
             WriteToLogFile.AddtoFile(String.format("%8sFlushing when upper threshold of %9.3f is reached", "", upperThreshold));
             WriteToLogFile.AddtoFile(String.format("%8sFlushing till lower threshold of %9.3f is reached", "", lowerThreshold));
 
@@ -256,6 +280,9 @@ public class FlushEntireStagingDiskContents {
         // scenario when we do a get and file is not in staging disk, so when we get it from always active HDD we need to PUT it into staging disk, for this
         // we need to know the file size. Hence we use this dict to store it
         Map<String, Double> tmpToBeDeletedList = new LinkedHashMap<String, Double>();
+
+        //update allFilesUploaded with startingFileList
+        updateAllFilesUploadedWithStartingFileList(allFilesUploaded, pathToStartingFileList, noOfOperations);
 
         // iterate through the operations chronologically
         for (Double key : chronologicallyOrderedOperations.keySet()) {
@@ -329,23 +356,22 @@ public class FlushEntireStagingDiskContents {
                         }
 
 
-                        // THIS BLOCK OF CODE IS REQUIRED FOR LRU ONLY
-                        // also when file not in stagingDisk and we get it from end node, should we add it to stagingDisk for future use
-                        if(cachingMechanism.equals("LRU")) {
 
-                            String putOp = "PUT," + data[1] + "," + data[2] + "," + allFilesUploaded.get(data[2]);
-                            Double memToBeAdded = stagingDiskPutOperation(putOp, stagingDisk, noOfActiveAlwaysDisks, putOp.split(","), stagingDiskMemoryUsed.get
-                                            (stagingDisk),
-                                    stagingDiskUpperThresholdMemory.get(stagingDisk),
-                                    tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
+                        // bcoz file was not in staging disk, we now add it to staging disk
 
-                                    tmpdataFile,
-                                    tmpdeleteFile,
-                                    nodeList,
-                                    nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown);
+                        String putOp = "PUT," + data[1] + "," + data[2] + "," + allFilesUploaded.get(data[2]);
+                        Double memToBeAdded = stagingDiskPutOperation(putOp, stagingDisk, noOfActiveAlwaysDisks, putOp.split(","), stagingDiskMemoryUsed.get
+                                        (stagingDisk),
+                                stagingDiskUpperThresholdMemory.get(stagingDisk),
+                                tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
 
-                            stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) + memToBeAdded);
-                        }
+                                tmpdataFile,
+                                tmpdeleteFile,
+                                nodeList,
+                                nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown);
+
+                        stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) + memToBeAdded);
+
 
                     }
                 } else if (data[0].equals("UPDATE")) {

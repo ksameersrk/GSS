@@ -16,8 +16,8 @@ import static org.cloudbus.cloudsimdisk.examples.SimulationScenarios.FlushEntire
  */
 public class InterfaceDriver {
 
-    //public static String base_directory = "/Users/skulkarni9/Desktop/8thSem/GSS/";
-    public static String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+    public static String base_directory = "/Users/skulkarni9/Desktop/8thSem/GSS/";
+    //public static String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
 
     public static void main(String args[]) throws Exception
     {
@@ -86,7 +86,7 @@ public class InterfaceDriver {
         int predefindedWorkloadNumber = inputObject.getPredefindedWorkloadNumber();
 
         int noOfReplicas = 3; //default 3
-        String cachingMechanism = "FIFO"; // FIFO also possible #TODO LRU not working
+        String cachingMechanism = "LRU"; // FIFO also possible #TODO LRU not working
         int HDDType = inputObject.getHddDiskType(); // basicallly this number is the id for storage and power model, will assign ids to them
         //Scenarios : this part is to be done in front end
         int SSDType = inputObject.getSsdDiskType();
