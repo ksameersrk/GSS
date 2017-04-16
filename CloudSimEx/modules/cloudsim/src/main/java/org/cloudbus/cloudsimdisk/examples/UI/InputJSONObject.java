@@ -6,13 +6,15 @@ package org.cloudbus.cloudsimdisk.examples.UI;
 public class InputJSONObject
 {
     Integer totalNoOfNodes;
-    Boolean addStagingDisk;
+    Integer scenario;
     Integer numberOfOperations;
-    String distribution;
     Integer predefindedWorkloadNumber;
     Integer noOfReplicas;
     String cachingMechanism;
-    Integer diskType;
+    Integer hddDiskType;
+    Integer ssdDiskType;
+    String workloadType;
+    String manualTextarea;
 
     public Integer getTotalNoOfNodes() {
         return totalNoOfNodes;
@@ -22,12 +24,12 @@ public class InputJSONObject
         this.totalNoOfNodes = totalNoOfNodes;
     }
 
-    public Boolean getAddStagingDisk() {
-        return addStagingDisk;
+    public Integer getScenario() {
+        return scenario;
     }
 
-    public void setAddStagingDisk(Boolean addStagingDisk) {
-        this.addStagingDisk = addStagingDisk;
+    public void setScenario(Integer scenario) {
+        this.scenario = scenario;
     }
 
     public Integer getNumberOfOperations() {
@@ -36,14 +38,6 @@ public class InputJSONObject
 
     public void setNumberOfOperations(Integer numberOfOperations) {
         this.numberOfOperations = numberOfOperations;
-    }
-
-    public String getDistribution() {
-        return distribution;
-    }
-
-    public void setDistribution(String distribution) {
-        this.distribution = distribution;
     }
 
     public Integer getPredefindedWorkloadNumber() {
@@ -70,11 +64,35 @@ public class InputJSONObject
         this.cachingMechanism = cachingMechanism;
     }
 
-    public Integer getDiskType() {
-        return diskType;
+    public Integer getHddDiskType() {
+        return hddDiskType;
     }
 
-    public void setDiskType(Integer diskType) {
-        this.diskType = diskType;
+    public void setHddDiskType(Integer hddDiskType) {
+        this.hddDiskType = hddDiskType;
+    }
+
+    public Integer getSsdDiskType() {
+        return ssdDiskType;
+    }
+
+    public void setSsdDiskType(Integer sddDiskType) {
+        this.ssdDiskType = sddDiskType;
+    }
+
+    public String getWorkloadType() {
+        return workloadType;
+    }
+
+    public void setWorkloadType(String workloadType) {
+        this.workloadType = workloadType;
+    }
+
+    public String getManualTextarea() {
+        return manualTextarea;
+    }
+
+    public void setManualTextarea(String manualTextarea) {
+        this.manualTextarea = manualTextarea;
     }
 }
