@@ -170,21 +170,23 @@ public class InterfaceDriver {
 
             getSortedAndDiskNameChangedDiskStats(diskStatsSSD);
 
-            //List<String> xAxisLabels = getXaxisLabels(diskStats, "disk name");
-            List<Double> yAxisLabelTotalPowerSSD = getYaxisLabels(diskStats, "total energy");
-            List<Double> yAxisLabelIdleTimeSSD = getYaxisLabels(diskStats, "idle time");
-            List<Double> yAxisLabelActiveTimeSSD = getYaxisLabels(diskStats,"active time" );
-            List<Double> yAxisLabelIdleEnergySSD = getYaxisLabels(diskStats, "idle energy");
-            List<Double> yAxisLabelActiveEnergySSD = getYaxisLabels(diskStats, "active energy");
+            List<String> xAxisLabelsSSD = getXaxisLabels(diskStats, "disk name");
+            List<Double> yAxisLabelTotalPowerSSD = getYaxisLabels(diskStatsSSD, "total energy");
+            List<Double> yAxisLabelIdleTimeSSD = getYaxisLabels(diskStatsSSD, "idle time");
+            List<Double> yAxisLabelActiveTimeSSD = getYaxisLabels(diskStatsSSD,"active time" );
+            List<Double> yAxisLabelIdleEnergySSD = getYaxisLabels(diskStatsSSD, "idle energy");
+            List<Double> yAxisLabelActiveEnergySSD = getYaxisLabels(diskStatsSSD, "active energy");
 
-            List<String> xAxisLabels = getXaxisLabels(diskStatsSSD, "disk name");
-            List<Double> yAxisLabelTotalPower = getYaxisLabels(diskStatsSSD, "total energy");
-            List<Double> yAxisLabelIdleTime = getYaxisLabels(diskStatsSSD, "idle time");
-            List<Double> yAxisLabelActiveTime = getYaxisLabels(diskStatsSSD,"active time" );
-            List<Double> yAxisLabelIdleEnergy = getYaxisLabels(diskStatsSSD, "idle energy");
-            List<Double> yAxisLabelActiveEnergy = getYaxisLabels(diskStatsSSD, "active energy");
+            List<String> xAxisLabels = getXaxisLabels(diskStats, "disk name");
+            List<Double> yAxisLabelTotalPower = getYaxisLabels(diskStats, "total energy");
+            List<Double> yAxisLabelIdleTime = getYaxisLabels(diskStats, "idle time");
+            List<Double> yAxisLabelActiveTime = getYaxisLabels(diskStats,"active time" );
+            List<Double> yAxisLabelIdleEnergy = getYaxisLabels(diskStats, "idle energy");
+            List<Double> yAxisLabelActiveEnergy = getYaxisLabels(diskStats, "active energy");
 
+            System.out.println(xAxisLabelsSSD.toString());
             System.out.println(yAxisLabelTotalPowerSSD.toString());
+            System.out.println(xAxisLabels.toString());
             System.out.println(yAxisLabelTotalPower.toString());
             Map<String, Object> graphJsonTotalPower = getLineGraphJSON(xAxisLabels,yAxisLabelTotalPower,yAxisLabelTotalPowerSSD,"without staging disk",
                     "with staging disk");
@@ -243,8 +245,8 @@ public class InterfaceDriver {
     public static void dumpToFile(Map<String, Object> graphJson, String filename) throws IOException{
         Gson gson = new Gson();
         String jsonInString = gson.toJson(graphJson);
-        String path = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/" + filename + ".json";
-        //String path = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/scenario2/" + filename + ".json";
+        String path = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/scenario2/" + filename + ".json";
+        //String path = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/scenario3/" + filename + ".json";
         FileUtils.writeStringToFile(new File(path), jsonInString);
     }
 
