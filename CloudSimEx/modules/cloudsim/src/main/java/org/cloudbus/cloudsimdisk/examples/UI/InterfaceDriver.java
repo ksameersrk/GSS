@@ -256,7 +256,7 @@ public class InterfaceDriver {
         String jsonInString = gson.toJson(graphJson);
         //String path = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/scenario2/" + filename + ".json";
         //String path = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/scenario2/" + filename + ".json";
-        String path = base_directory + "server/data/scenario" + Integer.toString(scenario) + "/" + filename + ".json";
+        String path = base_directory + "server/data/" + filename + ".json";
         FileUtils.writeStringToFile(new File(path), jsonInString);
     }
 
