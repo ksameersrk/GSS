@@ -18,36 +18,11 @@ public class InterfaceDriver {
     public static void main(String args[]) throws Exception
     {
         Gson jsonParser = new Gson();
-        String filePathToJson = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/input_data.json";
+        String filePathToJson = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/input_data.json";
         String jsonData = FileUtils.readFileToString(new File(filePathToJson));
         InputJSONObject inputObject = jsonParser.fromJson(jsonData, InputJSONObject.class);
 
-
         /*
-        int numberOfOperations = 10;
-        String distribution = "read intensive";
-
-        // will have a set of predefined workloads , user selects one of them,
-        // predefindedWorkloadNumber variable stores the workload id
-        int predefindedWorkloadNumber = 1;
-
-        int noOfReplicas = 3; //default 3
-        String cachingMechanism = "LRU"; // FIFO also possible
-        int diskType = 1; // basicallly this number is the id for storage and power model, will assign ids to them
-        //Scenarios : this part is to be done in front end
-        */
-        /*
-        int numberOfOperations = inputObject.getNumberOfOperations();
-        String distribution = inputObject.getDistribution();
-
-        // will have a set of predefined workloads , user selects one of them,
-        // predefindedWorkloadNumber variable stores the workload id
-        int predefindedWorkloadNumber = inputObject.getPredefindedWorkloadNumber();
-
-        int noOfReplicas = inputObject.getNoOfReplicas(); //default 3
-        String cachingMechanism = inputObject.getCachingMechanism(); // FIFO also possible
-        int diskType = inputObject.getDiskType(); // basicallly this number is the id for storage and power model, will assign ids to them
-        */
         // node properties
         int totalNoOfNodes = 16;
 
@@ -77,6 +52,50 @@ public class InterfaceDriver {
         boolean generateInputLog = false;
 
         int scenario = 2;
+        */
+
+        // My thing starting here
+        System.out.println(inputObject.getCachingMechanism());
+        System.out.println(inputObject.getHddDiskType());
+        System.out.println(inputObject.getManualTextarea());
+        System.out.println(inputObject.getNoOfReplicas());
+        System.out.println(inputObject.getNumberOfOperations());
+        System.out.println(inputObject.getPredefindedWorkloadNumber());
+        System.out.println(inputObject.getScenario());
+        System.out.println(inputObject.getSsdDiskType());
+        System.out.println(inputObject.getTotalNoOfNodes());
+        System.out.println(inputObject.getWorkloadType());
+
+        // node properties
+        int totalNoOfNodes = inputObject.getTotalNoOfNodes();
+
+        // staging disk properties
+        boolean addStagingDisk = true;
+
+        int numberOfOperations = inputObject.getNumberOfOperations();
+        String distribution = "read intensive";
+
+        // will have a set of predefined workloads , user selects one of them,
+        // predefindedWorkloadNumber variable stores the workload id
+        int predefindedWorkloadNumber = inputObject.getPredefindedWorkloadNumber();
+
+        int noOfReplicas = 3; //default 3
+        String cachingMechanism = "FIFO"; // FIFO also possible #TODO LRU not working
+        int HDDType = inputObject.getHddDiskType(); // basicallly this number is the id for storage and power model, will assign ids to them
+        //Scenarios : this part is to be done in front end
+        int SSDType = inputObject.getSsdDiskType();
+        int percentageFlushAt = 90;
+        int percentageFlushTill = 0;
+        boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
+
+        String pathToWorkload = "files/basic/operations/workload.txt";
+        String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
+        String pathToInputLog = "files/basic/operations/idealInputLog.txt";
+        boolean generateInputLog = false;
+
+        int scenario = inputObject.getScenario();
+        // My thing ending here
+
         if(scenario == 1){
             addStagingDisk = false;
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
@@ -223,7 +242,7 @@ public class InterfaceDriver {
     public static void dumpToFile(Map<String, Object> graphJson, String filename) throws IOException{
         Gson gson = new Gson();
         String jsonInString = gson.toJson(graphJson);
-        String path = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/scenario2/" + filename + ".json";
+        String path = "/Users/skulkarni9/Desktop/8thSem/GSS/server/data/scenario2/" + filename + ".json";
         FileUtils.writeStringToFile(new File(path), jsonInString);
     }
 

@@ -31,17 +31,47 @@ def large_datasets():
 		result["tableData"] = json.load(f)
 		for entry in result["tableData"]:
 			id_ = entry["id"]
-			piePath = rootPath+id_+"/pie_chart.json"
-			linePath = rootPath+id_+"/line_chart.json"
-			logsPath = rootPath+id_+"/output_logs.txt"
+			request_scenario = int(entry["scenario"])
+			entry["logs"] = rootPath+id_+"/output_logs.txt"
 
-			entry["logs"] = logsPath
+			lc_ae_path = rootPath+id_+'/line_chart_active_energy.json'
+			lc_at_path = rootPath+id_+'/line_chart_active_time.json'
+			lc_ie_path = rootPath+id_+'/line_chart_idle_energy.json'
+			lc_it_path = rootPath+id_+'/line_chart_idle_time.json'
+			lc_tp_path = rootPath+id_+'/line_chart_total_power.json'
+			pie_with_path = rootPath+id_+'/pieChartActiveVsSpundownWithStagingDisk.json'
+			pie_without_path = rootPath+id_+'/pieChartActiveVsSpundownWithoutStagingDisk.json'
+			pie_both_path = rootPath+id_+'/pieChartWithVsWithoutSSD.json'
+			pie_1and2_path = rootPath+id_+'/pieChartActiveVsSpundown.json'
 
-			with open(piePath) as f:
-				entry['pieChart'] = json.load(f)
+			with open(lc_ae_path) as f:
+				entry['lc_ae_path'] = json.load(f)
 
-			with open(linePath) as f:
-				entry['lineChart'] = json.load(f)
+			with open(lc_at_path) as f:
+				entry['lc_at_path'] = json.load(f)
+
+			with open(lc_ie_path) as f:
+				entry['lc_ie_path'] = json.load(f)
+
+			with open(lc_it_path) as f:
+				entry['lc_it_path'] = json.load(f)
+
+			with open(lc_tp_path) as f:
+				entry['lc_tp_path'] = json.load(f)
+
+			if request_scenario == 1:
+				with open(pie_1and2_path) as f:
+					entry['pie_without_path'] = json.load(f)
+			elif request_scenario == 2:
+				with open(pie_1and2_path) as f:
+					entry['pie_with_path'] = json.load(f)
+			elif request_scenario == 3:
+				with open(pie_without_path) as f:
+					entry['pie_without_path'] = json.load(f)
+				with open(pie_with_path) as f:
+					entry['pie_with_path'] = json.load(f)
+				with open(pie_both_path) as f:
+					entry['pie_both_path'] = json.load(f)
 
 	return json.dumps(result)
 
@@ -78,6 +108,7 @@ def start_simulation():
 	pieChartActiveVsSpundownWithStagingDisk.json
 	pieChartActiveVsSpundownWithoutStagingDisk.json
 	pieChartWithVsWithoutSSD.json
+	pieChartActiveVsSpundown.json
 	'''
 
 	lc_ae_path = rootPath+'line_chart_active_energy.json'
@@ -88,6 +119,7 @@ def start_simulation():
 	pie_with_path = rootPath+'pieChartActiveVsSpundownWithStagingDisk.json'
 	pie_without_path = rootPath+'pieChartActiveVsSpundownWithoutStagingDisk.json'
 	pie_both_path = rootPath+'pieChartWithVsWithoutSSD.json'
+	pie_1and2_path = rootPath+'pieChartActiveVsSpundown.json'
 
 	with open(lc_ae_path) as f:
 		result['lc_ae_path'] = json.load(f)
@@ -105,10 +137,10 @@ def start_simulation():
 		result['lc_tp_path'] = json.load(f)
 
 	if request_scenario == 1:
-		with open(pie_without_path) as f:
+		with open(pie_1and2_path) as f:
 			result['pie_without_path'] = json.load(f)
 	elif request_scenario == 2:
-		with open(pie_with_path) as f:
+		with open(pie_1and2_path) as f:
 			result['pie_with_path'] = json.load(f)
 	elif request_scenario == 3:
 		with open(pie_without_path) as f:
