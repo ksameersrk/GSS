@@ -86,7 +86,7 @@ public class InterfaceDriver {
         int predefindedWorkloadNumber = inputObject.getPredefindedWorkloadNumber();
 
         int noOfReplicas = 3; //default 3
-        String cachingMechanism = "LRU"; // FIFO also possible #TODO LRU not working
+        String cachingMechanism = "LRU"; // FIFO also possible
         int HDDType = inputObject.getHddDiskType(); // basicallly this number is the id for storage and power model, will assign ids to them
         //Scenarios : this part is to be done in front end
         int SSDType = inputObject.getSsdDiskType();
@@ -175,7 +175,7 @@ public class InterfaceDriver {
 
             getSortedAndDiskNameChangedDiskStats(diskStatsSSD);
 
-            List<String> xAxisLabelsSSD = getXaxisLabels(diskStats, "disk name");
+            List<String> xAxisLabelsSSD = getXaxisLabels(diskStatsSSD, "disk name");
             List<Double> yAxisLabelTotalPowerSSD = getYaxisLabels(diskStatsSSD, "total energy");
             List<Double> yAxisLabelIdleTimeSSD = getYaxisLabels(diskStatsSSD, "idle time");
             List<Double> yAxisLabelActiveTimeSSD = getYaxisLabels(diskStatsSSD,"active time" );
