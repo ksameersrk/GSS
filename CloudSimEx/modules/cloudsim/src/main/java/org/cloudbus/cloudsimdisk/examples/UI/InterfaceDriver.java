@@ -52,7 +52,7 @@ public class InterfaceDriver {
         int totalNoOfNodes = 16;
 
         // staging disk properties
-        boolean addStagingDisk = true;
+        boolean addStagingDisk;
 
         int numberOfOperations = 10;
         String distribution = "read intensive";
@@ -67,15 +67,16 @@ public class InterfaceDriver {
         //Scenarios : this part is to be done in front end
         int SSDType = 1;
         int percentageFlushAt = 90;
-        int percentageFlushTill = 0;
+        int percentageFlushTill = 70;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
-        String pathToWorkload = "files/basic/operations/workload.txt";
+        //String pathToWorkload = "files/basic/operations/workload.txt";
+        String pathToWorkload = "/Users/spadigi/Desktop/fyp_5k_workload.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
         String pathToInputLog = "files/basic/operations/idealInputLog.txt";
         boolean generateInputLog = false;
 
-        int scenario = 3;
+        int scenario = 2;
         if(scenario == 1){
             addStagingDisk = false;
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
@@ -109,6 +110,7 @@ public class InterfaceDriver {
                     percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
 
             List<Map<String,Object>> diskStats = runner.getDiskStats();
+            getSortedAndDiskNameChangedDiskStats(diskStats);
             //System.out.println(diskStats.toString());
             drawLineGraph(diskStats, "with staging disk");
 
@@ -134,6 +136,7 @@ public class InterfaceDriver {
                     percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
 
             List<Map<String,Object>> diskStats = runner.getDiskStats();
+
             //System.out.println(diskStats.toString());
             getSortedAndDiskNameChangedDiskStats(diskStats);
 
@@ -154,13 +157,15 @@ public class InterfaceDriver {
             List<Double> yAxisLabelIdleEnergySSD = getYaxisLabels(diskStats, "idle energy");
             List<Double> yAxisLabelActiveEnergySSD = getYaxisLabels(diskStats, "active energy");
 
-            List<String> xAxisLabels = getXaxisLabels(diskStats, "disk name");
-            List<Double> yAxisLabelTotalPower = getYaxisLabels(diskStats, "total energy");
-            List<Double> yAxisLabelIdleTime = getYaxisLabels(diskStats, "idle time");
-            List<Double> yAxisLabelActiveTime = getYaxisLabels(diskStats,"active time" );
-            List<Double> yAxisLabelIdleEnergy = getYaxisLabels(diskStats, "idle energy");
-            List<Double> yAxisLabelActiveEnergy = getYaxisLabels(diskStats, "active energy");
+            List<String> xAxisLabels = getXaxisLabels(diskStatsSSD, "disk name");
+            List<Double> yAxisLabelTotalPower = getYaxisLabels(diskStatsSSD, "total energy");
+            List<Double> yAxisLabelIdleTime = getYaxisLabels(diskStatsSSD, "idle time");
+            List<Double> yAxisLabelActiveTime = getYaxisLabels(diskStatsSSD,"active time" );
+            List<Double> yAxisLabelIdleEnergy = getYaxisLabels(diskStatsSSD, "idle energy");
+            List<Double> yAxisLabelActiveEnergy = getYaxisLabels(diskStatsSSD, "active energy");
 
+            System.out.println(yAxisLabelTotalPowerSSD.toString());
+            System.out.println(yAxisLabelTotalPower.toString());
             Map<String, Object> graphJsonTotalPower = getLineGraphJSON(xAxisLabels,yAxisLabelTotalPower,yAxisLabelTotalPowerSSD,"without staging disk",
                     "with staging disk");
             Map<String, Object> graphJsonIdleTime = getLineGraphJSON(xAxisLabels,yAxisLabelIdleTime,yAxisLabelIdleTimeSSD,"without staging disk","with staging disk");
@@ -218,7 +223,7 @@ public class InterfaceDriver {
     public static void dumpToFile(Map<String, Object> graphJson, String filename) throws IOException{
         Gson gson = new Gson();
         String jsonInString = gson.toJson(graphJson);
-        String path = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/" + filename + ".json";
+        String path = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/scenario2/" + filename + ".json";
         FileUtils.writeStringToFile(new File(path), jsonInString);
     }
 
@@ -259,6 +264,8 @@ public class InterfaceDriver {
 
     public static Map<String, Object> getLineGraphJSON(List<String> xAxisLabels, List<Double> yAxisLabels0, List<Double> yAxisLabels1, String series_name0,
                                                        String series_name1){
+
+
         Map<String, Object> graphJson = new HashMap<>();
         List<List<Double>> data = new ArrayList<>();
         List<String> series = new ArrayList<>();

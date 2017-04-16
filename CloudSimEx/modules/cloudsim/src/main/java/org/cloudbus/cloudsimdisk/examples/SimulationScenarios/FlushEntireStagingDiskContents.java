@@ -76,8 +76,8 @@ public class FlushEntireStagingDiskContents {
             // this section requires us to go and set the capacity of that type of SSD in StorageModelSSD* classes to be equal to totalStagingDiskCapacity
             int[] HDDCapacities = {6000000, 900000, 5000000};
             int[] SSDCapacities = {512000, 480000, 800000};
-            //totalHddRingStorageCapacity = totalNoOfNodes * (HDDCapacities[HDDType%3]);
-            //totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
+            totalHddRingStorageCapacity = totalNoOfNodes * (HDDCapacities[HDDType%3]);
+            totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
 
             // for quick execution
             totalStagingDiskCapacity = 100; // 5% capacity
@@ -175,21 +175,23 @@ public class FlushEntireStagingDiskContents {
         if (addStagingDisk == false) {
             WriteToLogFile.AddtoFile("Staging Disk : False");
             // pass the operation name to this getOperationFileList() method and it will return the op file to be passed to MyRunner
-            dataFile = getOperationFileList(pathToInputLog, "PUT", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
-            requiredFile = getOperationFileList(pathToInputLog, "GET", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
-            updateFile = getOperationFileList(pathToInputLog, "UPDATE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
-            deleteFile = getOperationFileList(pathToInputLog, "DELETE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks);
+            dataFile = getOperationFileList(pathToInputLog, "PUT", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks, numberOfOperations);
+            requiredFile = getOperationFileList(pathToInputLog, "GET", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks, numberOfOperations);
+            updateFile = getOperationFileList(pathToInputLog, "UPDATE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks, numberOfOperations);
+            deleteFile = getOperationFileList(pathToInputLog, "DELETE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks,
+                    numberOfOperations);
         } else {
             WriteToLogFile.AddtoFile("Staging Disk : True");
             // if there a staging disk included
             stagingDiskSimulate(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, pathToInputLog, nodeToTaskMapping, nodeList,
-                    noOfActiveAlwaysDisks, myRing, noOfSpunDownDisks, stagingDiskRing, percentageFlushAt, percentageFlushTill, cachingMechanism);
+                    noOfActiveAlwaysDisks, myRing, noOfSpunDownDisks, stagingDiskRing, percentageFlushAt, percentageFlushTill, cachingMechanism, numberOfOperations);
 
         }
 
         // list of all nodes on which operations are to be performed
         ArrayList<MyNode> allNodes = new ArrayList<MyNode>(myRing.getAllNodes());
-        allNodes.addAll(stagingDiskRing.getAllNodes());
+        if(addStagingDisk == true)
+            allNodes.addAll(stagingDiskRing.getAllNodes());
         allNodes.sort(Comparator.comparing(MyNode::getName));
         System.out.println("Check the mapping with assignment : ");
         for (MyNode n : allNodes) {
@@ -201,7 +203,7 @@ public class FlushEntireStagingDiskContents {
         Double totalEnergyConsumed = 0.0;
         // call performOperations() which performs all the CRUD operations as given in input and returns total power consumed
         MyRunner runner = performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing, stagingDiskRing,
-                pathToStartingFileList);
+                pathToStartingFileList, addStagingDisk);
 
         return runner;
         //System.out.println("\n\nTotal Energy Consumed : " + totalEnergyConsumed);
@@ -213,7 +215,8 @@ public class FlushEntireStagingDiskContents {
                                            ArrayList<String> updateFile, ArrayList<String> deleteFile, String inputLog,
                                            HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<MyNode> nodeList, int noOfActiveAlwaysDisks,
                                            MyRing ring, int noOfSpunDownDisks,
-                                           MyRing stagingDiskRing, int percentageToFlushAt, int percentageToFlushTill, String cachingMechanism) throws
+                                           MyRing stagingDiskRing, int percentageToFlushAt, int percentageToFlushTill, String cachingMechanism, int
+                                                   noOfOperations) throws
             Exception {
         List<MyNode> stagingDiskNodes = stagingDiskRing.getAllNodes();
         Map<MyNode, Double> stagingDiskMemoryUsed = new LinkedHashMap<MyNode, Double>();
@@ -241,7 +244,7 @@ public class FlushEntireStagingDiskContents {
 
 
         // get the entire list of operations in chronological order , time : list of operations to be performed at that time mapping
-        Map<Double, ArrayList<String>> chronologicallyOrderedOperations = getChronologicallyOrderedOperations(inputLog);
+        Map<Double, ArrayList<String>> chronologicallyOrderedOperations = getChronologicallyOrderedOperations(inputLog, noOfOperations);
         ArrayList<String> tmpdataFile = new ArrayList<>();
         ArrayList<String> tmprequiredFile = new ArrayList<>();
         ArrayList<String> tmpupdateFile = new ArrayList<>();
@@ -635,9 +638,10 @@ public class FlushEntireStagingDiskContents {
 
 
     // return map of time to operation mapping where keys indicating time are chronologically ordered
-    public static Map<Double, ArrayList<String>> getChronologicallyOrderedOperations(String inputLog) throws Exception {
+    public static Map<Double, ArrayList<String>> getChronologicallyOrderedOperations(String inputLog, int numberOfOperations) throws Exception {
         Map<Double, ArrayList<String>> chronologicallyOrderedOperations = new LinkedHashMap<Double, ArrayList<String>>();
         try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
+            int count = 0;
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
@@ -648,7 +652,14 @@ public class FlushEntireStagingDiskContents {
                     chronologicallyOrderedOperations.put(Double.parseDouble(data[1]), new ArrayList<String>(Arrays.asList(line)));
                 }
 
-
+                if(numberOfOperations > 0){
+                    if(count == numberOfOperations){
+                        break;
+                    }
+                    else {
+                        count = count + 1;
+                    }
+                }
 
             }
         }
@@ -657,9 +668,10 @@ public class FlushEntireStagingDiskContents {
 
     // get op list when staging disk is not involved
     public static ArrayList<String> getOperationFileList(String inputLog, String operation, HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<String>
-            arrivalFile, MyRing ring, ArrayList<MyNode> nodeList, int noOfActiveAlwaysDisks) throws Exception {
+            arrivalFile, MyRing ring, ArrayList<MyNode> nodeList, int noOfActiveAlwaysDisks, int numberOfOperations) throws Exception {
         ArrayList<String> operationFileList = new ArrayList<>();
 
+        int count = 0;
         try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -708,6 +720,15 @@ public class FlushEntireStagingDiskContents {
                         }
                     }
                 }
+
+                if(numberOfOperations > 0){
+                    if(count == numberOfOperations){
+                        break;
+                    }
+                    else {
+                        count = count + 1;
+                    }
+                }
             }
         }
         return operationFileList;
@@ -717,7 +738,8 @@ public class FlushEntireStagingDiskContents {
     // does the task of send the cloudlets and starting the simulation
     public static MyRunner performOperations(HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile,
                                            ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<MyNode>
-                                                   nodeList, MyRing myRing, MyRing stagingDiskRing, String pathToStartingFileList) throws Exception {
+                                                   nodeList, MyRing myRing, MyRing stagingDiskRing, String pathToStartingFileList, boolean addstagingDisk) throws
+            Exception {
         Runnable monitor = new Runnable() {
             @Override
             public void run() {
@@ -787,7 +809,8 @@ public class FlushEntireStagingDiskContents {
         String startingFilelist = pathToStartingFileList.split("files/")[1];
 
         ArrayList<MyNode> allNodes = new ArrayList<MyNode>(myRing.getAllNodes());
-        allNodes.addAll(stagingDiskRing.getAllNodes());
+        if(addstagingDisk)
+            allNodes.addAll(stagingDiskRing.getAllNodes());
         MyRunner runner = new MyRunner(nodeToTaskMapping, arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
 
         return runner;
@@ -797,7 +820,7 @@ public class FlushEntireStagingDiskContents {
 
     public static void main(String args[]) throws Exception{
         // node properties
-        int totalNoOfNodes = 16;
+        int totalNoOfNodes = 32;
 
         // staging disk properties
         boolean addStagingDisk = true;
