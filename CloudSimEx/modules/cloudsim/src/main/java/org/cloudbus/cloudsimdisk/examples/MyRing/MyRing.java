@@ -373,7 +373,7 @@ public class MyRing
     @Override
     public String toString()
     {
-        return this.myRegions.values().toString();
+        return "Ring : " +this.myRegions.values().toString();
     }
 
     public static MyRing buildRing(String fileName, int nodeCount, int partitionPower, int replicas, double overloadPercent)
