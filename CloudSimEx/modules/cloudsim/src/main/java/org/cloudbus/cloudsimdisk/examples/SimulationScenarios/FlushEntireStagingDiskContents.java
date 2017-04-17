@@ -313,7 +313,7 @@ public class FlushEntireStagingDiskContents {
                             tmpdataFile,
                             tmpdeleteFile,
                             nodeList,
-                            nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown);
+                            nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown, tmprequiredFile);
 
                     stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) + memToBeAdded);
                 } else if (data[0].equals("GET")) {
@@ -368,7 +368,7 @@ public class FlushEntireStagingDiskContents {
                                 tmpdataFile,
                                 tmpdeleteFile,
                                 nodeList,
-                                nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown);
+                                nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown, tmprequiredFile);
 
                         stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) + memToBeAdded);
 
@@ -388,7 +388,7 @@ public class FlushEntireStagingDiskContents {
                             stagingDiskMemoryUsed.get(stagingDisk),
                             stagingDiskUpperThresholdMemory.get(stagingDisk),
                             tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), noOfSpunDownDisks,
-                            tmpupdateFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown);
+                            tmpupdateFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown, tmprequiredFile);
                 } else if (data[0].equals("DELETE")) {
                     // delete everywhere
                     // if file in staging disk, then remove it and make note that it has been removed so that we can remove it from spun Down disk as well
@@ -442,13 +442,14 @@ public class FlushEntireStagingDiskContents {
                                               Map<String, Double> stagingDiskFileList, Double stagingDiskLowerThreshold,
                                               int noOfSpunDownDisks, ArrayList<String> tmpOpFile, ArrayList<String> tmpdeleteFile,
                                               ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping, MyRing ring, Map<String, Double>
-                                                      allFilesUploaded, ArrayList<String> newOperationsSinceLastSpinDown) {
+                                                      allFilesUploaded, ArrayList<String> newOperationsSinceLastSpinDown, ArrayList<String> tmpRequiredFile) {
         Double stagingDiskMemoryToBeAdded = 0.0;
         // if staging disk occupied more the stagingDiskMemoryUsed upper threshold
         if (stagingDiskMemoryUsed + Double.parseDouble(data[3]) > stagingDiskThresholdMemory) {
             stagingDiskMemoryToBeAdded += freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDisk, tmpToBeDeletedList,
                     stagingDiskFileList,
-                    stagingDiskLowerThreshold, noOfSpunDownDisks, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, newOperationsSinceLastSpinDown);
+                    stagingDiskLowerThreshold, noOfSpunDownDisks, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring,
+                    newOperationsSinceLastSpinDown, tmpRequiredFile);
         }
         // enough space in staging disk now
         tmpOpFile.add(op);
@@ -493,7 +494,7 @@ public class FlushEntireStagingDiskContents {
                                               Map<String, Double> tmpToBeDeletedList, Map<String, Double> stagingDiskFileList,
                                               Double stagingDiskLowerThreshold, int noOfSpunDownDisks, ArrayList<String> tmpOpFile,
                                               ArrayList<String> tmpdeleteFile, ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping,
-                                              MyRing ring, ArrayList<String> newOperationsSinceLastSpinDown) {
+                                              MyRing ring, ArrayList<String> newOperationsSinceLastSpinDown, ArrayList<String> tmpRequiredFile) {
         System.out.println("Flushing staging disk contents at time = " + data[1]);
         WriteToLogFile.AddtoFile(String.format("%8sFlushing staging disk contents at time = %8s ", "", data[1]));
         // remove oldest unused files such after removing them only 60% of stagingDisk mem is occupied
@@ -509,7 +510,7 @@ public class FlushEntireStagingDiskContents {
         }
         // READ from staging disk
         for (String file : tmpToBeAddedToSpunDownFiles.keySet()) {
-            tmpOpFile.add("READ,"+data[1]+","+file);
+            tmpRequiredFile.add("READ,"+data[1]+","+file);
             nodeToTaskMapping.get(stagingDisk).addTask("READ,"+data[1]+","+file);
             if (nodeToTaskMapping.containsKey(stagingDisk)) {
                 nodeToTaskMapping.get(stagingDisk).addTask("READ,"+data[1]+","+file);
@@ -536,7 +537,8 @@ public class FlushEntireStagingDiskContents {
         }
         // DELETE from staging disk
         for (String file : tmpToBeAddedToSpunDownFiles.keySet()) {
-            tmpOpFile.add("DELETE,"+data[1]+","+file);
+            //tmpOpFile.add("DELETE,"+data[1]+","+file);
+            tmpdeleteFile.add("DELETE,"+data[1]+","+file);
             nodeList.add(stagingDisk);
             if (nodeToTaskMapping.containsKey(stagingDisk)) {
                 nodeToTaskMapping.get(stagingDisk).addTask("DELETE,"+data[1]+","+file);
@@ -846,12 +848,12 @@ public class FlushEntireStagingDiskContents {
 
     public static void main(String args[]) throws Exception{
         // node properties
-        int totalNoOfNodes = 32;
+        int totalNoOfNodes = 16;
 
         // staging disk properties
         boolean addStagingDisk = true;
 
-        int numberOfOperations = 10;
+        int numberOfOperations = -1;
         String distribution = "read intensive";
 
         // will have a set of predefined workloads , user selects one of them,
@@ -859,7 +861,7 @@ public class FlushEntireStagingDiskContents {
         int predefindedWorkloadNumber = 1;
 
         int noOfReplicas = 3; //default 3
-        String cachingMechanism = "FIFO"; // FIFO also possible
+        String cachingMechanism = "LRU"; // FIFO also possible
         int HDDType = 0; // basicallly this number is the id for storage and power model, will assign ids to them
         //Scenarios : this part is to be done in front end
         int SSDType = 1;

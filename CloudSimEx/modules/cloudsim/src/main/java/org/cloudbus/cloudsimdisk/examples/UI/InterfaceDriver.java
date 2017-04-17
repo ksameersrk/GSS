@@ -16,8 +16,8 @@ import static org.cloudbus.cloudsimdisk.examples.SimulationScenarios.FlushEntire
  */
 public class InterfaceDriver {
 
-    public static String base_directory = "/Users/skulkarni9/Desktop/8thSem/GSS/";
-    //public static String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+    //public static String base_directory = "/Users/skulkarni9/Desktop/8thSem/GSS/";
+    public static String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
 
     public static void main(String args[]) throws Exception
     {
@@ -61,16 +61,16 @@ public class InterfaceDriver {
         */
 
         // My thing starting here
-        System.out.println(inputObject.getCachingMechanism());
-        System.out.println(inputObject.getHddDiskType());
-        System.out.println(inputObject.getManualTextarea());
-        System.out.println(inputObject.getNoOfReplicas());
-        System.out.println(inputObject.getNumberOfOperations());
-        System.out.println(inputObject.getPredefindedWorkloadNumber());
-        System.out.println(inputObject.getScenario());
-        System.out.println(inputObject.getSsdDiskType());
-        System.out.println(inputObject.getTotalNoOfNodes());
-        System.out.println(inputObject.getWorkloadType());
+        System.out.println("caching mach : " + inputObject.getCachingMechanism());
+        System.out.println("hdd type : " + inputObject.getHddDiskType());
+        System.out.println("manual text : " + inputObject.getManualTextarea());
+        System.out.println("no. of replicas : " + inputObject.getNoOfReplicas());
+        System.out.println("no. of ops : " + inputObject.getNumberOfOperations());
+        System.out.println("predefined workload no. : " + inputObject.getPredefindedWorkloadNumber());
+        System.out.println("scenario : " + inputObject.getScenario());
+        System.out.println("ssd type : " + inputObject.getSsdDiskType());
+        System.out.println("no. of nodes : " + inputObject.getTotalNoOfNodes());
+        System.out.println("workload type : " + inputObject.getWorkloadType());
 
         // node properties
         int totalNoOfNodes = inputObject.getTotalNoOfNodes();
@@ -97,7 +97,7 @@ public class InterfaceDriver {
         String pathToWorkload = "files/basic/operations/workload.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
         String pathToInputLog = "files/basic/operations/idealInputLog.txt";
-        boolean generateInputLog = false;
+        boolean generateInputLog = true;
 
         int scenario = inputObject.getScenario();
         // My thing ending here
