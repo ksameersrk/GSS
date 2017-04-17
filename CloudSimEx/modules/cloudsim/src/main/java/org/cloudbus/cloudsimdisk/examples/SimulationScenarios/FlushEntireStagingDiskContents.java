@@ -851,7 +851,7 @@ public class FlushEntireStagingDiskContents {
         int totalNoOfNodes = 16;
 
         // staging disk properties
-        boolean addStagingDisk = true;
+        boolean addStagingDisk = false;
 
         int numberOfOperations = -1;
         String distribution = "read intensive";
