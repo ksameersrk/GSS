@@ -10,7 +10,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 
 @Suite.SuiteClasses({
-        MyRingTest.class
+        MyRingTest.class, MySpindownOptimalAlgoTest.class
 })
 
 public class MyTestAll {

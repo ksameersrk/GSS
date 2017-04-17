@@ -1,50 +1,50 @@
-FIFO
-0
+LRU
+1
 
 3
 10
 1
-1
-0
-5
+3
+2
+4
 predefined_workload
 Check the mapping with assignment : 
-Node0 : file259, file259, file259, file259, file259, file259,
-Node1 : file23115,
-Node2 : file30943,
-Node3 : file20047, file31868, file20047,
+Node0 : file23115,
+Node1 : file259, file259, file259, file259, file259, file259,
+Node2 : file20047, file20047,
+Node3 : file30943, file31868,
 Starting simulation 
 
 Initialising...
-Starting file file259 on Node0
-Starting file file259 on Node4
+Starting file file259 on Node1
 Starting file file259 on Node2
-Starting file file30943 on Node2
-Starting file file30943 on Node4
+Starting file file259 on Node0
 Starting file file30943 on Node3
+Starting file file30943 on Node1
+Starting file file30943 on Node2
+Starting file file20047 on Node2
+Starting file file20047 on Node0
 Starting file file20047 on Node3
-Starting file file20047 on Node4
-Starting file file20047 on Node1
-Starting file file23115 on Node1
-Starting file file23115 on Node4
+Starting file file23115 on Node0
+Starting file file23115 on Node2
 Starting file file23115 on Node3
 Starting file file31868 on Node3
-Starting file file31868 on Node4
+Starting file file31868 on Node1
 Starting file file31868 on Node2
 Starting file file31869 on Node3
-Starting file file31869 on Node4
+Starting file file31869 on Node1
 Starting file file31869 on Node2
+Starting file file29809 on Node2
+Starting file file29809 on Node0
 Starting file file29809 on Node3
-Starting file file29809 on Node4
-Starting file file29809 on Node1
+Starting file file21652 on Node2
+Starting file file21652 on Node0
 Starting file file21652 on Node3
-Starting file file21652 on Node4
-Starting file file21652 on Node1
 Starting file file31870 on Node3
-Starting file file31870 on Node4
-Starting file file31870 on Node0
-Starting file file29811 on Node4
+Starting file file31870 on Node1
+Starting file file31870 on Node2
 Starting file file29811 on Node1
+Starting file file29811 on Node0
 Starting file file29811 on Node2
 Starting CloudSim version 3.0
 Broker is starting...
@@ -80,10 +80,10 @@ Entities started.
 
 0.073923: datacenter: Cloudlet # 5 has been successfully received. 
 
-0.089082: datacenter: Cloudlet # 5: <file23115> retrieved on Node HDDNode1.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+0.076907: datacenter: Cloudlet # 5: <file23115> retrieved on Node HDDNode0.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
            Queue Waiting time of  0.000000 Seconds(s).
-           Transaction time   of  0.015159 Seconde(s).
+           Transaction time   of  0.002984 Seconde(s).
            Arrival time at  0.073923 Seconde(s).
            Service started at  0.073923 Seconde(s).
 
@@ -97,20 +97,12 @@ Entities started.
 
 0.124665: datacenter: Cloudlet # 8 has been successfully received. 
 
-0.127430: datacenter: Cloudlet # 4: <file20047> retrieved on Node HDDNode3.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+0.138233: datacenter: Cloudlet # 4: <file20047> retrieved on Node HDDNode2.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
            Queue Waiting time of  0.000000 Seconds(s).
-           Transaction time   of  0.071171 Seconde(s).
+           Transaction time   of  0.081974 Seconde(s).
            Arrival time at  0.056259 Seconde(s).
            Service started at  0.056259 Seconde(s).
-
-
-0.135434: datacenter: Cloudlet # 6: <file31868> retrieved on Node HDDNode3.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
-           Queue Waiting time of  0.036972 Seconds(s).
-           Transaction time   of  0.008004 Seconde(s).
-           Arrival time at  0.090458 Seconde(s).
-           Service started at  0.127430 Seconde(s).
 
 
 
@@ -122,68 +114,76 @@ Entities started.
 
 0.177665: datacenter: Cloudlet # 11 has been successfully received. 
 
-0.205342: datacenter: Cloudlet # 10: <file20047> retrieved on Node HDDNode3.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
-           Queue Waiting time of -0.024338 Seconds(s).
-           Transaction time   of  0.069908 Seconde(s).
-           Arrival time at  0.159772 Seconde(s).
-           Service started at  0.135434 Seconde(s).
-
-
-0.208614: datacenter: Cloudlet # 2: <file30943> retrieved on Node HDDNode2.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+0.213660: datacenter: Cloudlet # 2: <file30943> retrieved on Node HDDNode3.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
            Queue Waiting time of  0.000000 Seconds(s).
-           Transaction time   of  0.190947 Seconde(s).
+           Transaction time   of  0.195993 Seconde(s).
            Arrival time at  0.017667 Seconde(s).
            Service started at  0.017667 Seconde(s).
 
 
-1.043295: datacenter: Cloudlet # 1: <file259> retrieved on Node HDDNode0.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+0.220914: datacenter: Cloudlet # 6: <file31868> retrieved on Node HDDNode3.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.123202 Seconds(s).
+           Transaction time   of  0.007254 Seconde(s).
+           Arrival time at  0.090458 Seconde(s).
+           Service started at  0.213660 Seconde(s).
+
+
+0.236813: datacenter: Cloudlet # 10: <file20047> retrieved on Node HDDNode2.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
            Queue Waiting time of  0.000000 Seconds(s).
-           Transaction time   of  1.043295 Seconde(s).
+           Transaction time   of  0.077041 Seconde(s).
+           Arrival time at  0.159772 Seconde(s).
+           Service started at  0.159772 Seconde(s).
+
+
+1.132875: datacenter: Cloudlet # 1: <file259> retrieved on Node HDDNode1.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.000000 Seconds(s).
+           Transaction time   of  1.132875 Seconde(s).
            Arrival time at  0.000000 Seconde(s).
            Service started at  0.000000 Seconde(s).
 
 
-2.098977: datacenter: Cloudlet # 3: <file259> retrieved on Node HDDNode0.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
-           Queue Waiting time of  1.007833 Seconds(s).
-           Transaction time   of  1.055682 Seconde(s).
+2.267671: datacenter: Cloudlet # 3: <file259> retrieved on Node HDDNode1.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  1.097413 Seconds(s).
+           Transaction time   of  1.134796 Seconde(s).
            Arrival time at  0.035462 Seconde(s).
-           Service started at  1.043295 Seconde(s).
+           Service started at  1.132875 Seconde(s).
 
 
-3.144278: datacenter: Cloudlet # 7: <file259> retrieved on Node HDDNode0.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
-           Queue Waiting time of  1.990742 Seconds(s).
-           Transaction time   of  1.045302 Seconde(s).
+3.400163: datacenter: Cloudlet # 7: <file259> retrieved on Node HDDNode1.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  2.159436 Seconds(s).
+           Transaction time   of  1.132491 Seconde(s).
            Arrival time at  0.108235 Seconde(s).
-           Service started at  2.098977 Seconde(s).
+           Service started at  2.267671 Seconde(s).
 
 
-4.183881: datacenter: Cloudlet # 8: <file259> retrieved on Node HDDNode0.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
-           Queue Waiting time of  3.019613 Seconds(s).
-           Transaction time   of  1.039603 Seconde(s).
+4.536792: datacenter: Cloudlet # 8: <file259> retrieved on Node HDDNode1.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  3.275498 Seconds(s).
+           Transaction time   of  1.136630 Seconde(s).
            Arrival time at  0.124665 Seconde(s).
-           Service started at  3.144278 Seconde(s).
+           Service started at  3.400163 Seconde(s).
 
 
-5.244163: datacenter: Cloudlet # 9: <file259> retrieved on Node HDDNode0.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
-           Queue Waiting time of  4.041783 Seconds(s).
-           Transaction time   of  1.060282 Seconde(s).
+5.669693: datacenter: Cloudlet # 9: <file259> retrieved on Node HDDNode1.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  4.394695 Seconds(s).
+           Transaction time   of  1.132900 Seconde(s).
            Arrival time at  0.142098 Seconde(s).
-           Service started at  4.183881 Seconde(s).
+           Service started at  4.536792 Seconde(s).
 
 
-6.285788: datacenter: Cloudlet # 11: <file259> retrieved on Node HDDNode0.
-           Power  consumption characteristics of disk = 11.270 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
-           Queue Waiting time of  5.066498 Seconds(s).
-           Transaction time   of  1.041625 Seconde(s).
+6.806520: datacenter: Cloudlet # 11: <file259> retrieved on Node HDDNode1.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  5.492028 Seconds(s).
+           Transaction time   of  1.136827 Seconde(s).
            Arrival time at  0.177665 Seconde(s).
-           Service started at  5.244163 Seconde(s).
+           Service started at  5.669693 Seconde(s).
 
 Simulation: No more future events
 CloudInformationService: Notify all CloudSim entities for shutting down.
@@ -198,46 +198,46 @@ Node "Node1"
 Storage "Node HDDNode1"
 	Disk behaviour (is spun down)	: false
 
-        Time in    Idle   mode:    12.556 second(s)
-        Time in   Active  mode:     0.015 second(s)
+        Time in    Idle   mode:     6.807 second(s)
+        Time in   Active  mode:     6.807 second(s)
         Time Spun Down :     0.000 second(s)
-        Time of the simulation:    12.572 second(s)
+        Time of the simulation:    13.613 second(s)
 
-        Energy consumed in  Idle   mode:    86.639 Joule(s)
-        Energy consumed in Active  mode:     0.171 Joule(s)
-        Energy consumed in  total      :    86.810 Joule(s)
+        Energy consumed in  Idle   mode:    20.420 Joule(s)
+        Energy consumed in Active  mode:    39.478 Joule(s)
+        Energy consumed in  total      :    59.897 Joule(s)
 
-        Maximum Queue size    :          1 operation(s)
+        Maximum Queue size    :          6 operation(s)
 
 
 Node "Node0"
 Storage "Node HDDNode0"
 	Disk behaviour (is spun down)	: false
 
-        Time in    Idle   mode:     6.286 second(s)
-        Time in   Active  mode:     6.286 second(s)
+        Time in    Idle   mode:    13.610 second(s)
+        Time in   Active  mode:     0.003 second(s)
         Time Spun Down :     0.000 second(s)
-        Time of the simulation:    12.572 second(s)
+        Time of the simulation:    13.613 second(s)
 
-        Energy consumed in  Idle   mode:    43.372 Joule(s)
-        Energy consumed in Active  mode:    70.841 Joule(s)
-        Energy consumed in  total      :   114.213 Joule(s)
+        Energy consumed in  Idle   mode:    40.830 Joule(s)
+        Energy consumed in Active  mode:     0.017 Joule(s)
+        Energy consumed in  total      :    40.847 Joule(s)
 
-        Maximum Queue size    :          6 operation(s)
+        Maximum Queue size    :          1 operation(s)
 
 
 Node "Node3"
 Storage "Node HDDNode3"
 	Disk behaviour (is spun down)	: false
 
-        Time in    Idle   mode:    12.422 second(s)
-        Time in   Active  mode:     0.149 second(s)
+        Time in    Idle   mode:    13.410 second(s)
+        Time in   Active  mode:     0.203 second(s)
         Time Spun Down :     0.000 second(s)
-        Time of the simulation:    12.572 second(s)
+        Time of the simulation:    13.613 second(s)
 
-        Energy consumed in  Idle   mode:    85.715 Joule(s)
-        Energy consumed in Active  mode:     1.680 Joule(s)
-        Energy consumed in  total      :    87.395 Joule(s)
+        Energy consumed in  Idle   mode:    40.229 Joule(s)
+        Energy consumed in Active  mode:     1.179 Joule(s)
+        Energy consumed in  total      :    41.408 Joule(s)
 
         Maximum Queue size    :          2 operation(s)
 
@@ -246,39 +246,492 @@ Node "Node2"
 Storage "Node HDDNode2"
 	Disk behaviour (is spun down)	: false
 
-        Time in    Idle   mode:    12.381 second(s)
-        Time in   Active  mode:     0.191 second(s)
+        Time in    Idle   mode:    13.454 second(s)
+        Time in   Active  mode:     0.159 second(s)
         Time Spun Down :     0.000 second(s)
-        Time of the simulation:    12.572 second(s)
+        Time of the simulation:    13.613 second(s)
 
-        Energy consumed in  Idle   mode:    85.426 Joule(s)
-        Energy consumed in Active  mode:     2.152 Joule(s)
-        Energy consumed in  total      :    87.578 Joule(s)
+        Energy consumed in  Idle   mode:    40.362 Joule(s)
+        Energy consumed in Active  mode:     0.922 Joule(s)
+        Energy consumed in  total      :    41.284 Joule(s)
 
         Maximum Queue size    :          1 operation(s)
 
 
-Node "Node4"
-Storage "Node HDDNode4"
-	Disk behaviour (is spun down)	: false
 
-        Time in    Idle   mode:    12.572 second(s)
+Energy consumed by Always Active Disks : 183.437 Joule(s)
+Energy consumed by Spun Down Disks : 0.000 Joule(s)
+Energy consumed by Entire Persistent Storage: 183.437 Joule(s)
+
+END !
+*********************
+Node : Node0, Partitions : [0, 1, 2, 3, 6, 7, 9, 12, 15]
+Node : Node1, Partitions : [0, 1, 2, 4, 5, 6, 8, 9, 10, 11, 12, 14]
+Node : Node2, Partitions : [2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 13, 14, 15]
+Node : Node3, Partitions : [0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15]
+*********************
+
+
+Results : 
+Spun Down Disks : 1 : [Node1]
+Check the mapping with assignment : 
+Node0 : file259, file23115, file23115,
+Node1000 : file259, file30943, file20047, file23115, file31868, file259, file259, file259, file259, file20047, file259,
+Node2 : file259, file30943, file20047, file31868, file259, file30943, file31868,
+Node3 : file259, file30943, file20047, file23115, file31868, file20047,
+Starting simulation 
+
+Initialising...
+Starting file file259 on Node2
+Starting file file259 on Node0
+Starting file file259 on Node3
+Starting file file30943 on Node2
+Starting file file30943 on Node3
+Starting file file30943 on Node1
+Starting file file20047 on Node3
+Starting file file20047 on Node1
+Starting file file20047 on Node2
+Starting file file23115 on Node0
+Starting file file23115 on Node1
+Starting file file23115 on Node3
+Starting file file31868 on Node2
+Starting file file31868 on Node3
+Starting file file31868 on Node1
+Starting file file31869 on Node2
+Starting file file31869 on Node3
+Starting file file31869 on Node1
+Starting file file29809 on Node1
+Starting file file29809 on Node3
+Starting file file29809 on Node0
+Starting file file21652 on Node3
+Starting file file21652 on Node1
+Starting file file21652 on Node2
+Starting file file31870 on Node1
+Starting file file31870 on Node0
+Starting file file31870 on Node3
+Starting file file29811 on Node3
+Starting file file29811 on Node1
+Starting file file29811 on Node2
+Starting CloudSim version 3.0
+Broker is starting...
+datacenter is starting...
+Entities started.
+0.0: Broker: Cloud Resource List received with 1 resource(s)
+0.0: Broker: Trying to Create VM #1 in datacenter
+0.0: Broker: VM #1 has been created in Datacenter #3, Host #1
+0.0: Broker: Cloudlet #  1 is scheduled to be sent to VM #  1 at   0.000 second(s)
+0.0: Broker: Cloudlet #  2 is scheduled to be sent to VM #  1 at   0.000 second(s)
+0.0: Broker: Cloudlet #  3 is scheduled to be sent to VM #  1 at   0.000 second(s)
+0.0: Broker: Cloudlet #  4 is scheduled to be sent to VM #  1 at   0.000 second(s)
+0.0: Broker: Cloudlet #  5 is scheduled to be sent to VM #  1 at   0.018 second(s)
+0.0: Broker: Cloudlet #  6 is scheduled to be sent to VM #  1 at   0.018 second(s)
+0.0: Broker: Cloudlet #  7 is scheduled to be sent to VM #  1 at   0.018 second(s)
+0.0: Broker: Cloudlet #  8 is scheduled to be sent to VM #  1 at   0.056 second(s)
+0.0: Broker: Cloudlet #  9 is scheduled to be sent to VM #  1 at   0.056 second(s)
+0.0: Broker: Cloudlet # 10 is scheduled to be sent to VM #  1 at   0.056 second(s)
+0.0: Broker: Cloudlet # 11 is scheduled to be sent to VM #  1 at   0.074 second(s)
+0.0: Broker: Cloudlet # 12 is scheduled to be sent to VM #  1 at   0.074 second(s)
+0.0: Broker: Cloudlet # 13 is scheduled to be sent to VM #  1 at   0.074 second(s)
+0.0: Broker: Cloudlet # 14 is scheduled to be sent to VM #  1 at   0.090 second(s)
+0.0: Broker: Cloudlet # 15 is scheduled to be sent to VM #  1 at   0.090 second(s)
+0.0: Broker: Cloudlet # 16 is scheduled to be sent to VM #  1 at   0.090 second(s)
+0.0: Broker: Cloudlet # 17 is scheduled to be sent to VM #  1 at   0.000 second(s)
+0.0: Broker: Cloudlet # 18 is scheduled to be sent to VM #  1 at   0.018 second(s)
+0.0: Broker: Cloudlet # 19 is scheduled to be sent to VM #  1 at   0.035 second(s)
+0.0: Broker: Cloudlet # 20 is scheduled to be sent to VM #  1 at   0.056 second(s)
+0.0: Broker: Cloudlet # 21 is scheduled to be sent to VM #  1 at   0.074 second(s)
+0.0: Broker: Cloudlet # 22 is scheduled to be sent to VM #  1 at   0.090 second(s)
+0.0: Broker: Cloudlet # 23 is scheduled to be sent to VM #  1 at   0.108 second(s)
+0.0: Broker: Cloudlet # 24 is scheduled to be sent to VM #  1 at   0.125 second(s)
+0.0: Broker: Cloudlet # 25 is scheduled to be sent to VM #  1 at   0.142 second(s)
+0.0: Broker: Cloudlet # 26 is scheduled to be sent to VM #  1 at   0.160 second(s)
+0.0: Broker: Cloudlet # 27 is scheduled to be sent to VM #  1 at   0.178 second(s)
+
+
+0.000000: datacenter: Cloudlet # 1 has been successfully received. 
+
+
+0.000000: datacenter: Cloudlet # 2 has been successfully received. 
+
+
+0.000000: datacenter: Cloudlet # 3 has been successfully received. 
+
+
+0.000000: datacenter: Cloudlet # 4 has been successfully received. 
+
+
+0.000000: datacenter: Cloudlet # 17 has been successfully received. 
+
+0.000000: datacenter: Cloudlet # 1: <file259> added on Node HDDNode2.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.000000 Seconds(s).
+           Transaction time   of  0.000000 Seconde(s).
+           Arrival time at  0.000000 Seconde(s).
+           Service started at  0.000000 Seconde(s).
+
+
+0.000000: datacenter: Cloudlet # 3: <file259> added on Node HDDNode2.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.000000 Seconds(s).
+           Transaction time   of  0.000000 Seconde(s).
+           Arrival time at  0.000000 Seconde(s).
+           Service started at  0.000000 Seconde(s).
+
+
+0.000000: datacenter: Cloudlet # 4: <file259> added on Node HDDNode0.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.000000 Seconds(s).
+           Transaction time   of  0.000000 Seconde(s).
+           Arrival time at  0.000000 Seconde(s).
+           Service started at  0.000000 Seconde(s).
+
+
+
+0.017667: datacenter: Cloudlet # 5 has been successfully received. 
+
+
+0.017667: datacenter: Cloudlet # 6 has been successfully received. 
+
+
+0.017667: datacenter: Cloudlet # 7 has been successfully received. 
+
+
+0.017667: datacenter: Cloudlet # 18 has been successfully received. 
+
+0.017667: datacenter: Cloudlet # 5: <file30943> added on Node HDDNode3.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.000000 Seconds(s).
+           Transaction time   of  0.000000 Seconde(s).
+           Arrival time at  0.017667 Seconde(s).
+           Service started at  0.017667 Seconde(s).
+
+
+0.017667: datacenter: Cloudlet # 6: <file30943> added on Node HDDNode2.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.000000 Seconds(s).
+           Transaction time   of  0.000000 Seconde(s).
+           Arrival time at  0.017667 Seconde(s).
+           Service started at  0.017667 Seconde(s).
+
+
+
+0.035462: datacenter: Cloudlet # 19 has been successfully received. 
+
+
+0.056259: datacenter: Cloudlet # 8 has been successfully received. 
+
+
+0.056259: datacenter: Cloudlet # 9 has been successfully received. 
+
+
+0.056259: datacenter: Cloudlet # 10 has been successfully received. 
+
+
+0.056259: datacenter: Cloudlet # 20 has been successfully received. 
+
+
+0.073923: datacenter: Cloudlet # 11 has been successfully received. 
+
+
+0.073923: datacenter: Cloudlet # 12 has been successfully received. 
+
+
+0.073923: datacenter: Cloudlet # 13 has been successfully received. 
+
+
+0.073923: datacenter: Cloudlet # 21 has been successfully received. 
+Error while retrieving file23115from : Node HDDNode2
+
+
+0.090458: datacenter: Cloudlet # 14 has been successfully received. 
+
+
+0.090458: datacenter: Cloudlet # 15 has been successfully received. 
+
+
+0.090458: datacenter: Cloudlet # 16 has been successfully received. 
+
+
+0.090458: datacenter: Cloudlet # 22 has been successfully received. 
+
+
+0.108235: datacenter: Cloudlet # 23 has been successfully received. 
+
+
+0.124665: datacenter: Cloudlet # 24 has been successfully received. 
+
+
+0.142098: datacenter: Cloudlet # 25 has been successfully received. 
+
+
+0.159772: datacenter: Cloudlet # 26 has been successfully received. 
+
+
+0.177665: datacenter: Cloudlet # 27 has been successfully received. 
+
+0.211699: datacenter: Cloudlet # 11: <file23115> added on Node HDDNode3.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.137776 Seconds(s).
+           Transaction time   of  0.000000 Seconde(s).
+           Arrival time at  0.073923 Seconde(s).
+           Service started at  0.211699 Seconde(s).
+
+
+0.211699: datacenter: Cloudlet # 13: <file23115> added on Node HDDNode3.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.137776 Seconds(s).
+           Transaction time   of  0.000000 Seconde(s).
+           Arrival time at  0.073923 Seconde(s).
+           Service started at  0.211699 Seconde(s).
+
+
+0.211699: datacenter: Cloudlet # 18: <file30943> retrieved on Node HDDNode3.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.000000 Seconds(s).
+           Transaction time   of  0.194032 Seconde(s).
+           Arrival time at  0.017667 Seconde(s).
+           Service started at  0.017667 Seconde(s).
+
+
+0.211699: datacenter: Cloudlet # 9: <file20047> added on Node HDDNode3.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.155440 Seconds(s).
+           Transaction time   of  0.000000 Seconde(s).
+           Arrival time at  0.056259 Seconde(s).
+           Service started at  0.211699 Seconde(s).
+
+
+0.219190: datacenter: Cloudlet # 22: <file31868> retrieved on Node HDDNode3.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.121241 Seconds(s).
+           Transaction time   of  0.007491 Seconde(s).
+           Arrival time at  0.090458 Seconde(s).
+           Service started at  0.211699 Seconde(s).
+
+
+0.446878: datacenter: Cloudlet # 2: <file259> added on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.000000 Seconds(s).
+           Transaction time   of  0.446878 Seconde(s).
+           Arrival time at  0.000000 Seconde(s).
+           Service started at  0.000000 Seconde(s).
+
+
+0.522300: datacenter: Cloudlet # 7: <file30943> added on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.429211 Seconds(s).
+           Transaction time   of  0.075422 Seconde(s).
+           Arrival time at  0.017667 Seconde(s).
+           Service started at  0.446878 Seconde(s).
+
+
+0.549575: datacenter: Cloudlet # 10: <file20047> added on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.466041 Seconds(s).
+           Transaction time   of  0.027276 Seconde(s).
+           Arrival time at  0.056259 Seconde(s).
+           Service started at  0.522300 Seconde(s).
+
+
+0.576769: datacenter: Cloudlet # 20: <file20047> retrieved on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.493316 Seconds(s).
+           Transaction time   of  0.027193 Seconde(s).
+           Arrival time at  0.056259 Seconde(s).
+           Service started at  0.549575 Seconde(s).
+
+
+0.576908: datacenter: Cloudlet # 12: <file23115> added on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.502846 Seconds(s).
+           Transaction time   of  0.000139 Seconde(s).
+           Arrival time at  0.073923 Seconde(s).
+           Service started at  0.576769 Seconde(s).
+
+
+0.576912: datacenter: Cloudlet # 16: <file31868> added on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.486450 Seconds(s).
+           Transaction time   of  0.000004 Seconde(s).
+           Arrival time at  0.090458 Seconde(s).
+           Service started at  0.576908 Seconde(s).
+
+
+1.023849: datacenter: Cloudlet # 23: <file259> retrieved on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.468677 Seconds(s).
+           Transaction time   of  0.446937 Seconde(s).
+           Arrival time at  0.108235 Seconde(s).
+           Service started at  0.576912 Seconde(s).
+
+
+1.133472: datacenter: Cloudlet # 17: <file259> retrieved on Node HDDNode0.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.000000 Seconds(s).
+           Transaction time   of  1.133472 Seconde(s).
+           Arrival time at  0.000000 Seconde(s).
+           Service started at  0.000000 Seconde(s).
+
+
+1.143395: datacenter: Cloudlet # 15: <file31868> added on Node HDDNode0.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  1.043014 Seconds(s).
+           Transaction time   of  0.009923 Seconde(s).
+           Arrival time at  0.090458 Seconde(s).
+           Service started at  1.133472 Seconde(s).
+
+
+1.176699: datacenter: Cloudlet # 19: <file259> retrieved on Node HDDNode2.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.000000 Seconds(s).
+           Transaction time   of  1.141237 Seconde(s).
+           Arrival time at  0.035462 Seconde(s).
+           Service started at  0.035462 Seconde(s).
+
+
+1.176699: datacenter: Cloudlet # 8: <file20047> added on Node HDDNode2.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  1.120440 Seconds(s).
+           Transaction time   of  0.000000 Seconde(s).
+           Arrival time at  0.056259 Seconde(s).
+           Service started at  1.176699 Seconde(s).
+
+
+1.176699: datacenter: Cloudlet # 14: <file31868> added on Node HDDNode2.
+           Power  consumption characteristics of disk =  5.800 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  1.086241 Seconds(s).
+           Transaction time   of  0.000000 Seconde(s).
+           Arrival time at  0.090458 Seconde(s).
+           Service started at  1.176699 Seconde(s).
+
+
+1.470690: datacenter: Cloudlet # 24: <file259> retrieved on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  0.899184 Seconds(s).
+           Transaction time   of  0.446841 Seconde(s).
+           Arrival time at  0.124665 Seconde(s).
+           Service started at  1.023849 Seconde(s).
+
+
+1.917531: datacenter: Cloudlet # 25: <file259> retrieved on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  1.328592 Seconds(s).
+           Transaction time   of  0.446841 Seconde(s).
+           Arrival time at  0.142098 Seconde(s).
+           Service started at  1.470690 Seconde(s).
+
+
+1.944877: datacenter: Cloudlet # 26: <file20047> retrieved on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  1.757759 Seconds(s).
+           Transaction time   of  0.027345 Seconde(s).
+           Arrival time at  0.159772 Seconde(s).
+           Service started at  1.917531 Seconde(s).
+
+
+2.391715: datacenter: Cloudlet # 27: <file259> retrieved on Node HDDNode1000.
+           Power  consumption characteristics of disk =  5.000 Watt(s). [ this is rate of energy consumption (Joules/sec), NOT total energy consumed for that operation ]
+           Queue Waiting time of  1.767212 Seconds(s).
+           Transaction time   of  0.446839 Seconde(s).
+           Arrival time at  0.177665 Seconde(s).
+           Service started at  1.944877 Seconde(s).
+
+Simulation: No more future events
+CloudInformationService: Notify all CloudSim entities for shutting down.
+Broker is shutting down...
+datacenter is shutting down...
+Simulation completed.
+
+*************************** RESULTS ***************************
+
+TIME SPENT IN IDLE/ACTIVE MODE FOR EACH STORAGE
+Node "Node1"
+Storage "Node HDDNode1"
+	Disk behaviour (is spun down)	: true
+
+        Time in    Idle   mode:     0.000 second(s)
         Time in   Active  mode:     0.000 second(s)
-        Time Spun Down :     0.000 second(s)
-        Time of the simulation:    12.572 second(s)
+        Time Spun Down :     4.783 second(s)
+        Time of the simulation:     4.783 second(s)
 
-        Energy consumed in  Idle   mode:    86.744 Joule(s)
+        Energy consumed in  Idle   mode:     0.000 Joule(s)
         Energy consumed in Active  mode:     0.000 Joule(s)
-        Energy consumed in  total      :    86.744 Joule(s)
+        Energy consumed in  total      :     0.000 Joule(s)
 
         Maximum Queue size    :          0 operation(s)
 
 
+Node "Node0"
+Storage "Node HDDNode0"
+	Disk behaviour (is spun down)	: false
 
-Energy consumed by Always Active Disks : 462.740 Joule(s)
+        Time in    Idle   mode:     3.640 second(s)
+        Time in   Active  mode:     1.143 second(s)
+        Time Spun Down :     0.000 second(s)
+        Time of the simulation:     4.783 second(s)
+
+        Energy consumed in  Idle   mode:    10.920 Joule(s)
+        Energy consumed in Active  mode:     6.632 Joule(s)
+        Energy consumed in  total      :    17.552 Joule(s)
+
+        Maximum Queue size    :          2 operation(s)
+
+
+Node "Node3"
+Storage "Node HDDNode3"
+	Disk behaviour (is spun down)	: false
+
+        Time in    Idle   mode:     4.582 second(s)
+        Time in   Active  mode:     0.202 second(s)
+        Time Spun Down :     0.000 second(s)
+        Time of the simulation:     4.783 second(s)
+
+        Energy consumed in  Idle   mode:    13.746 Joule(s)
+        Energy consumed in Active  mode:     1.169 Joule(s)
+        Energy consumed in  total      :    14.915 Joule(s)
+
+        Maximum Queue size    :          5 operation(s)
+
+
+Node "Node2"
+Storage "Node HDDNode2"
+	Disk behaviour (is spun down)	: false
+
+        Time in    Idle   mode:     3.642 second(s)
+        Time in   Active  mode:     1.141 second(s)
+        Time Spun Down :     0.000 second(s)
+        Time of the simulation:     4.783 second(s)
+
+        Energy consumed in  Idle   mode:    10.927 Joule(s)
+        Energy consumed in Active  mode:     6.619 Joule(s)
+        Energy consumed in  total      :    17.546 Joule(s)
+
+        Maximum Queue size    :          3 operation(s)
+
+
+Node "Node1000"
+Storage "Node HDDNode1000"
+	Disk behaviour (is spun down)	: false
+
+        Time in    Idle   mode:     2.392 second(s)
+        Time in   Active  mode:     2.392 second(s)
+        Time Spun Down :     0.000 second(s)
+        Time of the simulation:     4.783 second(s)
+
+        Energy consumed in  Idle   mode:     1.555 Joule(s)
+        Energy consumed in Active  mode:    11.959 Joule(s)
+        Energy consumed in  total      :    13.513 Joule(s)
+
+        Maximum Queue size    :         11 operation(s)
+
+
+
+Energy consumed by Always Active Disks : 63.525 Joule(s)
 Energy consumed by Spun Down Disks : 0.000 Joule(s)
-Energy consumed by Entire Persistent Storage: 462.740 Joule(s)
+Energy consumed by Entire Persistent Storage: 63.525 Joule(s)
 
 END !
-[HDD0, HDD1, HDD2, HDD3, HDD4]
-[114.21277076207696, 86.81012196807728, 87.57831694977426, 87.39536884003213, 86.74387652815972]
+[HDD0, HDD1, HDD2, HDD3, SSD1000]
+[17.551797545883293, 0.0, 17.54575485566622, 14.914556835963952, 13.513191633808798]
+[HDD0, HDD1, HDD2, HDD3]
+[40.847474593505645, 59.89737667049421, 41.28436152818173, 41.40821129611595]
