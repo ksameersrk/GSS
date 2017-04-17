@@ -87,9 +87,9 @@ public class InterfaceDriver {
 
         int noOfReplicas = 3; //default 3
         String cachingMechanism = "LRU"; // FIFO also possible
-        int HDDType = inputObject.getHddDiskType(); // basicallly this number is the id for storage and power model, will assign ids to them
+        int HDDType = inputObject.getHddDiskType() - 1; // basicallly this number is the id for storage and power model, will assign ids to them
         //Scenarios : this part is to be done in front end
-        int SSDType = inputObject.getSsdDiskType();
+        int SSDType = inputObject.getSsdDiskType() - 1;
         int percentageFlushAt = 90;
         int percentageFlushTill = 70;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity

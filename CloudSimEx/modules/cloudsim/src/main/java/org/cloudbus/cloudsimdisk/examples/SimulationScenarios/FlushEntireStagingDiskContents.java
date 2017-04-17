@@ -75,7 +75,7 @@ public class FlushEntireStagingDiskContents {
         else {
             // this section requires us to go and set the capacity of that type of SSD in StorageModelSSD* classes to be equal to totalStagingDiskCapacity
             int[] HDDCapacities = {6000000, 900000, 5000000};
-            int[] SSDCapacities = {512000, 480000, 800000};
+            int[] SSDCapacities = { 512000, 480000,  800000};
             totalHddRingStorageCapacity = totalNoOfNodes * (HDDCapacities[HDDType%3]);
             totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
 
