@@ -1,0 +1,10 @@
+GET,0.0,file2
+GET,1.0,file7
+GET,0.5,file5
+PUT,2.0,file11,200
+GET,2.2,file9
+GET,3.0,file1
+GET,3.33,file3
+GET,4.5,file8
+PUT,5.4,file12,150
+GET,6.3,file9

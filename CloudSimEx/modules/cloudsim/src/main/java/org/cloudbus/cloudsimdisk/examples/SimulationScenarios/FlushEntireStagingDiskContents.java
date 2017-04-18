@@ -871,7 +871,7 @@ public class FlushEntireStagingDiskContents {
         String pathToWorkload = "files/basic/operations/workload.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
         String pathToInputLog = "files/basic/operations/idealInputLog.txt";
-        boolean generateInputLog = true;
+        boolean generateInputLog = false;
 
 
 

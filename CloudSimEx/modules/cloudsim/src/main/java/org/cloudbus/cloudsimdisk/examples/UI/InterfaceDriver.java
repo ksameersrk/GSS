@@ -96,8 +96,19 @@ public class InterfaceDriver {
 
         String pathToWorkload = "files/basic/operations/workload.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
-        String pathToInputLog = "files/basic/operations/idealInputLog.txt";
-        boolean generateInputLog = true;
+
+        //String pathToInputLog = "files/basic/operations/idealInputLog.txt";
+        String pathToInputLog = "";
+        boolean generateInputLog = false;
+
+        if(inputObject.getWorkloadType().equals("predefined_workload")) {
+            pathToInputLog = "files/basic/operations/idealInputLog" + inputObject.getPredefindedWorkloadNumber() + ".txt";
+        }
+        else if(inputObject.getWorkloadType().equals("manual")) {
+            pathToInputLog = "files/basic/operations/idealInputLog.txt";
+            FileUtils.writeStringToFile(new File(pathToInputLog), inputObject.getManualTextarea());
+            numberOfOperations = -1;
+        }
 
         int scenario = inputObject.getScenario();
         // My thing ending here
