@@ -99,7 +99,7 @@ public class InterfaceDriver {
 
         //String pathToInputLog = "files/basic/operations/idealInputLog.txt";
         String pathToInputLog = "";
-        boolean generateInputLog = false;
+        boolean generateInputLog = true;
 
         if(inputObject.getWorkloadType().equals("predefined_workload")) {
             pathToInputLog = "files/basic/operations/idealInputLog" + inputObject.getPredefindedWorkloadNumber() + ".txt";
@@ -112,7 +112,9 @@ public class InterfaceDriver {
 
         int scenario = inputObject.getScenario();
         // My thing ending here
-
+        System.out.println("workload : " + pathToWorkload);
+        System.out.println("startting file list : " + pathToStartingFileList);
+        System.out.println("input log : " + pathToInputLog);
         if(scenario == 1){
             addStagingDisk = false;
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,

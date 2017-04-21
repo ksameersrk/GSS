@@ -15,11 +15,15 @@ import java.util.HashSet;
 public class StartingFileListGenerator {
     public static void generateStartingFile(String readFromPath, String writeToPathStartingFile, String writeToPathInputLog) throws IOException{
         try (BufferedReader br = new BufferedReader(new FileReader(new File(readFromPath)))) {
+            System.out.println("Starting inputLog and startingFileList generation");
+            int count = 0;
             String line;
             String startingFileList = "";
             String inputLog = "";
             HashSet<String> filesAdded = new HashSet<>();
             while ((line = br.readLine()) != null) {
+                count = count + 1;
+                System.out.print(count + ", ");
                 line = line.trim();
                 String data[] = line.split(",");
 
