@@ -23,7 +23,7 @@ public class StartingFileListGenerator {
             HashSet<String> filesAdded = new HashSet<>();
             while ((line = br.readLine()) != null) {
                 count = count + 1;
-                System.out.print(count + ", ");
+                System.out.println(count);
                 line = line.trim();
                 String data[] = line.split(",");
 
@@ -46,13 +46,21 @@ public class StartingFileListGenerator {
                         inputLog = inputLog + data[0] + "," + data[1] + "," + data[2]  + "\n";
                     }
                 }
+
+                if(count%100 == 0){
+                    FileUtils.writeStringToFile(new File(writeToPathStartingFile), startingFileList.toString(), true);
+                    FileUtils.writeStringToFile(new File(writeToPathInputLog), inputLog.toString(), true);
+
+                    startingFileList = "";
+                    inputLog = "";
+                }
             }
 
             startingFileList = startingFileList.trim();
             inputLog = inputLog.trim();
 
-            FileUtils.writeStringToFile(new File(writeToPathStartingFile), startingFileList.toString());
-            FileUtils.writeStringToFile(new File(writeToPathInputLog), inputLog.toString());
+            FileUtils.writeStringToFile(new File(writeToPathStartingFile), startingFileList.toString(), true);
+            FileUtils.writeStringToFile(new File(writeToPathInputLog), inputLog.toString(), true);
 
         }
     }
@@ -60,9 +68,9 @@ public class StartingFileListGenerator {
     public static void main(String args[]) throws IOException{
         String readFromPath = "/Users/spadigi/Desktop/greenSwiftSimulation/workload/harvard/research/5k_ops_GSS_style.txt";
         String writeToPath_starting_file = "/Users/spadigi/Desktop/greenSwiftSimulation/workload/pre-processing-workloads/harvard_research_graph" +
-                "/GSS_style_starting_file.txt";
+                "/GSS_style_starting_file_dummy.txt";
         String writeToPathInputLog = "/Users/spadigi/Desktop/greenSwiftSimulation/workload/pre-processing-workloads/harvard_research_graph" +
-                "/GSS_style_input_log.txt";
+                "/GSS_style_input_log_dummy.txt";
         generateStartingFile(readFromPath, writeToPath_starting_file, writeToPathInputLog);
     }
 }
