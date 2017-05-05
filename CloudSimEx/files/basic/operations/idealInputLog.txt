@@ -1,2 +1,4 @@
-PUT,20,file10,100
-GET,50,file10
+PUT,0.0,file99,100
+GET,1.0,file99
+GET,2.0,file99
+GET,3.0,file99

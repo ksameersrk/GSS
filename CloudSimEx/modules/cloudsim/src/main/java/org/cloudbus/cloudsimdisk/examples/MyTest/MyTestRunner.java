@@ -19,6 +19,7 @@ public class MyTestRunner {
         System.out.println("Was Successful : "+result.wasSuccessful());
         System.out.println("Test run count : "+result.getRunCount());
         System.out.println("Test failure count : "+result.getFailureCount());
+        System.out.println("Test ignore count : "+result.getIgnoreCount());
         System.out.println("Test runtime in milliseconds : "+result.getRunTime());
     }
 }
