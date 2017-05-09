@@ -669,6 +669,7 @@ public class Helper {
         }
 
 		double totalSimulationTime = 0.0;
+        // spun down disks are spun up only during flush, this variable captures total time spent in flushes
 		double maxSpunDownDiskActiveTime = 0.0;
 		for(int i = 0; i < tempList.size(); i++)
 		{

@@ -29,7 +29,7 @@ import static org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownOp
  */
 
 public class FlushEntireStagingDiskContents {
-
+    public static boolean debug = true;
     //public static void main(String args[]) throws Exception{
     public static MyRunner startSimulation(int totalNoOfNodes, boolean addStagingDisk, int numberOfOperations, int predefindedWorkloadNumber, int noOfReplicas,
                                        String cachingMechanism, int HDDType, int SSDType,
@@ -834,7 +834,12 @@ public class FlushEntireStagingDiskContents {
         FileUtils.writeStringToFile(new File("files/" + getData), getOpData.toString());
         FileUtils.writeStringToFile(new File("files/" + updateData), updateOpData.toString());
         FileUtils.writeStringToFile(new File("files/" + deleteData), deleteOpData.toString());
-        String startingFilelist = pathToStartingFileList.split("files/")[1];
+
+        String startingFilelist ;
+        if(debug == true)
+            startingFilelist = "basic/operations/emptyFile.txt";
+        else
+            startingFilelist = pathToStartingFileList.split("files/")[1];
 
         ArrayList<MyNode> allNodes = new ArrayList<MyNode>(myRing.getAllNodes());
         if(addstagingDisk)

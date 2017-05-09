@@ -90,8 +90,8 @@ public class InterfaceDriver {
         int HDDType = inputObject.getHddDiskType() - 1; // basicallly this number is the id for storage and power model, will assign ids to them
         //Scenarios : this part is to be done in front end
         int SSDType = inputObject.getSsdDiskType() - 1;
-        int percentageFlushAt = 90;
-        int percentageFlushTill = 70;
+        int percentageFlushAt = 100;
+        int percentageFlushTill = 40;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
         String pathToWorkload = "files/basic/operations/workload.txt";
@@ -113,7 +113,7 @@ public class InterfaceDriver {
         int scenario = inputObject.getScenario();
         // My thing ending here
         System.out.println("workload : " + pathToWorkload);
-        System.out.println("startting file list : " + pathToStartingFileList);
+        System.out.println("starting file list : " + pathToStartingFileList);
         System.out.println("input log : " + pathToInputLog);
         if(scenario == 1){
             addStagingDisk = false;
