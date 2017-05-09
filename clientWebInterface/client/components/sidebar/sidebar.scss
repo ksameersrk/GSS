@@ -1,0 +1,23 @@
+#side-menu > li > a {
+    background-color: transparent;
+    color: #fff;
+	padding:15px 20px;
+}
+#side-menu > li > a:hover{
+	color:#1ab394;
+}
+#side-menu > li.active > a {
+    color: #fff;
+}
+
+#side-menu > li.active {
+	background-color:#1ab394;
+	border: 0 none;
+}
+#homeSideBar.navbar-static-side {
+	position: relative;
+	height: 100%;
+	width: 210px;
+	overflow: hidden;
+	z-index: 2001;
+}

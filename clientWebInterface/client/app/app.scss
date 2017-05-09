@@ -1,0 +1,108 @@
+$icon-font-path: "/bower_components/bootstrap-sass-official/vendor/assets/fonts/bootstrap/";
+$fa-font-path: "/bower_components/font-awesome/fonts";
+
+@import 'bootstrap-sass-official/vendor/assets/stylesheets/bootstrap';
+@import 'font-awesome/scss/font-awesome';
+
+/**
+ * App-wide Styles
+ */
+
+.browsehappy {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
+.sideBar{
+	bottom: -10px;
+	padding-left:0;
+	position:absolute;
+	top:51px;
+}
+
+// Component styles are injected through grunt
+// injector
+@import 'largeSavedSimulation/largeSavedSimulation.scss';
+@import 'main/main.scss';
+@import 'startSimulation/startSimulation.scss';
+@import 'modal/modal.scss';
+@import 'sidebar/sidebar.scss';
+// endinjector
+
+.navbar-default {
+    background-color: #2f4050;
+    border-color: #2f4050;
+}
+
+.navbar-default .navbar-brand{
+	background-color: #2f4050;
+	color: #ffffff; 	
+}
+
+.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+	background-color: #2f4050;
+	color: #ffffff;	
+}
+
+.navbar-login {
+	color: #fff;
+	float: right;
+	font-size: 18px;
+	padding-top: 10px;
+}
+
+.navbar-login a{
+	color: #fff;
+}
+
+.navbar-login a:hover, .navbar-login a:focus {
+	color: #649fd1;
+}
+
+.increasedMargin {
+	margin-bottom: 50px;
+	margin-left: 16%;
+}
+
+.navbar-header::after, .navbar-header::before {
+	content: " ";
+	display: table;
+}
+
+.navbar-header::after {
+	clear: both;
+}
+
+.navbar-header::after, .navbar-header::before {
+	content: "";
+	display: table;
+}
+
+.footer {
+	background: #fff;
+	border-top: 1px solid #e7eaec;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	position: fixed;
+	z-index: 2001;
+	padding: 0 20px;
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	min-height: 98%;
+	height: auto;
+}
+
+.clearFloat {
+	clear: both;
+	content: ".";
+	display: block;
+	height: 0;
+	visibility: hidden;
+}
