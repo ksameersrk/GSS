@@ -110,7 +110,7 @@ public class MyDatacenter extends DatacenterEX {
 
 		// retrieve Cloudlet object
 		Cloudlet cl = (Cloudlet) ev.getData();
-		WriteToResultFile.setTempRowNum(cl.getCloudletId());
+		//WriteToResultFile.setTempRowNum(cl.getCloudletId());
 
 		// print out Cloudlet reception
 		Log.printLine();
@@ -357,11 +357,11 @@ public class MyDatacenter extends DatacenterEX {
 		double waitingTime = (double) data[5];
 
 		// store results/information
-		WriteToResultFile.AddValueToSheetTab(waitingTime, cl.getCloudletId(), 2);
-		WriteToResultFile.AddValueToSheetTab(transTime, cl.getCloudletId(), 3);
-		WriteToResultFile.AddValueToSheetTab(CloudSim.clock(), cl.getCloudletId(), 7);
-		WriteToResultFile.AddValueToSheetTab(tempFile.getName(), cl.getCloudletId(), 8);
-		WriteToResultFile.AddValueToSheetTab(tempFile.getSize(), cl.getCloudletId(), 9);
+		//WriteToResultFile.AddValueToSheetTab(waitingTime, cl.getCloudletId(), 2);
+		//WriteToResultFile.AddValueToSheetTab(transTime, cl.getCloudletId(), 3);
+        //WriteToResultFile.AddValueToSheetTab(CloudSim.clock(), cl.getCloudletId(), 7);
+        //WriteToResultFile.AddValueToSheetTab(tempFile.getName(), cl.getCloudletId(), 8);
+        //WriteToResultFile.AddValueToSheetTab(tempFile.getSize(), cl.getCloudletId(), 9);
 
 		// Print out confirmation that Files have been handled
 		Double clockTime = CloudSim.clock();

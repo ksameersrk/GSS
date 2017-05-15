@@ -820,11 +820,11 @@ public class MyHarddriveStorage implements Storage {
 			usedSpace += file.getSize(); // increment the current HD size
 
 			// store results/information
-			WriteToResultFile.AddValueToSheetTabSameRow(seekTime, 4);
-			WriteToResultFile.AddValueToSheetTabSameRow(rotlatency, 5);
-			WriteToResultFile.AddValueToSheetTabSameRow(transferTime, 6);
-			WriteToResultFile.AddTextToSheetTabSameRow("added", 10);
-			WriteToResultFile.AddTextToSheetTabSameRow(this.name, 11);
+			//WriteToResultFile.AddValueToSheetTabSameRow(seekTime, 4);
+			//WriteToResultFile.AddValueToSheetTabSameRow(rotlatency, 5);
+			//WriteToResultFile.AddValueToSheetTabSameRow(transferTime, 6);
+			//WriteToResultFile.AddTextToSheetTabSameRow("added", 10);
+			//WriteToResultFile.AddTextToSheetTabSameRow(this.name, 11);
 
 			// Log the observation
 			String msg = String.format("OBSERVATION>> Writting \"%s\" on \"%s\" will take:" + "\n" + "%13s" + "%9.6f"
@@ -888,11 +888,11 @@ public class MyHarddriveStorage implements Storage {
 			obj.setTransactionTime(seekTime + rotlatency + transferTime);
 
 			// store results/information
-			WriteToResultFile.AddValueToSheetTabSameRow(seekTime, 4);
-			WriteToResultFile.AddValueToSheetTabSameRow(rotlatency, 5);
-			WriteToResultFile.AddValueToSheetTabSameRow(transferTime, 6);
-			WriteToResultFile.AddTextToSheetTabSameRow("retrieved", 10);
-			WriteToResultFile.AddTextToSheetTabSameRow(this.name, 11);
+			//WriteToResultFile.AddValueToSheetTabSameRow(seekTime, 4);
+			//WriteToResultFile.AddValueToSheetTabSameRow(rotlatency, 5);
+			//WriteToResultFile.AddValueToSheetTabSameRow(transferTime, 6);
+			//WriteToResultFile.AddTextToSheetTabSameRow("retrieved", 10);
+			//WriteToResultFile.AddTextToSheetTabSameRow(this.name, 11);
 
 			// log the observation
 			String msg = String.format("OBSERVATION>> Reading \"%s\" on \"%s\" will take:" + "\n" + "%13s" + "%9.6f"

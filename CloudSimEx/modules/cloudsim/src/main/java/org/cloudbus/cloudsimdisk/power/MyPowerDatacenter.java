@@ -150,12 +150,12 @@ public class MyPowerDatacenter extends MyDatacenter {
 		double waitingTime = (double) data[7];
 
 		// store results/information
-		WriteToResultFile.AddValueToSheetTab(waitingTime, cl.getCloudletId(), 2);
-		WriteToResultFile.AddValueToSheetTab(transTime, cl.getCloudletId(), 3);
-		WriteToResultFile.AddValueToSheetTab(CloudSim.clock(), cl.getCloudletId(), 7);
-		WriteToResultFile.AddValueToSheetTab(tempFile.getName(), cl.getCloudletId(), 8);
-		WriteToResultFile.AddValueToSheetTab(tempFile.getSize(), cl.getCloudletId(), 9);
-		WriteToResultFile.AddValueToSheetTab(tempEnergy, cl.getCloudletId(), 12);
+		//WriteToResultFile.AddValueToSheetTab(waitingTime, cl.getCloudletId(), 2);
+		//WriteToResultFile.AddValueToSheetTab(transTime, cl.getCloudletId(), 3);
+		//WriteToResultFile.AddValueToSheetTab(CloudSim.clock(), cl.getCloudletId(), 7);
+		//WriteToResultFile.AddValueToSheetTab(tempFile.getName(), cl.getCloudletId(), 8);
+		//WriteToResultFile.AddValueToSheetTab(tempFile.getSize(), cl.getCloudletId(), 9);
+		//WriteToResultFile.AddValueToSheetTab(tempEnergy, cl.getCloudletId(), 12);
 
 		// Print out confirmation that Files have been handled
 		Double clockTime = CloudSim.clock();

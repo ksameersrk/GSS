@@ -81,7 +81,7 @@ public class MyPowerDatacenterBroker extends PowerDatacenterBroker {
 			MyCloudlet myCloudlet = (MyCloudlet) cloudlet;
 
 			// prepare spreadsheet results
-			WriteToResultFile.AddValueToSheetTab(myCloudlet.getCloudletId(), myCloudlet.getCloudletId(), 0);
+			//WriteToResultFile.AddValueToSheetTab(myCloudlet.getCloudletId(), myCloudlet.getCloudletId(), 0);
 
 			// Vm binding check
 			Vm vm;
@@ -91,7 +91,7 @@ public class MyPowerDatacenterBroker extends PowerDatacenterBroker {
 				vm = VmList.getById(getVmsCreatedList(), cloudlet.getVmId());
 				if (vm == null) { // vm was not created
 					Log.printLine(CloudSim.clock() + ": " + getName() + ": Postponing execution of cloudlet "
-							+ cloudlet.getCloudletId() + ": bount VM not available");
+							+ cloudlet.getCloudletId() + ": bound VM not available");
 					continue;
 				}
 			}
@@ -104,7 +104,7 @@ public class MyPowerDatacenterBroker extends PowerDatacenterBroker {
 
 			// store arrival time
 			History.add(tempArrivalTime);
-			WriteToResultFile.AddValueToSheetTab(tempArrivalTime, myCloudlet.getCloudletId(), 1);
+			//WriteToResultFile.AddValueToSheetTab(tempArrivalTime, myCloudlet.getCloudletId(), 1);
 
 			// each Cloudlet are scheduled according to the request arrival rate sample
 			send(getVmsToDatacentersMap().get(vm.getId()), tempArrivalTime - CloudSim.clock(),

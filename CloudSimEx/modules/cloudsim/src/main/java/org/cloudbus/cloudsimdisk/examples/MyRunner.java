@@ -80,14 +80,14 @@ public class MyRunner {
 		// BEGIN
 		Log.printLine("Starting simulation \"" + name + "\"\n");
 		WriteToLogFile.AddtoFile("Starting simulation \"" + name + "\"\n");
-		WriteToResultFile.init();
+		//WriteToResultFile.init();
 
 		init(NumberOfRequest, type, RequestArrivalDistri, requiredFiles, dataFiles, startingFilesList, NumberOfDisk,
 				hddModel, hddPowerModel);
 		start();
 		print();
 
-		WriteToResultFile.end();
+		//WriteToResultFile.end();
 		Log.printLine("END !");
 		// END
 	}
@@ -96,7 +96,7 @@ public class MyRunner {
     {
         Log.printLine("Starting simulation \n");
         WriteToLogFile.AddtoFile("Starting simulation \n");
-        WriteToResultFile.init();
+		//WriteToResultFile.init();
 
         //-----------------INIT-----------------//
         helper.initCloudSim();
@@ -124,7 +124,7 @@ public class MyRunner {
         start();
         print();
 
-        WriteToResultFile.end();
+		//WriteToResultFile.end();
         Log.printLine("END !");
     }
 
@@ -133,7 +133,7 @@ public class MyRunner {
 	{
 		Log.printLine("Starting simulation \n");
 		WriteToLogFile.AddtoFile("Starting simulation \n");
-		WriteToResultFile.init();
+		//WriteToResultFile.init();
 
 		//-----------------INIT-----------------//
 		helper.initCloudSim();
@@ -164,7 +164,7 @@ public class MyRunner {
 		//print();
 		//print(new ArrayList<MyNode>(nodeToTaskMapping.keySet()));
 		print(new ArrayList<MyNode>(AllnodesList));
-		WriteToResultFile.end();
+		//WriteToResultFile.end();
 		Log.printLine("END !");
 	}
 

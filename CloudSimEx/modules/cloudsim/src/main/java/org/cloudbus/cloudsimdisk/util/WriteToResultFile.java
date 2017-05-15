@@ -196,7 +196,7 @@ public class WriteToResultFile {
 	 * Store temporarily the row number.
 	 */
 	public static void setTempRowNum(int tempRowNum) {
-		WriteToResultFile.tempRowNum = tempRowNum;
+		//WriteToResultFile.tempRowNum = tempRowNum;
 	}
 
 	/**
