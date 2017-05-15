@@ -29,7 +29,7 @@ import static org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownOp
  */
 
 public class FlushEntireStagingDiskContents {
-    public static boolean debug = true;
+    public static boolean debug = false;
     //public static void main(String args[]) throws Exception{
     public static MyRunner startSimulation(int totalNoOfNodes, boolean addStagingDisk, int numberOfOperations, int predefindedWorkloadNumber, int noOfReplicas,
                                        String cachingMechanism, int HDDType, int SSDType,
@@ -445,7 +445,12 @@ public class FlushEntireStagingDiskContents {
                                                       allFilesUploaded, ArrayList<String> newOperationsSinceLastSpinDown, ArrayList<String> tmpRequiredFile) {
         Double stagingDiskMemoryToBeAdded = 0.0;
         // if staging disk occupied more the stagingDiskMemoryUsed upper threshold
-        if (stagingDiskMemoryUsed + Double.parseDouble(data[3]) > stagingDiskThresholdMemory) {
+        if (data[3].equals(null))
+        {
+            System.out.println(op);
+            System.exit(1);
+        }
+        if (data[0].equals("PUT") && data[3]!=null && stagingDiskMemoryUsed + Double.parseDouble(data[3]) > stagingDiskThresholdMemory) {
             stagingDiskMemoryToBeAdded += freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDisk, tmpToBeDeletedList,
                     stagingDiskFileList,
                     stagingDiskLowerThreshold, noOfSpunDownDisks, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring,
@@ -790,12 +795,18 @@ public class FlushEntireStagingDiskContents {
         resumingThread.setDaemon(true);
         resumingThread.start();
 
-
         String arrival = "basic/operations/arrival.txt";
         String putData = "basic/operations/putData.txt";
         String getData = "basic/operations/getData.txt";
         String updateData = "basic/operations/updateData.txt";
         String deleteData = "basic/operations/deleteData.txt";
+
+        // clearing contents of these files
+        FileUtils.writeStringToFile(new File("files/" + arrival), "");
+        FileUtils.writeStringToFile(new File("files/" + putData), "");
+        FileUtils.writeStringToFile(new File("files/" + getData), "");
+        FileUtils.writeStringToFile(new File("files/" + updateData), "");
+        FileUtils.writeStringToFile(new File("files/" + deleteData), "");
 
         StringBuilder arrivalTimes = new StringBuilder();
         StringBuilder putOpData = new StringBuilder();
@@ -807,33 +818,57 @@ public class FlushEntireStagingDiskContents {
             if (i > 0)
                 arrivalTimes.append("\n");
             arrivalTimes.append(arrivalFile.get(i));
+            if(i%1000 == 0){
+                FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
+                arrivalTimes = new StringBuilder();
+            }
         }
         for (int i = 0; i < dataFile.size(); i++) {
             if (i > 0)
                 putOpData.append("\n");
             putOpData.append(dataFile.get(i));
+
+            if(i%1000 == 0){
+                FileUtils.writeStringToFile(new File("files/" + putData), putOpData.toString(), true);
+            }
         }
+
         for (int i = 0; i < requiredFile.size(); i++) {
             if (i > 0)
                 getOpData.append("\n");
             getOpData.append(requiredFile.get(i));
+
+            if(i%1000 == 0){
+                FileUtils.writeStringToFile(new File("files/" + getData), getOpData.toString(),true);
+                getOpData = new StringBuilder();
+            }
         }
+
         for (int i = 0; i < updateFile.size(); i++) {
             if (i > 0)
                 updateOpData.append("\n");
             updateOpData.append(updateFile.get(i));
+
+            if(i%1000 == 0){
+                FileUtils.writeStringToFile(new File("files/" + updateData), updateOpData.toString(), true);
+            }
         }
+
         for (int i = 0; i < deleteFile.size(); i++) {
             if (i > 0)
                 deleteOpData.append("\n");
             deleteOpData.append(deleteFile.get(i));
+
+            if(i%1000 == 0){
+                FileUtils.writeStringToFile(new File("files/" + deleteData), deleteOpData.toString(), true);
+            }
         }
 
-        FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString());
-        FileUtils.writeStringToFile(new File("files/" + putData), putOpData.toString());
-        FileUtils.writeStringToFile(new File("files/" + getData), getOpData.toString());
-        FileUtils.writeStringToFile(new File("files/" + updateData), updateOpData.toString());
-        FileUtils.writeStringToFile(new File("files/" + deleteData), deleteOpData.toString());
+        FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
+        FileUtils.writeStringToFile(new File("files/" + putData), putOpData.toString(),true);
+        FileUtils.writeStringToFile(new File("files/" + getData), getOpData.toString(),true);
+        FileUtils.writeStringToFile(new File("files/" + updateData), updateOpData.toString(),true);
+        FileUtils.writeStringToFile(new File("files/" + deleteData), deleteOpData.toString(),true);
 
         String startingFilelist ;
         if(debug == true)
