@@ -1,1 +1,1 @@
-{'totalNoOfNodes': '5', 'scenario': '3', 'numberOfOperations': '10', 'noOfReplicas': '3', 'cachingMechanism': 'LRU', 'hddDiskType': '2', 'ssdDiskType': '3', 'workloadType': 'predefined_workload', 'predefindedWorkloadNumber': '2', 'manualTextarea': ''}
+{'totalNoOfNodes': '4', 'scenario': '1', 'numberOfOperations': '5', 'noOfReplicas': '3', 'cachingMechanism': 'FIFO', 'hddDiskType': '1', 'ssdDiskType': '0', 'workloadType': 'predefined_workload', 'predefindedWorkloadNumber': '2', 'manualTextarea': ''}

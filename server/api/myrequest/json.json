@@ -1,0 +1,66 @@
+{
+     "status":"SUCCESS",
+     "user_name":"smahanthesh",
+   "requests_list":[
+      {
+         "transaction_id":"123456",
+         "mode":"enable",
+         "scheduled_time":"dd/mm/yyyy hh:mm",
+         "status":"Completed/failed/partially failed",
+         "justification":"Reason for enabling or disabling",
+         "status_reason":"In case of failure as provided by spectrum",
+         "user_name":"smahanthesh",
+         "user_email_id":"santhosh_mahanthesh@intuit.com"
+      },
+      {
+         "transaction_id":"123456",
+         "mode":"enable",
+         "scheduled_time":"dd/mm/yyyy hh:mm",
+         "status":"Completed/failed/partially failed",
+         "justification":"Reason for enabling or disabling",
+         "status_reason":"In case of failure as provided by spectrum",
+         "user_name":"smahanthesh",
+         "user_email_id":"santhosh_mahanthesh@intuit.com"
+      },
+      {
+         "transaction_id":"123456",
+         "mode":"enable",
+         "scheduled_time":"dd/mm/yyyy hh:mm",
+         "status":"Completed/failed/partially failed",
+         "justification":"Reason for enabling or disabling",
+         "status_reason":"In case of failure as provided by spectrum",
+         "user_name":"smahanthesh",
+         "user_email_id":"santhosh_mahanthesh@intuit.com"
+      },
+      {
+         "transaction_id":"123456",
+         "mode":"enable",
+         "scheduled_time":"dd/mm/yyyy hh:mm",
+         "status":"Completed/failed/partially failed",
+         "justification":"Reason for enabling or disabling",
+         "status_reason":"In case of failure as provided by spectrum",
+         "user_name":"smahanthesh",
+         "user_email_id":"santhosh_mahanthesh@intuit.com"
+      },
+      {
+         "transaction_id":"123456",
+         "mode":"enable",
+         "scheduled_time":"dd/mm/yyyy hh:mm",
+         "status":"Completed/failed/partially failed",
+         "justification":"Reason for enabling or disabling",
+         "status_reason":"In case of failure as provided by spectrum",
+         "user_name":"smahanthesh",
+         "user_email_id":"santhosh_mahanthesh@intuit.com"
+      },
+      {
+         "transaction_id":"123456",
+         "mode":"enable",
+         "scheduled_time":"dd/mm/yyyy hh:mm",
+         "status":"Completed/failed/partially failed",
+         "justification":"Reason for enabling or disabling",
+         "status_reason":"In case of failure as provided by spectrum",
+         "user_name":"smahanthesh",
+         "user_email_id":"santhosh_mahanthesh@intuit.com"
+      }
+   ]
+} 

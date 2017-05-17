@@ -23,7 +23,6 @@ file16,120
 file17,99
 file17,99
 file17,99
-file17,99
 file18,180
 file18,180
 file18,180
