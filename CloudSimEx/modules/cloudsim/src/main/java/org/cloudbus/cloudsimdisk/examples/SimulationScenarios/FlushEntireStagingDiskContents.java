@@ -818,7 +818,7 @@ public class FlushEntireStagingDiskContents {
             if (i > 0)
                 arrivalTimes.append("\n");
             arrivalTimes.append(arrivalFile.get(i));
-            if(i%1000 == 0){
+            if(i%100000 == 0){
                 FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
                 arrivalTimes = new StringBuilder();
             }
@@ -828,8 +828,9 @@ public class FlushEntireStagingDiskContents {
                 putOpData.append("\n");
             putOpData.append(dataFile.get(i));
 
-            if(i%1000 == 0){
+            if(i%100000 == 0){
                 FileUtils.writeStringToFile(new File("files/" + putData), putOpData.toString(), true);
+                putOpData = new StringBuilder();
             }
         }
 
@@ -838,7 +839,7 @@ public class FlushEntireStagingDiskContents {
                 getOpData.append("\n");
             getOpData.append(requiredFile.get(i));
 
-            if(i%1000 == 0){
+            if(i%100000 == 0){
                 FileUtils.writeStringToFile(new File("files/" + getData), getOpData.toString(),true);
                 getOpData = new StringBuilder();
             }
@@ -849,8 +850,9 @@ public class FlushEntireStagingDiskContents {
                 updateOpData.append("\n");
             updateOpData.append(updateFile.get(i));
 
-            if(i%1000 == 0){
+            if(i%100000 == 0){
                 FileUtils.writeStringToFile(new File("files/" + updateData), updateOpData.toString(), true);
+                updateOpData = new StringBuilder();
             }
         }
 
@@ -859,8 +861,9 @@ public class FlushEntireStagingDiskContents {
                 deleteOpData.append("\n");
             deleteOpData.append(deleteFile.get(i));
 
-            if(i%1000 == 0){
+            if(i%100000 == 0){
                 FileUtils.writeStringToFile(new File("files/" + deleteData), deleteOpData.toString(), true);
+                deleteOpData = new StringBuilder();
             }
         }
 

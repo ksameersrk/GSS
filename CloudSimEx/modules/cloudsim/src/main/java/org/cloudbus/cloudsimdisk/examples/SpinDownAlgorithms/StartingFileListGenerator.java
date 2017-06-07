@@ -20,6 +20,10 @@ public class StartingFileListGenerator {
             String line;
             String startingFileList = "";
             String inputLog = "";
+
+            FileUtils.writeStringToFile(new File(writeToPathStartingFile), startingFileList.toString());
+            FileUtils.writeStringToFile(new File(writeToPathInputLog), inputLog.toString());
+
             HashSet<String> filesAdded = new HashSet<>();
             while ((line = br.readLine()) != null) {
                 count = count + 1;

@@ -827,7 +827,7 @@ public class MyHarddriveStorage implements Storage {
 			//WriteToResultFile.AddTextToSheetTabSameRow(this.name, 11);
 
 			// Log the observation
-			String msg = String.format("OBSERVATION>> Writting \"%s\" on \"%s\" will take:" + "\n" + "%13s" + "%9.6f"
+			String msg = String.format("OBSERVATION>> Writing \"%s\" on \"%s\" will take:" + "\n" + "%13s" + "%9.6f"
 					+ " second(s) for SeekTime;" + "\n" + "%13s" + "%9.6f" + " second(s) for TransferTime;" + "\n"
 					+ "%13s" + "%9.6f" + " second(s) for rotation Latency;" + "\n" + "%13s" + "%9.6f"
 					+ " second(s) in TOTAL.\n", file.getName(), this.getName(), "", seekTime, "", transferTime, "",

@@ -16,14 +16,14 @@ import static org.cloudbus.cloudsimdisk.examples.SimulationScenarios.FlushEntire
  */
 public class InterfaceDriver {
 
-    public static String base_directory = "/Users/skulkarni9/Desktop/8thSem/GSS/";
-    //public static String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+    //public static String base_directory = "/Users/skulkarni9/Desktop/8thSem/GSS/";
+    public static String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
 
     public static void main(String args[]) throws Exception
     {
         Gson jsonParser = new Gson();
 
-                String filePathToJson = base_directory + "server/data/input_data.json";
+        String filePathToJson = base_directory + "server/data/input_data.json";
         //String filePathToJson = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/input_data.json";
         String jsonData = FileUtils.readFileToString(new File(filePathToJson));
         InputJSONObject inputObject = jsonParser.fromJson(jsonData, InputJSONObject.class);
@@ -90,7 +90,7 @@ public class InterfaceDriver {
         int HDDType = inputObject.getHddDiskType() - 1; // basicallly this number is the id for storage and power model, will assign ids to them
         //Scenarios : this part is to be done in front end
         int SSDType = inputObject.getSsdDiskType() - 1;
-        int percentageFlushAt = 100;
+        int percentageFlushAt = 90;
         int percentageFlushTill = 40;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
