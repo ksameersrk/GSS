@@ -16,8 +16,8 @@ import static org.cloudbus.cloudsimdisk.examples.SimulationScenarios.FlushEntire
  */
 public class InterfaceDriver {
 
-    //public static String base_directory = "/Users/skulkarni9/Desktop/8thSem/GSS/";
-    public static String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+    public static String base_directory = "/Users/skulkarni9/Desktop/8thSem/GSS/";
+    //public static String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
 
     public static void main(String args[]) throws Exception
     {

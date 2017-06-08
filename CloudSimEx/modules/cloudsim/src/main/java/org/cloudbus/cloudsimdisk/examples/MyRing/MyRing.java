@@ -1,13 +1,16 @@
 package org.cloudbus.cloudsimdisk.examples.MyRing;
 
+import com.google.common.io.Files;
+import com.google.gson.Gson;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.cloudbus.cloudsimdisk.examples.MyConstants;
 import org.cloudbus.cloudsimdisk.examples.Node;
 import org.cloudbus.cloudsimdisk.models.hdd.*;
 import org.cloudbus.cloudsimdisk.power.models.hdd.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.MessageDigest;
@@ -17,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by skulkarni9 on 2/26/17.
  */
-public class MyRing
+public class MyRing implements Serializable
 {
     Map<String,MyRegion> myRegions;
     long numberOfPartitions;
@@ -38,6 +41,32 @@ public class MyRing
         this.totalNumberOfPartitions = this.numberOfPartitions * this.replicas;
         this.overloadPartition = this.getTotalNumberOfPartitions() * (overloadPercent/100);
         nodeToPartition = new HashMap<>();
+    }
+
+    public static void saveRing(MyRing myRing, String filePath) {
+        Gson gson = new Gson();
+        String jsonStringObject = gson.toJson(myRing);
+        try {
+            byte[] data = SerializationUtils.serialize(myRing);
+            FileUtils.writeByteArrayToFile(new File(filePath), data);
+            //FileUtils.writeStringToFile(new File(filePath), jsonStringObject);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static MyRing getRing(String filePath) {
+        Gson gson = new Gson();
+        MyRing myRing = null;
+        try {
+            byte data[] = FileUtils.readFileToByteArray(new File(filePath));
+            myRing = (MyRing) SerializationUtils.deserialize(data);
+            //String jsonString =  FileUtils.readFileToString(new File(filePath));
+            //myRing = gson.fromJson(jsonString.toString(), MyRing.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return myRing;
     }
 
     private void createRing()
@@ -497,6 +526,8 @@ public class MyRing
         String ringInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/rings.txt";
         MyRing myRing = buildRing(ringInputPath,
                 nodeCount, partitionPower, replicas, overloadPercent);
+        saveRing(myRing, "saved_ring_data.json");
+        myRing = getRing("saved_ring_data.json");
         System.out.println(myRing);
         System.out.println("Total Weight : "+myRing.getWeight());
         System.out.println("Average Weight : "+myRing.getAverageWeight());

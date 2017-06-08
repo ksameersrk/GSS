@@ -1,11 +1,12 @@
 package org.cloudbus.cloudsimdisk.examples.MyRing;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by skulkarni9 on 2/26/17.
  */
-public class MyZone
+public class MyZone implements Serializable
 {
     Map<String, MyNode> myNodes;
     String name;

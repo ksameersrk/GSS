@@ -3,12 +3,13 @@ package org.cloudbus.cloudsimdisk.examples.MyRing;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by skulkarni9 on 2/26/17.
  */
-public class MyNode
+public class MyNode implements Serializable
 {
     String name;
     double weight;
