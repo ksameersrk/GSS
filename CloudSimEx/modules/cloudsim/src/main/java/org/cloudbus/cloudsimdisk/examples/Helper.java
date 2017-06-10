@@ -441,7 +441,7 @@ public class Helper {
     }
 
 
-    public void createCloudletList(HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<MyNode> nodeList) throws ParameterException {
+    public void createCloudletList(ArrayList<MyNode> nodeList) throws ParameterException {
 
         // local variable
         ArrayList<String> tempRequiredFilesList = null;
@@ -512,7 +512,7 @@ public class Helper {
      * @param startingFilesList
      * @param allNodeList
      */
-	public void addFiles(String startingFilesList, MyRing ring, List<MyNode> allNodeList) {
+	public void addFiles(String startingFilesList, MyRing ring) {
 
 		if (startingFilesList != "") {
 			try {
@@ -535,7 +535,7 @@ public class Helper {
 					fileSize = lineSplited[1];
 
 					// add file to datacenter
-					datacenter.addStartingFile(new File(fileName, Double.parseDouble(fileSize)),ring, allNodeList, nmmap);
+					datacenter.addStartingFile(new File(fileName, Double.parseDouble(fileSize)),ring, nmmap);
 				}
 
 				// close the reader

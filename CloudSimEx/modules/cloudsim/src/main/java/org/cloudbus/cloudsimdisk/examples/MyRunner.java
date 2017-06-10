@@ -114,7 +114,7 @@ public class MyRunner {
         helper.createDataFilesList(dataFile);
 
         // Cloudlets
-        helper.createCloudletList(nodeToTaskMapping, nodeList);
+        helper.createCloudletList(nodeList);
 
         // Logs
         helper.printPersistenStorageDetails();
@@ -128,7 +128,7 @@ public class MyRunner {
         Log.printLine("END !");
     }
 
-	public MyRunner(HashMap<MyNode, Tasks> nodeToTaskMapping, String arrivalFile, String putDataFile, String getDataFile, String updateDataFile, String
+	public MyRunner(String arrivalFile, String putDataFile, String getDataFile, String updateDataFile, String
 			deleteDataFile, ArrayList<MyNode> nodeList, String startingFileList, MyRing ring, List<MyNode> AllnodesList) throws Exception
 	{
 		Log.printLine("Starting simulation \n");
@@ -146,14 +146,14 @@ public class MyRunner {
 		helper.createDatacenter();
 
 		// Files
-		helper.addFiles(startingFileList, ring, AllnodesList);
+		helper.addFiles(startingFileList, ring);
 		helper.createRequiredFilesList(getDataFile);
 		helper.createDataFilesList(putDataFile);
 		helper.createUpdateFilesList(updateDataFile);
 		helper.createDeleteFilesList(deleteDataFile);
 
 		// Cloudlets
-		helper.createCloudletList(nodeToTaskMapping, nodeList);
+		helper.createCloudletList(nodeList);
 
 		// Logs
 		helper.printPersistenStorageDetails();

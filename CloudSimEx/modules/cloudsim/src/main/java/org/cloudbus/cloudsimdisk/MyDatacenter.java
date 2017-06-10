@@ -498,7 +498,7 @@ public class MyDatacenter extends DatacenterEX {
 	 * @see org.cloudbus.cloudsim.Datacenter#addFile(org.cloudbus.cloudsim.File) */
 	@SuppressWarnings("javadoc")
 	//@Override
-	public int addStartingFile(File file, MyRing ring, List<MyNode> allNodeList, HashMap<MyNode, MyPowerHarddriveStorage> nmmap) {
+	public int addStartingFile(File file, MyRing ring, HashMap<MyNode, MyPowerHarddriveStorage> nmmap) {
 
 		/************ HDD POOL MANAGEMENT ******/
 		/* Select the storage algorithm */

@@ -203,7 +203,7 @@ public class FlushEntireStagingDiskContents {
 
         Double totalEnergyConsumed = 0.0;
         // call performOperations() which performs all the CRUD operations as given in input and returns total power consumed
-        MyRunner runner = performOperations(nodeToTaskMapping, arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing, stagingDiskRing,
+        MyRunner runner = performOperations(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing, stagingDiskRing,
                 pathToStartingFileList, addStagingDisk);
 
         return runner;
@@ -769,7 +769,7 @@ public class FlushEntireStagingDiskContents {
 
 
     // does the task of send the cloudlets and starting the simulation
-    public static MyRunner performOperations(HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, ArrayList<String> dataFile,
+    public static MyRunner performOperations(ArrayList<String> arrivalFile, ArrayList<String> dataFile,
                                            ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<MyNode>
                                                    nodeList, MyRing myRing, MyRing stagingDiskRing, String pathToStartingFileList, boolean addstagingDisk) throws
             Exception {
@@ -882,7 +882,7 @@ public class FlushEntireStagingDiskContents {
         ArrayList<MyNode> allNodes = new ArrayList<MyNode>(myRing.getAllNodes());
         if(addstagingDisk)
             allNodes.addAll(stagingDiskRing.getAllNodes());
-        MyRunner runner = new MyRunner(nodeToTaskMapping, arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
+        MyRunner runner = new MyRunner(arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
 
         return runner;
         //System.out.println("Energy Consumed : " + run.getTotalStorageEnergyConsumed() + " Joules()");
