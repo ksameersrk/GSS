@@ -266,7 +266,7 @@ public class MyHarddriveStorage implements Storage {
 		queueLengthHistory.add(queueLength);
 
 		// log the observation
-		WriteToLogFile.AddtoFile("OBSERVATION>> #QueueLenght <" + this.name + "> is now => " + queueLength);
+		// WriteToLogFile.AddtoFile("OBSERVATION>> #QueueLenght <" + this.name + "> is now => " + queueLength);
 	}
 
 	/**
@@ -832,7 +832,7 @@ public class MyHarddriveStorage implements Storage {
 					+ "%13s" + "%9.6f" + " second(s) for rotation Latency;" + "\n" + "%13s" + "%9.6f"
 					+ " second(s) in TOTAL.\n", file.getName(), this.getName(), "", seekTime, "", transferTime, "",
 					rotlatency, "", seekTime + transferTime + rotlatency);
-			WriteToLogFile.AddtoFile(msg);
+			// WriteToLogFile.AddtoFile(msg);
 		}
 
 		// store transactionTime and HDDid as attributes on this file.
@@ -900,7 +900,7 @@ public class MyHarddriveStorage implements Storage {
 					+ "%13s" + "%9.6f" + " second(s) for rotation Latency;" + "\n" + "%13s" + "%9.6f"
 					+ " second(s) in TOTAL.\n", obj.getName(), this.getName(), "", seekTime, "", transferTime, "",
 					rotlatency, "", seekTime + transferTime + rotlatency);
-			WriteToLogFile.AddtoFile(msg);
+			// WriteToLogFile.AddtoFile(msg);
 		}
 
 		return obj;

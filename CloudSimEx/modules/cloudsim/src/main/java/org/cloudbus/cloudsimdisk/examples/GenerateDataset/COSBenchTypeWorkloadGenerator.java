@@ -72,7 +72,7 @@ public class COSBenchTypeWorkloadGenerator {
             i++;
             totalUploadedSize += random;
         } while (totalUploadedSize < totalUploadCapacity);
-        WriteToLogFile.AddtoFile(String.format("%8sTotal no. of upload ops : %10d ", "", i ));
+        // WriteToLogFile.AddtoFile(String.format("%8sTotal no. of upload ops : %10d ", "", i ));
         return uploadOps;
     }
 
@@ -98,7 +98,7 @@ public class COSBenchTypeWorkloadGenerator {
         ArrayList<String> downloadOps = new ArrayList<>();
 
         int noOfDownloadOpsReqd = Math.round(downloadPercentage*noOfUploadOps/uploadPercentage);
-        WriteToLogFile.AddtoFile(String.format("%8sTotal no. of download ops : %10d ", "", noOfDownloadOpsReqd ));
+        // WriteToLogFile.AddtoFile(String.format("%8sTotal no. of download ops : %10d ", "", noOfDownloadOpsReqd ));
         for(int i = 0; i<noOfDownloadOpsReqd; ++i){
             int random = ThreadLocalRandom.current().nextInt(0, noOfUploadOps);
             downloadOps.add("File"+random);
@@ -129,7 +129,7 @@ public class COSBenchTypeWorkloadGenerator {
         ArrayList<String> deleteOps = new ArrayList<>();
 
         int noOfDeleteOpsReqd = Math.round(deletePercentage*noOfUploadOps/uploadPercentage);
-        WriteToLogFile.AddtoFile(String.format("%8sTotal no. of delete ops : %10d ", "", noOfDeleteOpsReqd ));
+        // WriteToLogFile.AddtoFile(String.format("%8sTotal no. of delete ops : %10d ", "", noOfDeleteOpsReqd ));
 
         for(int i = 0; i<noOfDeleteOpsReqd; ++i){
             int random = ThreadLocalRandom.current().nextInt(0, noOfUploadOps);

@@ -35,7 +35,7 @@ public class MySpinDownRandomAlgorithm
 
         System.out.println("Simulating After Each Operation : ");
         List<List<MyNode>> result = simulate(operationsInputPath, myRing, numberOfInputLines);
-        WriteToLogFile.AddtoFile("*************************** RESULTS ***************************");
+        // WriteToLogFile.AddtoFile("*************************** RESULTS ***************************");
 
 
         for(int i=0; i<result.size(); ++i)

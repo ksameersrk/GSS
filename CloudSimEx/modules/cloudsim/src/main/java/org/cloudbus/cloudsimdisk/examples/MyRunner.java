@@ -79,7 +79,7 @@ public class MyRunner {
 
 		// BEGIN
 		Log.printLine("Starting simulation \"" + name + "\"\n");
-		WriteToLogFile.AddtoFile("Starting simulation \"" + name + "\"\n");
+		// WriteToLogFile.AddtoFile("Starting simulation \"" + name + "\"\n");
 		//WriteToResultFile.init();
 
 		init(NumberOfRequest, type, RequestArrivalDistri, requiredFiles, dataFiles, startingFilesList, NumberOfDisk,
@@ -95,7 +95,7 @@ public class MyRunner {
 	public MyRunner(HashMap<MyNode, Tasks> nodeToTaskMapping, String arrivalFile, String dataFile, ArrayList<MyNode> nodeList) throws Exception
     {
         Log.printLine("Starting simulation \n");
-        WriteToLogFile.AddtoFile("Starting simulation \n");
+        // WriteToLogFile.AddtoFile("Starting simulation \n");
 		//WriteToResultFile.init();
 
         //-----------------INIT-----------------//
@@ -132,7 +132,7 @@ public class MyRunner {
 			deleteDataFile, ArrayList<MyNode> nodeList, String startingFileList, MyRing ring, List<MyNode> AllnodesList) throws Exception
 	{
 		Log.printLine("Starting simulation \n");
-		WriteToLogFile.AddtoFile("Starting simulation \n");
+		// WriteToLogFile.AddtoFile("Starting simulation \n");
 		//WriteToResultFile.init();
 
 		//-----------------INIT-----------------//

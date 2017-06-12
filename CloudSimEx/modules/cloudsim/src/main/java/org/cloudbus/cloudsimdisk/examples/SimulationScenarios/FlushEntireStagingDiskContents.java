@@ -90,7 +90,7 @@ public class FlushEntireStagingDiskContents {
                 noOfStagingDisks
                 , 1, 1, 10.0, true, SSDType);
 
-        WriteToLogFile.AddtoFile(String.format("%8sTotal no. of HDDs = %10d ", "", totalNoOfNodes));
+        // WriteToLogFile.AddtoFile(String.format("%8sTotal no. of HDDs = %10d ", "", totalNoOfNodes));
         // ==================================================================================================
 
         String ringInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/rings.txt";
@@ -118,7 +118,7 @@ public class FlushEntireStagingDiskContents {
                 tmp.sort(Comparator.comparing(String::hashCode));
 
                 System.out.println("Operation No : "+((result.size()-1)+1)+", No of Nodes spunDownAble : "+tmp.size()+" are : "+tmp);
-                WriteToLogFile.AddtoFile(String.format("%8s Operation No. : %10d, No of Nodes spunDownAble :  %10d . They are : %s", "", ((result.size()-1)
+                // WriteToLogFile.AddtoFile(String.format("%8s Operation No. : %10d, No of Nodes spunDownAble :  %10d . They are : %s", "", ((result.size()-1)
                         +1), tmp.size(), tmp));
             }
 
@@ -173,7 +173,7 @@ public class FlushEntireStagingDiskContents {
 
         // if there is no staging disk
         if (addStagingDisk == false) {
-            WriteToLogFile.AddtoFile("Staging Disk : False");
+            // WriteToLogFile.AddtoFile("Staging Disk : False");
             // pass the operation name to this getOperationFileList() method and it will return the op file to be passed to MyRunner
             dataFile = getOperationFileList(pathToInputLog, "PUT", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks, numberOfOperations);
             requiredFile = getOperationFileList(pathToInputLog, "GET", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks, numberOfOperations);
@@ -181,7 +181,7 @@ public class FlushEntireStagingDiskContents {
             deleteFile = getOperationFileList(pathToInputLog, "DELETE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfActiveAlwaysDisks,
                     numberOfOperations);
         } else {
-            WriteToLogFile.AddtoFile("Staging Disk : True");
+            // WriteToLogFile.AddtoFile("Staging Disk : True");
             // if there a staging disk included
             stagingDiskSimulate(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, pathToInputLog, nodeToTaskMapping, nodeList,
                     noOfActiveAlwaysDisks, myRing, noOfSpunDownDisks, stagingDiskRing, percentageFlushAt, percentageFlushTill, cachingMechanism,
@@ -261,8 +261,8 @@ public class FlushEntireStagingDiskContents {
             stagingDiskFileList.put(n, new HashMap<String, Double>());
 
             //System.out.println("Flushing when upper threshold of " + upperThreshold.toString() + " is reached.");
-            WriteToLogFile.AddtoFile(String.format("%8sFlushing when upper threshold of %9.3f is reached", "", upperThreshold));
-            WriteToLogFile.AddtoFile(String.format("%8sFlushing till lower threshold of %9.3f is reached", "", lowerThreshold));
+            // WriteToLogFile.AddtoFile(String.format("%8sFlushing when upper threshold of %9.3f is reached", "", upperThreshold));
+            // WriteToLogFile.AddtoFile(String.format("%8sFlushing till lower threshold of %9.3f is reached", "", lowerThreshold));
 
         }
 
@@ -501,7 +501,7 @@ public class FlushEntireStagingDiskContents {
                                               ArrayList<String> tmpdeleteFile, ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping,
                                               MyRing ring, ArrayList<String> newOperationsSinceLastSpinDown, ArrayList<String> tmpRequiredFile) {
         System.out.println("Flushing staging disk contents at time = " + data[1]);
-        WriteToLogFile.AddtoFile(String.format("%8sFlushing staging disk contents at time = %8s ", "", data[1]));
+        // WriteToLogFile.AddtoFile(String.format("%8sFlushing staging disk contents at time = %8s ", "", data[1]));
         // remove oldest unused files such after removing them only 60% of stagingDisk mem is occupied
         // before removing add them to respective spun down disks
         Map<String, Double> tmpToBeAddedToSpunDownFiles = new LinkedHashMap<String, Double>();
