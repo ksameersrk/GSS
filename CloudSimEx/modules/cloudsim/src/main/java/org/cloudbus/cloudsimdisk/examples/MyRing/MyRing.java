@@ -95,6 +95,11 @@ public class MyRing implements Serializable
         }
     }
 
+    public void setAllNodes(ArrayList<MyNode> complete_nodeList)
+    {
+        allNodes = complete_nodeList;
+    }
+
     public List<MyNode> getAllNodes()
     {
         return this.allNodes;

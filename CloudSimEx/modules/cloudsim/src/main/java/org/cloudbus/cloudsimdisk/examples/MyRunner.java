@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.cloudbus.cloudsimdisk.examples;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
@@ -22,6 +24,8 @@ import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
 import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
 import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -240,5 +244,60 @@ public class MyRunner {
 	{
 		double TotalStorageEnergy = helper.getTotalStorageEnergyConsumed();
 		return TotalStorageEnergy ;
+	}
+
+	public static void main(String args[]) throws Exception{
+		String arrival = "basic/operations/arrival.txt";
+		String putData = "basic/operations/putData.txt";
+		String getData = "basic/operations/getData.txt";
+		String updateData = "basic/operations/updateData.txt";
+		String deleteData = "basic/operations/deleteData.txt";
+
+		String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
+		String startingFilelist = pathToStartingFileList.split("files/")[1];
+
+		MyRing myRing = null;
+		ArrayList<MyNode> nodeList = new ArrayList<>();
+        ArrayList<MyNode> allNodes = new ArrayList<>();
+		ArrayList<MyNode> nodeList_dummy = new ArrayList<>();
+		ArrayList<MyNode> allNodes_dummy = new ArrayList<>();
+		try {
+
+			byte data[] = FileUtils.readFileToByteArray(new File("files/basic/operations/myRing.json"));
+			myRing = (MyRing) SerializationUtils.deserialize(data);
+
+			ArrayList<MyNode> defaultNodeList = (ArrayList<MyNode>) myRing.getAllNodes();
+			HashMap<String, MyNode> nodeNameToNodeMapping = new HashMap<>();
+			for(MyNode n : defaultNodeList)
+			{
+				nodeNameToNodeMapping.put(n.getName(), n);
+			}
+
+            byte data_2[] = FileUtils.readFileToByteArray(new File("files/basic/operations/allNodes.json"));
+            allNodes_dummy = (ArrayList<MyNode>) SerializationUtils.deserialize(data_2);
+            for(MyNode n : allNodes_dummy)
+            {
+                if(nodeNameToNodeMapping.containsKey(n.getName()))
+                    allNodes.add(nodeNameToNodeMapping.get(n.getName()));
+                else
+                {
+                    nodeNameToNodeMapping.put(n.getName(), n);
+                    allNodes.add(n);
+                }
+            }
+
+			byte data_1[] = FileUtils.readFileToByteArray(new File("files/basic/operations/nodeList.json"));
+			nodeList_dummy = (ArrayList<MyNode>) SerializationUtils.deserialize(data_1);
+
+			for(MyNode n : nodeList_dummy)
+			{
+				nodeList.add(nodeNameToNodeMapping.get(n.getName()));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+		MyRunner runner = new MyRunner(arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
 	}
 }

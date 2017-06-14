@@ -195,7 +195,7 @@ public class Helper {
 	}
 
     public void createPersistentStorage(List<MyNode> nodes) throws ParameterException {
-		MyPowerHarddriveStorage tmp = null;
+		MyPowerHarddriveStorage tmp ;
 		int i = 0;
         for (MyNode n : nodes) {
         	tmp = new MyPowerHarddriveStorage(i, "Node HDD" + n.getName(), n.getHddModel(), n.getHddPowerModel(), n.isSpunDown());
@@ -566,6 +566,7 @@ public class Helper {
 		}
 
 		// WriteToLogFile.AddtoFile(msg);
+        System.out.println(msg);
 	}
 
 	/**

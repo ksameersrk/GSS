@@ -1,5 +1,6 @@
 package org.cloudbus.cloudsimdisk.examples.SimulationScenarios;
 
+import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsimdisk.examples.GenerateDataset.COSBenchTypeWorkloadGenerator;
@@ -11,11 +12,12 @@ import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.OptimalHelper;
 import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownRandomAlgorithm;
 import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.StartingFileListGenerator;
 import org.cloudbus.cloudsimdisk.examples.Tasks;
+import org.cloudbus.cloudsimdisk.examples.UI.InputJSONObject;
 import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
 
 import java.io.*;
 import java.util.*;
-
+import org.apache.commons.lang3.SerializationUtils;
 import static org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownOptimalAlgorithm.*;
 
 /**
@@ -28,7 +30,7 @@ import static org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownOp
  * Spinning disk down algo : Spin down random disk. Mark which disks cannot be spun down. Spin down another random disk.
  */
 
-public class FlushEntireStagingDiskContents {
+public class FlushEntireStagingDiskContents implements Serializable{
     public static boolean debug = false;
     //public static void main(String args[]) throws Exception{
     public static MyRunner startSimulation(int totalNoOfNodes, boolean addStagingDisk, int numberOfOperations, int predefindedWorkloadNumber, int noOfReplicas,
@@ -882,45 +884,113 @@ public class FlushEntireStagingDiskContents {
         ArrayList<MyNode> allNodes = new ArrayList<MyNode>(myRing.getAllNodes());
         if(addstagingDisk)
             allNodes.addAll(stagingDiskRing.getAllNodes());
-        MyRunner runner = new MyRunner(arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
 
+        /*
+        MyRunner runner = new MyRunner(arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
         return runner;
+        */
+        serializeObjects(nodeList, "files/basic/operations/nodeList.json");
+        serializeObjects(myRing, "files/basic/operations/myRing.json");
+        serializeObjects(allNodes, "files/basic/operations/allNodes.json");
+
         //System.out.println("Energy Consumed : " + run.getTotalStorageEnergyConsumed() + " Joules()");
         //return run.getTotalStorageEnergyConsumed();
+
+        return null;
+    }
+
+    public static void serializeObjects(Object obj, String filePath)
+    {
+        try {
+            byte[] data = SerializationUtils.serialize((Serializable) obj);
+            FileUtils.writeByteArrayToFile(new File(filePath), data);
+            //FileUtils.writeStringToFile(new File(filePath), jsonStringObject);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void main(String args[]) throws Exception{
+
+        String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+        Gson jsonParser = new Gson();
+
+        String filePathToJson = base_directory + "server/data/input_data.json";
+        //String filePathToJson = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/server/data/input_data.json";
+        String jsonData = FileUtils.readFileToString(new File(filePathToJson));
+        InputJSONObject inputObject = jsonParser.fromJson(jsonData, InputJSONObject.class);
         // node properties
-        int totalNoOfNodes = 16;
+        int totalNoOfNodes = inputObject.getTotalNoOfNodes();
 
         // staging disk properties
-        boolean addStagingDisk = false;
+        boolean addStagingDisk = true;
 
-        int numberOfOperations = -1;
+        int numberOfOperations = inputObject.getNumberOfOperations();
         String distribution = "read intensive";
 
         // will have a set of predefined workloads , user selects one of them,
         // predefindedWorkloadNumber variable stores the workload id
-        int predefindedWorkloadNumber = 1;
+        int predefindedWorkloadNumber = inputObject.getPredefindedWorkloadNumber();
 
         int noOfReplicas = 3; //default 3
         String cachingMechanism = "LRU"; // FIFO also possible
-        int HDDType = 0; // basicallly this number is the id for storage and power model, will assign ids to them
+        int HDDType = inputObject.getHddDiskType() - 1; // basicallly this number is the id for storage and power model, will assign ids to them
         //Scenarios : this part is to be done in front end
-        int SSDType = 1;
+        int SSDType = inputObject.getSsdDiskType() - 1;
         int percentageFlushAt = 90;
-        int percentageFlushTill = 0;
+        int percentageFlushTill = 40;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
-        String pathToWorkload = "files/basic/operations/workload.txt";
+
+        String pathToWorkload = "files/basic/operations/workload_medium.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
-        String pathToInputLog = "files/basic/operations/idealInputLog.txt";
-        boolean generateInputLog = false;
 
+        //String pathToInputLog = "files/basic/operations/idealInputLog.txt";
+        String pathToInputLog = "";
+        boolean generateInputLog = true;
 
+        if(inputObject.getWorkloadType().equals("predefined_workload")) {
+            pathToInputLog = "files/basic/operations/idealInputLog" + inputObject.getPredefindedWorkloadNumber() + ".txt";
+        }
+        else if(inputObject.getWorkloadType().equals("manual")) {
+            pathToInputLog = "files/basic/operations/idealInputLog.txt";
+            FileUtils.writeStringToFile(new File(pathToInputLog), inputObject.getManualTextarea());
+            numberOfOperations = -1;
+        }
 
+        int scenario = inputObject.getScenario();
 
-        startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, HDDType, SSDType,
-                percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+        System.out.println("workload : " + pathToWorkload);
+        System.out.println("starting file list : " + pathToStartingFileList);
+        System.out.println("input log : " + pathToInputLog);
+        if(scenario == 1){
+            addStagingDisk = false;
+            MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
+                    HDDType,
+                    SSDType,
+                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
 
+        }
+        else if(scenario == 2) {
+            addStagingDisk = true;
+            MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
+                    HDDType, SSDType,
+                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+
+        }
+        else if(scenario == 3){
+
+            addStagingDisk = false;
+            MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
+                    HDDType,
+                    SSDType,
+                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+
+            addStagingDisk = true;
+            MyRunner runnerSSD = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
+                    HDDType, SSDType,
+                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+
+        }
     }
 }
