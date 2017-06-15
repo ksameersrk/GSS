@@ -32,6 +32,7 @@ import org.cloudbus.cloudsim.ex.DatacenterEX;
 import org.cloudbus.cloudsimdisk.core.MyCloudSimTags;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
+import org.cloudbus.cloudsimdisk.examples.MyRunner;
 import org.cloudbus.cloudsimdisk.examples.Node;
 import org.cloudbus.cloudsimdisk.examples.Ring;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
@@ -51,6 +52,7 @@ public class MyDatacenter extends DatacenterEX {
 	public static HashMap<Cloudlet, MyPowerHarddriveStorage> csmap = new HashMap<Cloudlet, MyPowerHarddriveStorage>();
 	public static Cloudlet curr = null;
 	public static MyPowerDatacenterBroker myPowerDatacenterBroker;
+	public static MyRunner myRunner;
 
 	/** Round Robin Algorithm temp variable */
 	private int	tempRR	= -1;
@@ -85,6 +87,7 @@ public class MyDatacenter extends DatacenterEX {
 		// Handle my new Tag Event.
 		if (ev.getTag() == MyCloudSimTags.CLOUDLET_FILE_DONE) {
 			if(myPowerDatacenterBroker != null) {
+				myRunner.helper.createCloudletListOne();
 				myPowerDatacenterBroker.submitOneCloudlets();
 			}
 			processCloudletFilesDone(ev);

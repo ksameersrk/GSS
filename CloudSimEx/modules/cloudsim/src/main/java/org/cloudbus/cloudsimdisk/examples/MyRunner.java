@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsimdisk.MyDatacenter;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
@@ -157,7 +158,10 @@ public class MyRunner {
 		helper.createDeleteFilesList(deleteDataFile);
 
 		// Cloudlets
-		helper.createCloudletList(nodeList);
+		//helper.createCloudletList(nodeList);
+		MyDatacenter.myRunner = this;
+		helper.setMyNodeListOne(nodeList);
+		helper.createCloudletListOne();
 
 		// Logs
 		helper.printPersistenStorageDetails();
@@ -209,7 +213,8 @@ public class MyRunner {
 		helper.createDataFilesList(dataFiles);
 
 		// Cloudlets
-		helper.createCloudletList(NumberOfRequest);
+		//helper.createCloudletList(NumberOfRequest);
+		helper.createCloudletListOne();
 
 		// Logs
 		helper.printPersistenStorageDetails();

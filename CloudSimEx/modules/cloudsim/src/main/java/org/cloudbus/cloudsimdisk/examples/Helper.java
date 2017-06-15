@@ -103,6 +103,8 @@ public class Helper {
     // for graph purpose
     List<Map<String,Object>> diskStats = new ArrayList<Map<String,Object>>();
     Map<String, Double> scenarioStat = new HashMap<>();
+	List<MyNode> myNodeListOne;
+	int cloudletNumber = 1;
 
 
 	// Methods
@@ -496,6 +498,73 @@ public class Helper {
         // submit the list to the broker
         broker.submitCloudletList(cloudletList);
     }
+
+    public void setMyNodeListOne(List<MyNode> list) {
+		this.myNodeListOne = list;
+	}
+
+	public List<MyNode> getMyNodeListOne() {
+		return myNodeListOne;
+	}
+
+	public void createCloudletListOne() {
+		System.out.println("createCloudletListOne : "+cloudletNumber+" : "+myNodeListOne.size()+" : "+myNodeListOne.toString());
+		if(cloudletNumber <= myNodeListOne.size()) {
+			ArrayList<String> tempRequiredFilesList = null;
+			ArrayList<File> tempDataFilesList = null;
+			ArrayList<File> tempUpdateFileList = null;
+			ArrayList<String> tempDeleteFileList = null;
+
+			int i = cloudletNumber;
+
+			if (i <= dataFiles.size()) {
+				tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(i - 1)));
+				tempRequiredFilesList = null;
+				tempUpdateFileList = null;
+				tempDeleteFileList = null;
+			}
+			else if (i > dataFiles.size() && i <= (requiredFiles.size() + dataFiles.size())) {
+				tempRequiredFilesList = new ArrayList<String>(Arrays.asList(requiredFiles.get(i - dataFiles.size() - 1)));
+				tempDataFilesList = null;
+				tempUpdateFileList = null;
+				tempDeleteFileList = null;
+			}
+			else if(i > (requiredFiles.size() + dataFiles.size()) && i <= (requiredFiles.size() + dataFiles.size() + updateFiles.size())){
+				tempUpdateFileList = new ArrayList<File>(Arrays.asList(updateFiles.get(i - dataFiles.size() - requiredFiles.size() - 1)));
+				tempDeleteFileList = null;
+				tempDataFilesList = null;
+				tempRequiredFilesList = null;
+			}
+			else if(i > (requiredFiles.size() + dataFiles.size() + updateFiles.size()) && i<= (requiredFiles.size() + dataFiles.size() + updateFiles.size() + deleteFiles.size()))
+			{
+				tempDeleteFileList = new ArrayList<String>(Arrays.asList(deleteFiles.get(i - dataFiles.size() - requiredFiles.size() - updateFiles.size() - 1)));
+				tempRequiredFilesList = null;
+				tempDataFilesList = null;
+				tempUpdateFileList = null;
+			}
+			else {
+				tempRequiredFilesList = null;
+				tempDataFilesList = null;
+				tempUpdateFileList = null;
+				tempDeleteFileList = null;
+			}
+
+			MyCloudlet myCloudlet = new MyCloudlet(i, MyConstants.CLOUDLET_LENGHT, MyConstants.CLOUDLET_PES_NUMBER,
+					MyConstants.CLOUDLET_FILE_SIZE, MyConstants.CLOUDLET_OUTPUT_SIZE,
+					MyConstants.CLOUDLET_UTILIZATION_MODEL_CPU, MyConstants.CLOUDLET_UTILIZATION_MODEL_RAM,
+					MyConstants.CLOUDLET_UTILIZATION_MODEL_BW, tempRequiredFilesList, tempDataFilesList, tempUpdateFileList, tempDeleteFileList);
+
+			myCloudlet.setUserId(broker.getId());
+			myCloudlet.setVmId(vmlist.get(0).getId());
+
+			MyDatacenter.csmap.put(myCloudlet, nmmap.get(myNodeListOne.get(i-1)));
+			cloudletNumber++;
+
+			broker.submitCloudletList(Arrays.asList(myCloudlet));
+		}
+	}
+
+
 
 	/**
      * @param startingFilesList
