@@ -913,7 +913,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
 
     public static void main(String args[]) throws Exception{
 
-        String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+        //String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+        String base_directory = "/Users/skulkarni9/Desktop/8thSem/GSS/";
         Gson jsonParser = new Gson();
 
         String filePathToJson = base_directory + "server/data/input_data.json";
@@ -921,12 +922,12 @@ public class FlushEntireStagingDiskContents implements Serializable{
         String jsonData = FileUtils.readFileToString(new File(filePathToJson));
         InputJSONObject inputObject = jsonParser.fromJson(jsonData, InputJSONObject.class);
         // node properties
-        int totalNoOfNodes = inputObject.getTotalNoOfNodes();
+        int totalNoOfNodes = 8;
 
         // staging disk properties
         boolean addStagingDisk = true;
 
-        int numberOfOperations = inputObject.getNumberOfOperations();
+        int numberOfOperations = 32;
         String distribution = "read intensive";
 
         // will have a set of predefined workloads , user selects one of them,
@@ -942,7 +943,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         int percentageFlushTill = 40;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
-        String pathToWorkload = "files/basic/operations/workload_medium.txt";
+        String pathToWorkload = "files/basic/operations/workload.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
 
         //String pathToInputLog = "files/basic/operations/idealInputLog.txt";
@@ -958,7 +959,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
             numberOfOperations = -1;
         }
 
-        int scenario = inputObject.getScenario();
+        int scenario = 1;
 
         System.out.println("workload : " + pathToWorkload);
         System.out.println("starting file list : " + pathToStartingFileList);

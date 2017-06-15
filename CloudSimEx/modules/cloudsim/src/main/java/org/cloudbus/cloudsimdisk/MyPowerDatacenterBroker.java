@@ -71,7 +71,7 @@ public class MyPowerDatacenterBroker extends PowerDatacenterBroker {
 	@SuppressWarnings("javadoc")
 	@Override
 	protected void submitCloudlets() {
-
+		/*
 		// Initialize local variable
 		int vmIndex = 0;
 		double tempArrivalTime = 0;
@@ -118,10 +118,76 @@ public class MyPowerDatacenterBroker extends PowerDatacenterBroker {
 
 			// update Cloudlet Submitted List
 			getCloudletSubmittedList().add(cloudlet);
+			//break;
 		}
+
+		System.out.println("DEBUG100");
+
 
 		// remove submitted cloudlets from waiting list
 		for (Cloudlet cloudlet : getCloudletSubmittedList()) {
+			getCloudletList().remove(cloudlet);
+		}
+		*/
+		submitOneCloudlets();
+	}
+
+	protected  void submitOneCloudlets() {
+		if(getCloudletList().size() > 0) {
+			// Initialize local variable
+			int vmIndex = 0;
+			double tempArrivalTime = 0;
+			Cloudlet cloudlet = getCloudletList().get(0);
+			MyCloudlet myCloudlet = (MyCloudlet) cloudlet;
+
+			// For each Cloudlet of the Cloudlet list...
+
+
+			// prepare spreadsheet results
+			//WriteToResultFile.AddValueToSheetTab(myCloudlet.getCloudletId(), myCloudlet.getCloudletId(), 0);
+
+			// Vm binding check
+			Vm vm;
+			if (cloudlet.getVmId() == -1) { // if user didn't bind this cloudlet and it has not been executed yet
+				vm = getVmsCreatedList().get(vmIndex);
+			} else { // submit to the specific vm
+				vm = VmList.getById(getVmsCreatedList(), cloudlet.getVmId());
+				if (vm == null) { // vm was not created
+					Log.printLine(CloudSim.clock() + ": " + getName() + ": Postponing execution of cloudlet "
+							+ cloudlet.getCloudletId() + ": bound VM not available");
+					return;
+				}
+			}
+
+			// set VM ID to the Cloudlet
+			cloudlet.setVmId(vm.getId());
+
+			// request arrival rate sample according to a specific distribution type
+			tempArrivalTime = distri.sample();
+
+			// store arrival time
+			History.add(tempArrivalTime);
+			//WriteToResultFile.AddValueToSheetTab(tempArrivalTime, myCloudlet.getCloudletId(), 1);
+
+			// each Cloudlet are scheduled according to the request arrival rate sample
+			send(getVmsToDatacentersMap().get(vm.getId()), tempArrivalTime - CloudSim.clock(),
+					CloudSimTags.CLOUDLET_SUBMIT, myCloudlet);
+			Log.formatLine("%.1f: %s: Cloudlet #%3d is scheduled to be sent to VM #%3d at %7.3f second(s)",
+					CloudSim.clock(), getName(), cloudlet.getCloudletId(), vm.getId(), tempArrivalTime);
+
+			// increment variable
+			cloudletsSubmitted++;
+			vmIndex = (vmIndex + 1) % getVmsCreatedList().size();
+
+			// update Cloudlet Submitted List
+			getCloudletSubmittedList().add(cloudlet);
+			//break;
+
+
+			System.out.println("DEBUG100");
+
+
+			// remove submitted cloudlets from waiting list
 			getCloudletList().remove(cloudlet);
 		}
 	}

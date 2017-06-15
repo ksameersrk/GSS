@@ -160,6 +160,11 @@ public class Helper {
 	 */
 	public void createHostList(int hostsNumber) {
 		for (int i = 1; i <= hostsNumber; i++) {
+			/*
+			hostList.add(new PowerHost(i, new RamProvisionerSimple(MyConstants.HOST_RAM), new BwProvisionerSimple(
+					MyConstants.HOST_BW), MyConstants.HOST_STORAGE, peList, new VmSchedulerTimeSharedOverSubscription(
+					peList), MyConstants.HOST_POWER_MODEL));
+			*/
 			hostList.add(new PowerHost(i, new RamProvisionerSimple(MyConstants.HOST_RAM), new BwProvisionerSimple(
 					MyConstants.HOST_BW), MyConstants.HOST_STORAGE, peList, new VmSchedulerTimeSharedOverSubscription(
 					peList), MyConstants.HOST_POWER_MODEL));
@@ -396,22 +401,6 @@ public class Helper {
         ArrayList<File> tempDataFilesList = null;
 
         for (int i = 1; i <= CloudlerNumber; i++) {
-
-			/*
-				// handle dataFiles
-				if (i <= dataFiles.size()) {
-					tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(i - 1)));
-				} else {
-					tempDataFilesList = null;
-				}
-
-				// handle requiredFiles
-				if (i <= requiredFiles.size()) {
-					tempRequiredFilesList = new ArrayList<String>(Arrays.asList(requiredFiles.get(i - 1)));
-				} else {
-					tempRequiredFilesList = null;
-				}
-			*/
 
             if (i <= dataFiles.size()) {
                 tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(i - 1)));

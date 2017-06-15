@@ -69,7 +69,7 @@ public class MyPowerDatacenter extends MyDatacenter {
 	@Override
 	protected void processOperationWithStorage(MyPowerHarddriveStorage storage, File tempFile, Cloudlet cl,
 			String action) {
-
+		System.out.println("processOperationWithStorage : MyPowerDatacenter");
 		// retrieve the transaction time for this operation
 		double transTime = tempFile.getTransactionTime();
 

@@ -50,6 +50,7 @@ public class MyDatacenter extends DatacenterEX {
 
 	public static HashMap<Cloudlet, MyPowerHarddriveStorage> csmap = new HashMap<Cloudlet, MyPowerHarddriveStorage>();
 	public static Cloudlet curr = null;
+	public static MyPowerDatacenterBroker myPowerDatacenterBroker;
 
 	/** Round Robin Algorithm temp variable */
 	private int	tempRR	= -1;
@@ -83,6 +84,9 @@ public class MyDatacenter extends DatacenterEX {
 
 		// Handle my new Tag Event.
 		if (ev.getTag() == MyCloudSimTags.CLOUDLET_FILE_DONE) {
+			if(myPowerDatacenterBroker != null) {
+				myPowerDatacenterBroker.submitOneCloudlets();
+			}
 			processCloudletFilesDone(ev);
 		} else {
 			super.processEvent(ev);
@@ -295,7 +299,7 @@ public class MyDatacenter extends DatacenterEX {
 	 */
 	protected void processOperationWithStorage(MyPowerHarddriveStorage storage, File tempFile, Cloudlet cl,
 			String action) {
-
+		System.out.println("processOperationWithStorage : MyDatacenter");
 		// retrieve the transaction time for this operation
 		double transTime = tempFile.getTransactionTime();
 
