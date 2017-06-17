@@ -508,7 +508,7 @@ public class Helper {
 	}
 
 	public void createCloudletListOne() {
-		System.out.println("createCloudletListOne : "+cloudletNumber+" : "+myNodeListOne.size()+" : "+myNodeListOne.toString());
+		//System.out.println("createCloudletListOne : "+cloudletNumber+" : "+myNodeListOne.size()+" : "+myNodeListOne.toString());
 		if(cloudletNumber <= myNodeListOne.size()) {
 			ArrayList<String> tempRequiredFilesList = null;
 			ArrayList<File> tempDataFilesList = null;
