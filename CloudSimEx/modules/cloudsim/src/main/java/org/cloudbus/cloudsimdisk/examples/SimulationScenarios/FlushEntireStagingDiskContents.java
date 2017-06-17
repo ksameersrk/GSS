@@ -519,6 +519,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         for (String file : tmpToBeAddedToSpunDownFiles.keySet()) {
             stagingDiskFileList.remove(file);
             tmpRequiredFile.add("READ,"+data[1]+","+file);
+            nodeList.add(stagingDisk);
             nodeToTaskMapping.get(stagingDisk).addTask("READ,"+data[1]+","+file);
             if (nodeToTaskMapping.containsKey(stagingDisk)) {
                 nodeToTaskMapping.get(stagingDisk).addTask("READ,"+data[1]+","+file);
