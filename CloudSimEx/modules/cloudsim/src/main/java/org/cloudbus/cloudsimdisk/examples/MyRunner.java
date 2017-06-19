@@ -63,6 +63,7 @@ public class MyRunner {
 		MyRunner.numberOfProcessingUnits = num;
 	}
 
+
 	/**
 	 * Create a Runner to run a MyExampleX scenario.
 	 * 
@@ -78,6 +79,7 @@ public class MyRunner {
 	 * @param hddPowerModel 
 	 * @throws Exception
 	 */
+	/*
 	public MyRunner(String name, String type, int NumberOfRequest, String RequestArrivalDistri, String requiredFiles,
 			String dataFiles, String startingFilesList, int NumberOfDisk, StorageModelHdd hddModel,
 			PowerModelHdd hddPowerModel) throws Exception {
@@ -132,9 +134,9 @@ public class MyRunner {
 		//WriteToResultFile.end();
         Log.printLine("END !");
     }
-
+	*/
 	public MyRunner(String arrivalFile, String putDataFile, String getDataFile, String updateDataFile, String
-			deleteDataFile, ArrayList<MyNode> nodeList, String startingFileList, MyRing ring, List<MyNode> AllnodesList) throws Exception
+			deleteDataFile, ArrayList<MyNode> nodeList, String startingFileList, MyRing ring, List<MyNode> AllnodesList, String operationOrderData) throws Exception
 	{
 		Log.printLine("Starting simulation \n");
 		// WriteToLogFile.AddtoFile("Starting simulation \n");
@@ -156,6 +158,7 @@ public class MyRunner {
 		helper.createDataFilesList(putDataFile);
 		helper.createUpdateFilesList(updateDataFile);
 		helper.createDeleteFilesList(deleteDataFile);
+		helper.operationOrderFileList(operationOrderData);
 
 		// Cloudlets
 		//helper.createCloudletList(nodeList);
@@ -257,6 +260,7 @@ public class MyRunner {
 		String getData = "basic/operations/getData.txt";
 		String updateData = "basic/operations/updateData.txt";
 		String deleteData = "basic/operations/deleteData.txt";
+		String operationOrderData = "basic/operations/operationOrderData.txt";
 
 		String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
 		String startingFilelist = pathToStartingFileList.split("files/")[1];
@@ -303,6 +307,6 @@ public class MyRunner {
 		}
 
 
-		MyRunner runner = new MyRunner(arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
+		MyRunner runner = new MyRunner(arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes, operationOrderData);
 	}
 }

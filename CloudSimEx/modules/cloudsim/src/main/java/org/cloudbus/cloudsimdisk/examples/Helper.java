@@ -53,7 +53,7 @@ public class Helper {
 	 * the cloudlet required FileNames list.
 	 */
 	public List<String>							requiredFiles	= new ArrayList<String>();
-
+	public ArrayList<String> operationOrderList = new ArrayList<>();
 	/**
 	 * the cloudlet data Files list.
 	 */
@@ -99,6 +99,10 @@ public class Helper {
 	public DatacenterCharacteristics			datacenterCharacteristics;
 
 	public HashMap<MyNode, MyPowerHarddriveStorage> nmmap = new HashMap<>();
+    public int putOpCounter = 0;
+    public int getOpCounter = 0;
+    public int updateOpCounter = 0;
+    public int deleteOpCounter = 0;
 
     // for graph purpose
     List<Map<String,Object>> diskStats = new ArrayList<Map<String,Object>>();
@@ -507,8 +511,41 @@ public class Helper {
 		return myNodeListOne;
 	}
 
+	public void operationOrderFileList(String operationOrderData)
+	{
+
+		if (operationOrderData != "") {
+
+			String path = "files/" + operationOrderData;
+
+			try {
+				// instantiates reader
+				BufferedReader input = new BufferedReader(new FileReader(path));
+
+				// instantiates local variable
+				String fileName;
+
+				// read line by line
+				while ((fileName = input.readLine()) != null) {
+
+					// add fileName to the List
+					operationOrderList.add(fileName);
+				}
+
+				// close the reader
+				input.close();
+
+			} catch (IOException | NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public void createCloudletListOne() {
 		//System.out.println("createCloudletListOne : "+cloudletNumber+" : "+myNodeListOne.size()+" : "+myNodeListOne.toString());
+
+
+
 		if(cloudletNumber <= myNodeListOne.size()) {
 			ArrayList<String> tempRequiredFilesList = null;
 			ArrayList<File> tempDataFilesList = null;
@@ -517,30 +554,41 @@ public class Helper {
 
 			int i = cloudletNumber;
 
-			if (i <= dataFiles.size()) {
-				tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(i - 1)));
+
+
+			//if (i <= dataFiles.size()) {
+			if (operationOrderList.get(i - 1).equals("PUT")) {
+				tempDataFilesList = new ArrayList<File>(Arrays.asList(dataFiles.get(putOpCounter)));
 				tempRequiredFilesList = null;
 				tempUpdateFileList = null;
 				tempDeleteFileList = null;
+				++putOpCounter;
 			}
-			else if (i > dataFiles.size() && i <= (requiredFiles.size() + dataFiles.size())) {
-				tempRequiredFilesList = new ArrayList<String>(Arrays.asList(requiredFiles.get(i - dataFiles.size() - 1)));
+			//else if (i > dataFiles.size() && i <= (requiredFiles.size() + dataFiles.size())) {
+			else if (operationOrderList.get(i - 1).equals("GET")) {
+				tempRequiredFilesList = new ArrayList<String>(Arrays.asList(requiredFiles.get(getOpCounter)));
 				tempDataFilesList = null;
 				tempUpdateFileList = null;
 				tempDeleteFileList = null;
+				++getOpCounter;
 			}
-			else if(i > (requiredFiles.size() + dataFiles.size()) && i <= (requiredFiles.size() + dataFiles.size() + updateFiles.size())){
-				tempUpdateFileList = new ArrayList<File>(Arrays.asList(updateFiles.get(i - dataFiles.size() - requiredFiles.size() - 1)));
+			//else if(i > (requiredFiles.size() + dataFiles.size()) && i <= (requiredFiles.size() + dataFiles.size() + updateFiles.size())){
+			else if (operationOrderList.get(i - 1).equals("UPDATE")) {
+				tempUpdateFileList = new ArrayList<File>(Arrays.asList(updateFiles.get(updateOpCounter)));
 				tempDeleteFileList = null;
 				tempDataFilesList = null;
 				tempRequiredFilesList = null;
+				++updateOpCounter;
 			}
-			else if(i > (requiredFiles.size() + dataFiles.size() + updateFiles.size()) && i<= (requiredFiles.size() + dataFiles.size() + updateFiles.size() + deleteFiles.size()))
-			{
-				tempDeleteFileList = new ArrayList<String>(Arrays.asList(deleteFiles.get(i - dataFiles.size() - requiredFiles.size() - updateFiles.size() - 1)));
+			//else if(i > (requiredFiles.size() + dataFiles.size() + updateFiles.size()) && i<= (requiredFiles.size() + dataFiles.size() + updateFiles.size()
+					// + deleteFiles.size()))
+			else if (operationOrderList.get(i - 1).equals("DELETE")) {
+
+				tempDeleteFileList = new ArrayList<String>(Arrays.asList(deleteFiles.get(deleteOpCounter)));
 				tempRequiredFilesList = null;
 				tempDataFilesList = null;
 				tempUpdateFileList = null;
+				++deleteOpCounter;
 			}
 			else {
 				tempRequiredFilesList = null;
