@@ -14,7 +14,7 @@ import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.StartingFileListGen
 import org.cloudbus.cloudsimdisk.examples.Tasks;
 import org.cloudbus.cloudsimdisk.examples.UI.InputJSONObject;
 import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
-
+import java.util.Collections;
 import java.io.*;
 import java.util.*;
 import org.apache.commons.lang3.SerializationUtils;
@@ -292,7 +292,9 @@ public class FlushEntireStagingDiskContents implements Serializable{
         updateAllFilesUploadedWithStartingFileList(allFilesUploaded, pathToStartingFileList, noOfOperations);
 
         // iterate through the operations chronologically
-        for (Double key : chronologicallyOrderedOperations.keySet()) {
+        ArrayList<Double> sortedTimes = new ArrayList<>(chronologicallyOrderedOperations.keySet());
+        Collections.sort(sortedTimes);
+        for (Double key : sortedTimes) {
             ArrayList<String> operations = chronologicallyOrderedOperations.get(key);
             for (String op : operations) {
                 op = op.trim();
@@ -777,6 +779,59 @@ public class FlushEntireStagingDiskContents implements Serializable{
         return operationFileList;
     }
 
+    public static void getChronologicallyOrderedOperations(ArrayList<String> arrivalFile, ArrayList<MyNode> nodeList, ArrayList<String> sortedArrivalFile,
+                                                           ArrayList<MyNode> sortedNodeList, ArrayList<String> sortedOperationTypeList, int dataFileSize,
+                                                           int requiredFileSize, int updateFileSize, int deleteFileSize) {
+
+        ArrayList<HashMap> propertiesToBeSorted = new ArrayList();
+        for(int i = 0; i < arrivalFile.size(); i++){
+            HashMap mMap = new LinkedHashMap();
+            mMap.put("arrivalTime", Double.parseDouble(arrivalFile.get(i)));
+            mMap.put("node", nodeList.get(i));
+
+            if( i < dataFileSize){
+                mMap.put("operation", "PUT" );
+            }
+            else if (i < dataFileSize + requiredFileSize) {
+                mMap.put("operation", "GET" );
+            }
+            else if(i < dataFileSize + requiredFileSize + updateFileSize) {
+                mMap.put("operation", "UPDATE" );
+            }
+            else if(i < dataFileSize + requiredFileSize + updateFileSize + deleteFileSize) {
+                mMap.put("operation", "DELETE" );
+            }
+
+            propertiesToBeSorted.add(mMap);
+        }
+        /*
+        Collections.sort(propertiesToBeSorted, new Comparator<Map>() {
+            public int compare(Map o1, Map o2) {
+                return o1.get("arrivalTime").compareTo(o2.get("arrivalTime"));
+            }
+        });
+        */
+        Collections.sort(propertiesToBeSorted, new Comparator<Map>() {
+            @Override
+            public int compare(Map m1, Map m2) {
+
+                if ( (Double)(m1.get("arrivalTime")) > (Double)(m2.get("arrivalTime"))){
+                    return +1;
+                }else if ((Double)(m1.get("arrivalTime")) < (Double)(m2.get("arrivalTime"))){
+                    return -1;
+                }else{
+                    return 0;
+                }
+            }
+        });
+
+        for ( HashMap m : propertiesToBeSorted) {
+            sortedArrivalFile.add(m.get("arrivalTime") + "");
+            sortedNodeList.add((MyNode) m.get("node"));
+            sortedOperationTypeList.add(m.get("operation") + "");
+        }
+    }
+
 
     // does the task of send the cloudlets and starting the simulation
     public static MyRunner performOperations(ArrayList<String> arrivalFile, ArrayList<String> dataFile,
@@ -810,6 +865,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         String getData = "basic/operations/getData.txt";
         String updateData = "basic/operations/updateData.txt";
         String deleteData = "basic/operations/deleteData.txt";
+        String operationOrder = "basic/operations/operationOrderData.txt";
 
         // clearing contents of these files
         FileUtils.writeStringToFile(new File("files/" + arrival), "");
@@ -823,7 +879,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
         StringBuilder getOpData = new StringBuilder();
         StringBuilder updateOpData = new StringBuilder();
         StringBuilder deleteOpData = new StringBuilder();
-
+        StringBuilder operationList = new StringBuilder();
+        /*
         for (int i = 0; i < arrivalFile.size(); i++) {
             if (i > 0)
                 arrivalTimes.append("\n");
@@ -833,6 +890,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
                 arrivalTimes = new StringBuilder();
             }
         }
+        */
+
         for (int i = 0; i < dataFile.size(); i++) {
             if (i > 0)
                 putOpData.append("\n");
@@ -877,7 +936,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
             }
         }
 
-        FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
+        // FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
         FileUtils.writeStringToFile(new File("files/" + putData), putOpData.toString(),true);
         FileUtils.writeStringToFile(new File("files/" + getData), getOpData.toString(),true);
         FileUtils.writeStringToFile(new File("files/" + updateData), updateOpData.toString(),true);
@@ -897,7 +956,37 @@ public class FlushEntireStagingDiskContents implements Serializable{
         MyRunner runner = new MyRunner(arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
         return runner;
         */
-        serializeObjects(nodeList, "files/basic/operations/nodeList.json");
+        ArrayList<String> sortedArrivalFile = new ArrayList<>();
+        ArrayList<MyNode> sortedNodeList = new ArrayList<>();
+        ArrayList<String> sortedOperationTypeList = new ArrayList<>();
+
+        getChronologicallyOrderedOperations(arrivalFile, nodeList, sortedArrivalFile, sortedNodeList, sortedOperationTypeList, dataFile.size(), requiredFile
+                .size(), updateFile.size(), deleteFile.size());
+
+        for (int i = 0; i < sortedArrivalFile.size(); i++) {
+            if (i > 0)
+                arrivalTimes.append("\n");
+            arrivalTimes.append(sortedArrivalFile.get(i));
+            if(i%100000 == 0){
+                FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
+                arrivalTimes = new StringBuilder();
+            }
+        }
+
+        for (int i = 0; i < sortedOperationTypeList.size(); i++) {
+            if (i > 0)
+                operationList.append("\n");
+            operationList.append(sortedOperationTypeList.get(i));
+            if(i%100000 == 0){
+                FileUtils.writeStringToFile(new File("files/" + operationOrder), operationList.toString(),true);
+                operationList = new StringBuilder();
+            }
+        }
+
+        FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
+        FileUtils.writeStringToFile(new File("files/" + operationOrder), operationList.toString(),true);
+
+        serializeObjects(sortedNodeList, "files/basic/operations/nodeList.json");
         serializeObjects(myRing, "files/basic/operations/myRing.json");
         serializeObjects(allNodes, "files/basic/operations/allNodes.json");
 
@@ -971,6 +1060,9 @@ public class FlushEntireStagingDiskContents implements Serializable{
         System.out.println("workload : " + pathToWorkload);
         System.out.println("starting file list : " + pathToStartingFileList);
         System.out.println("input log : " + pathToInputLog);
+
+
+
         if(scenario == 1){
             addStagingDisk = false;
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
