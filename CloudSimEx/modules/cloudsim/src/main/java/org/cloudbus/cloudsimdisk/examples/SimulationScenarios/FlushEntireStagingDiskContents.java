@@ -130,11 +130,15 @@ public class FlushEntireStagingDiskContents implements Serializable{
         if (addStagingDisk == false) {
             // WriteToLogFile.AddtoFile("Staging Disk : False");
             // pass the operation name to this getOperationFileList() method and it will return the op file to be passed to MyRunner
+            /*
             dataFile = getOperationFileList(pathToInputLog, "PUT", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfReplicas, numberOfOperations);
             requiredFile = getOperationFileList(pathToInputLog, "GET", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfReplicas, numberOfOperations);
             updateFile = getOperationFileList(pathToInputLog, "UPDATE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfReplicas, numberOfOperations);
             deleteFile = getOperationFileList(pathToInputLog, "DELETE", nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfReplicas,
                     numberOfOperations);
+            */
+            getOperationFileList(pathToInputLog, nodeToTaskMapping, arrivalFile, myRing, nodeList, noOfReplicas, numberOfOperations, dataFile, requiredFile,
+                    updateFile, deleteFile, operationTypeList);
         } else {
             // WriteToLogFile.AddtoFile("Staging Disk : True");
             // if there a staging disk included
@@ -683,28 +687,34 @@ public class FlushEntireStagingDiskContents implements Serializable{
     }
 
     // get op list when staging disk is not involved
-    public static ArrayList<String> getOperationFileList(String inputLog, String operation, HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<String>
-            arrivalFile, MyRing ring, ArrayList<MyNode> nodeList, int noOfReplicas, int numberOfOperations) throws Exception {
-        ArrayList<String> operationFileList = new ArrayList<>();
-
+    public static void getOperationFileList(String inputLog, HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<String> arrivalFile, MyRing ring,
+                                            ArrayList<MyNode> nodeList, int noOfReplicas, int numberOfOperations, ArrayList<String> dataFile,
+                                            ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<String>
+                                                    operationTypeList) throws Exception {
+        Map<Double, ArrayList<String>> chronologicallyOrderedOperations = getChronologicallyOrderedOperations(inputLog, numberOfOperations);
         int count = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader(new File(inputLog)))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
-                String data[] = line.split(",");
-
+        // iterate through the operations chronologically
+        ArrayList<Double> sortedTimes = new ArrayList<>(chronologicallyOrderedOperations.keySet());
+        Collections.sort(sortedTimes);
+        for (Double key : sortedTimes) {
+            ArrayList<String> operations = chronologicallyOrderedOperations.get(key);
+            for (String op : operations) {
+                op = op.trim();
+                String data[] = op.split(",");
+                String operation= data[0];
                 if (operation.equals("GET")) {
                     if (data[0].equals("GET")) {
-                        operationFileList.add(data[2]);
+                        requiredFile.add(data[2]);
                         List<MyNode> nodes = ring.getPrimaryNodes(data[2]);
                         MyNode n = nodes.get(0);
                         nodeList.add(n);
                         arrivalFile.add(data[1]);
+                        operationTypeList.add(operation);
+
                         if (nodeToTaskMapping.containsKey(n)) {
-                            nodeToTaskMapping.get(n).addTask(line);
+                            nodeToTaskMapping.get(n).addTask(op);
                         } else {
-                            nodeToTaskMapping.put(n, new Tasks(n, line));
+                            nodeToTaskMapping.put(n, new Tasks(n, op));
                         }
                     }
                 } else {
@@ -712,26 +722,28 @@ public class FlushEntireStagingDiskContents implements Serializable{
                         for (int i = 0; i < noOfReplicas; i++)
                             arrivalFile.add(data[1]);
                         for (int i = 0; i < noOfReplicas; i++)
-                            operationFileList.add(data[2] + "," + data[3]);
+                            dataFile.add(data[2] + "," + data[3]);
                         for (MyNode n : ring.getPrimaryNodes(data[2])) {
                             nodeList.add(n);
+                            operationTypeList.add(operation);
                             if (nodeToTaskMapping.containsKey(n)) {
-                                nodeToTaskMapping.get(n).addTask(line);
+                                nodeToTaskMapping.get(n).addTask(op);
                             } else {
-                                nodeToTaskMapping.put(n, new Tasks(n, line));
+                                nodeToTaskMapping.put(n, new Tasks(n, op));
                             }
                         }
                     } else if (operation.equals("DELETE") && data[0].equals("DELETE")) {
                         for (int i = 0; i < noOfReplicas; i++)
                             arrivalFile.add(data[1]);
                         for (int i = 0; i < noOfReplicas; i++)
-                            operationFileList.add(data[2]);
+                            deleteFile.add(data[2]);
                         for (MyNode n : ring.getPrimaryNodes(data[2])) {
                             nodeList.add(n);
+                            operationTypeList.add(operation);
                             if (nodeToTaskMapping.containsKey(n)) {
-                                nodeToTaskMapping.get(n).addTask(line);
+                                nodeToTaskMapping.get(n).addTask(op);
                             } else {
-                                nodeToTaskMapping.put(n, new Tasks(n, line));
+                                nodeToTaskMapping.put(n, new Tasks(n, op));
                             }
                         }
                     }
@@ -747,9 +759,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
                 }
             }
         }
-        return operationFileList;
     }
-
     // does the task of send the cloudlets and starting the simulation
     public static MyRunner performOperations(ArrayList<String> arrivalFile, ArrayList<String> dataFile,
                                            ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<MyNode>
