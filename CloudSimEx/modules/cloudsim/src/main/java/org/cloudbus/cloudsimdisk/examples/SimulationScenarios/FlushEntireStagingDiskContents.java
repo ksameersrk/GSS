@@ -3,7 +3,6 @@ package org.cloudbus.cloudsimdisk.examples.SimulationScenarios;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsimdisk.examples.GenerateDataset.COSBenchTypeWorkloadGenerator;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 import org.cloudbus.cloudsimdisk.examples.MyRunner;
@@ -95,49 +94,11 @@ public class FlushEntireStagingDiskContents implements Serializable{
         MyRing myRing = MyRing.buildRing(ringInputPath, totalNoOfNodes, partitionPower, replicas, overloadPercent, false, HDDType);
 
         if (addStagingDisk == true) {
-            /*
-            MySpinDownRandomAlgorithm spinDownRandomAlgorithm = new MySpinDownRandomAlgorithm();
-            String startingOperationsInputPath = "files/basic/operations/startingFileList.txt";
-
-            int numberOfInputLines = 99;
-            Map<MyNode, List<String>> nodeToFileList = spinDownRandomAlgorithm.getNodeToFileList(startingOperationsInputPath, myRing, numberOfInputLines);
-            spinDownRandomAlgorithm.display(nodeToFileList);
-
-            List<List<MyNode>> result = spinDownRandomAlgorithm.simulate(startingOperationsInputPath, myRing, numberOfInputLines);
-            List<String> tmp = new ArrayList<>();
-
-            if(result.size() > 0) {
-
-                for(MyNode n : result.get(result.size()-1))
-                {
-                    tmp.add(n.getName());
-                }
-
-                tmp.sort(Comparator.comparing(String::hashCode));
-
-                System.out.println("Operation No : "+((result.size()-1)+1)+", No of Nodes spunDownAble : "+tmp.size()+" are : "+tmp);
-                // WriteToLogFile.AddtoFile(String.format("%8s Operation No. : %10d, No of Nodes spunDownAble :  %10d . They are : %s", "", ((result.size()-1)
-                        +1), tmp.size(), tmp));
-            }
-
-            List<MyNode> ringNodeList = myRing.getAllNodes();
-            for (MyNode n : ringNodeList) {
-                if (tmp.contains(n.getName())) {
-                    n.setSpunDown(true);
-                    //n.addSpunDownAt(0);
-                }
-            }
-            */
 
             MySpinDownOptimalAlgorithm spinDownOptimalAlgorithm = new MySpinDownOptimalAlgorithm();
             int numberOfPartition = (int)myRing.getNumberOfPartitions();
             spinDownOptimalAlgorithm.displayNodeMap(myRing.getNodeToPartition());
             Map<MyNode, List<Integer>> newMap = spinDownOptimalAlgorithm.getSortedNodeMap(myRing.getNodeToPartition(), numberOfPartition);
-//            for(MyNode myNode : newMap.keySet())
-//            {
-//                System.out.println(myNode+" : "+newMap.get(myNode));
-//            }
-
             OptimalHelper optimalHelper = new OptimalHelper();
             optimalHelper.setMaxNodes(0);
             optimalHelper.setNodes(new ArrayList<>());
@@ -151,27 +112,13 @@ public class FlushEntireStagingDiskContents implements Serializable{
             for (MyNode n : myRing.getAllNodes()) {
                 if (spunDownNodes.contains(n)) {
                     n.setSpunDown(true);
-                    //n.addSpunDownAt(0);
                 }
             }
         }
 
-        /*
-        if(addStagingDisk == true) {
-            noOfActiveAlwaysDisks = noOfReplicas - noOfSpunDownDisks;
-        }
-        else {
-            noOfActiveAlwaysDisks = noOfReplicas;
-        }
-        */
-
-        //String inputLog = "files/basic/SimulationScenarios/FlushEntireStagingDiskContentsInputLog.txt";
-        //String inputLog = pathToInputLog;
-//        COSBenchTypeWorkloadGenerator workloadGenerator = new COSBenchTypeWorkloadGenerator();
-//        workloadGenerator.generateWorkload("download intensive", "large", inputLog, totalStagingDiskCapacity, 0.2 );
-
         ArrayList<String> arrivalFile = new ArrayList<>();
         ArrayList<MyNode> nodeList = new ArrayList<>();
+        ArrayList<String> operationTypeList = new ArrayList<>();
         HashMap<MyNode, Tasks> nodeToTaskMapping = new HashMap<>();
 
         ArrayList<String> dataFile = new ArrayList<>();
@@ -193,7 +140,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
             // if there a staging disk included
             stagingDiskSimulate(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, pathToInputLog, nodeToTaskMapping, nodeList,
                     myRing, stagingDiskRing, percentageFlushAt, percentageFlushTill, cachingMechanism,
-                    numberOfOperations, pathToStartingFileList);
+                    numberOfOperations, pathToStartingFileList, operationTypeList);
 
         }
 
@@ -212,7 +159,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         Double totalEnergyConsumed = 0.0;
         // call performOperations() which performs all the CRUD operations as given in input and returns total power consumed
         MyRunner runner = performOperations(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing, stagingDiskRing,
-                pathToStartingFileList, addStagingDisk);
+                pathToStartingFileList, addStagingDisk, operationTypeList);
 
         return runner;
         //System.out.println("\n\nTotal Energy Consumed : " + totalEnergyConsumed);
@@ -247,7 +194,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
                                            ArrayList<String> updateFile, ArrayList<String> deleteFile, String inputLog,
                                            HashMap<MyNode, Tasks> nodeToTaskMapping, ArrayList<MyNode> nodeList, MyRing ring,
                                            MyRing stagingDiskRing, int percentageToFlushAt, int percentageToFlushTill, String cachingMechanism, int
-                                                   noOfOperations, String pathToStartingFileList) throws
+                                                   noOfOperations, String pathToStartingFileList, ArrayList<String> operationTypeList) throws
             Exception {
         List<MyNode> stagingDiskNodes = stagingDiskRing.getAllNodes();
         Map<MyNode, Double> stagingDiskMemoryUsed = new LinkedHashMap<MyNode, Double>();
@@ -319,14 +266,17 @@ public class FlushEntireStagingDiskContents implements Serializable{
                                     (stagingDisk),
                             stagingDiskUpperThresholdMemory.get(stagingDisk),
                             tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), tmpdataFile,
-                            tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown, tmprequiredFile);
+                            tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown, tmprequiredFile, arrivalFile,
+                            operationTypeList);
 
                     stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) + memToBeAdded);
                 } else if (data[0].equals("GET")) {
                     // if file in staging disk then fetch from it
                     if (stagingDiskFileList.get(stagingDisk).containsKey(data[2])) {
                         tmprequiredFile.add(op);
+                        arrivalFile.add(data[1]);
                         nodeList.add(stagingDisk);
+                        operationTypeList.add("GET");
                         if (nodeToTaskMapping.containsKey(stagingDisk)) {
                             nodeToTaskMapping.get(stagingDisk).addTask(op);
                         } else {
@@ -352,6 +302,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
                             if(n.isSpunDown() == false)
                             {
                                 nodeList.add(n);
+                                arrivalFile.add(data[1]);
+                                operationTypeList.add("GET");
                                 if (nodeToTaskMapping.containsKey(n)) {
                                     nodeToTaskMapping.get(n).addTask(op);
                                 } else {
@@ -370,7 +322,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
                                         (stagingDisk),
                                 stagingDiskUpperThresholdMemory.get(stagingDisk),
                                 tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), tmpdataFile,
-                                tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown, tmprequiredFile);
+                                tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown, tmprequiredFile,
+                                arrivalFile, operationTypeList);
 
                         stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) + memToBeAdded);
 
@@ -390,7 +343,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
                             stagingDiskMemoryUsed.get(stagingDisk),
                             stagingDiskUpperThresholdMemory.get(stagingDisk),
                             tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk),
-                            tmpupdateFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown, tmprequiredFile);
+                            tmpupdateFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown,
+                            tmprequiredFile, arrivalFile, operationTypeList);
                 } else if (data[0].equals("DELETE")) {
                     // delete everywhere
                     // if file in staging disk, then remove it and make note that it has been removed so that we can remove it from spun Down disk as well
@@ -402,6 +356,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
                         // remove from staging disk
                         tmpdeleteFile.add(op);
                         nodeList.add(stagingDisk);
+                        arrivalFile.add(data[1]);
+                        operationTypeList.add("DELETE");
                         if (nodeToTaskMapping.containsKey(stagingDisk)) {
                             nodeToTaskMapping.get(stagingDisk).addTask(op);
                         } else {
@@ -417,6 +373,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
                         if(n.isSpunDown() == false){
                             tmpdeleteFile.add(op);
                             nodeList.add(n);
+                            arrivalFile.add(data[1]);
+                            operationTypeList.add("DELETE");
                             if (nodeToTaskMapping.containsKey(n)) {
                                 nodeToTaskMapping.get(n).addTask(op);
                             } else {
@@ -443,7 +401,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
                                                  Double stagingDiskThresholdMemory, Map<String, Double> tmpToBeDeletedList,
                                               Map<String, Double> stagingDiskFileList, Double stagingDiskLowerThreshold, ArrayList<String> tmpOpFile, ArrayList<String> tmpdeleteFile,
                                               ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping, MyRing ring, Map<String, Double>
-                                                      allFilesUploaded, ArrayList<String> newOperationsSinceLastSpinDown, ArrayList<String> tmpRequiredFile) {
+                                                      allFilesUploaded, ArrayList<String> newOperationsSinceLastSpinDown, ArrayList<String> tmpRequiredFile,
+                                                 ArrayList<String> arrivalFile, ArrayList<String> operationTypeList)  {
         Double stagingDiskMemoryToBeAdded = 0.0;
         // if staging disk occupied more the stagingDiskMemoryUsed upper threshold
         if (data[3].equals(null))
@@ -455,12 +414,13 @@ public class FlushEntireStagingDiskContents implements Serializable{
             stagingDiskMemoryToBeAdded += freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDisk, tmpToBeDeletedList,
                     stagingDiskFileList,
                     stagingDiskLowerThreshold, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring,
-                    newOperationsSinceLastSpinDown, tmpRequiredFile);
+                    newOperationsSinceLastSpinDown, tmpRequiredFile, arrivalFile, operationTypeList);
         }
         // enough space in staging disk now
         tmpOpFile.add(op);
         nodeList.add(stagingDisk);
-
+        arrivalFile.add(data[1]);
+        operationTypeList.add("PUT");
         stagingDiskMemoryToBeAdded += Double.parseDouble(data[3]);
 
         //stagingDiskFileList.put()
@@ -483,6 +443,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
                 if(n.isSpunDown() == false){
                     tmpOpFile.add(op);
                     nodeList.add(n);
+                    operationTypeList.add("PUT");
+                    arrivalFile.add(data[1]);
                     if (nodeToTaskMapping.containsKey(n)) {
                         nodeToTaskMapping.get(n).addTask(op);
                     } else {
@@ -503,7 +465,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
                                               Map<String, Double> tmpToBeDeletedList, Map<String, Double> stagingDiskFileList,
                                               Double stagingDiskLowerThreshold, ArrayList<String> tmpOpFile,
                                               ArrayList<String> tmpdeleteFile, ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping,
-                                              MyRing ring, ArrayList<String> newOperationsSinceLastSpinDown, ArrayList<String> tmpRequiredFile) {
+                                              MyRing ring, ArrayList<String> newOperationsSinceLastSpinDown, ArrayList<String> tmpRequiredFile,
+                                                 ArrayList<String> arrivalFile, ArrayList<String> operationTypeList) {
         System.out.println("Flushing staging disk contents at time = " + data[1]);
         // WriteToLogFile.AddtoFile(String.format("%8sFlushing staging disk contents at time = %8s ", "", data[1]));
         // remove oldest unused files such after removing them only 60% of stagingDisk mem is occupied
@@ -522,6 +485,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
             stagingDiskFileList.remove(file);
             tmpRequiredFile.add("READ,"+data[1]+","+file);
             nodeList.add(stagingDisk);
+            arrivalFile.add(data[1]);
+            operationTypeList.add("GET");
             nodeToTaskMapping.get(stagingDisk).addTask("READ,"+data[1]+","+file);
             if (nodeToTaskMapping.containsKey(stagingDisk)) {
                 nodeToTaskMapping.get(stagingDisk).addTask("READ,"+data[1]+","+file);
@@ -540,6 +505,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
             for (MyNode n : ring.getPrimaryNodes(data[2])) {
                 if(n.isSpunDown()){
                     nodeList.add(n);
+                    arrivalFile.add(data[1]);
+                    operationTypeList.add("PUT");
                     tmpOpFile.add("PUT," + data[1] + "," + file + "," + tmpToBeAddedToSpunDownFiles.get(file)); // tmpOpFile is tmpdataFile for PUT and
                     if (nodeToTaskMapping.containsKey(n)) {
                         nodeToTaskMapping.get(n).addTask("PUT," + data[1] + "," + file + "," + tmpToBeAddedToSpunDownFiles.get(file));
@@ -554,6 +521,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
             //tmpOpFile.add("DELETE,"+data[1]+","+file);
             tmpdeleteFile.add("DELETE,"+data[1]+","+file);
             nodeList.add(stagingDisk);
+            arrivalFile.add(data[1]);
+            operationTypeList.add("DELETE");
             if (nodeToTaskMapping.containsKey(stagingDisk)) {
                 nodeToTaskMapping.get(stagingDisk).addTask("DELETE,"+data[1]+","+file);
             } else {
@@ -591,6 +560,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
                 if(n.isSpunDown()){
                     tmpdeleteFile.add("DELETE," + data[1] + "," + file);
                     nodeList.add(n);
+                    arrivalFile.add(data[1]);
+                    operationTypeList.add("DELETE");
                     if (nodeToTaskMapping.containsKey(n)) {
                         nodeToTaskMapping.get(n).addTask("DELETE," + data[1] + "," + file);
                     } else {
@@ -655,28 +626,28 @@ public class FlushEntireStagingDiskContents implements Serializable{
         for (String op : tmpdataFile) {
             op = op.trim();
             String data[] = op.split(",");
-            arrivalFile.add(data[1]);
+            //arrivalFile.add(data[1]);
             dataFile.add(data[2] + "," + data[3]);
         }
 
         for (String op : tmprequiredFile) {
             op = op.trim();
             String data[] = op.split(",");
-            arrivalFile.add(data[1]);
+            //arrivalFile.add(data[1]);
             requiredFile.add(data[2]);
         }
 
         for (String op : tmpupdateFile) {
             op = op.trim();
             String data[] = op.split(",");
-            arrivalFile.add(data[1]);
+            //arrivalFile.add(data[1]);
             updateFile.add(data[2] + "," + data[3]);
         }
 
         for (String op : tmpdeleteFile) {
             op = op.trim();
             String data[] = op.split(",");
-            arrivalFile.add(data[1]);
+            //arrivalFile.add(data[1]);
             deleteFile.add(data[2]);
         }
     }
@@ -725,11 +696,11 @@ public class FlushEntireStagingDiskContents implements Serializable{
 
                 if (operation.equals("GET")) {
                     if (data[0].equals("GET")) {
-                        arrivalFile.add(data[1]);
                         operationFileList.add(data[2]);
                         List<MyNode> nodes = ring.getPrimaryNodes(data[2]);
                         MyNode n = nodes.get(0);
                         nodeList.add(n);
+                        arrivalFile.add(data[1]);
                         if (nodeToTaskMapping.containsKey(n)) {
                             nodeToTaskMapping.get(n).addTask(line);
                         } else {
@@ -779,64 +750,12 @@ public class FlushEntireStagingDiskContents implements Serializable{
         return operationFileList;
     }
 
-    public static void getChronologicallyOrderedOperations(ArrayList<String> arrivalFile, ArrayList<MyNode> nodeList, ArrayList<String> sortedArrivalFile,
-                                                           ArrayList<MyNode> sortedNodeList, ArrayList<String> sortedOperationTypeList, int dataFileSize,
-                                                           int requiredFileSize, int updateFileSize, int deleteFileSize) {
-
-        ArrayList<HashMap> propertiesToBeSorted = new ArrayList();
-        for(int i = 0; i < arrivalFile.size(); i++){
-            HashMap mMap = new LinkedHashMap();
-            mMap.put("arrivalTime", Double.parseDouble(arrivalFile.get(i)));
-            mMap.put("node", nodeList.get(i));
-
-            if( i < dataFileSize){
-                mMap.put("operation", "PUT" );
-            }
-            else if (i < dataFileSize + requiredFileSize) {
-                mMap.put("operation", "GET" );
-            }
-            else if(i < dataFileSize + requiredFileSize + updateFileSize) {
-                mMap.put("operation", "UPDATE" );
-            }
-            else if(i < dataFileSize + requiredFileSize + updateFileSize + deleteFileSize) {
-                mMap.put("operation", "DELETE" );
-            }
-
-            propertiesToBeSorted.add(mMap);
-        }
-        /*
-        Collections.sort(propertiesToBeSorted, new Comparator<Map>() {
-            public int compare(Map o1, Map o2) {
-                return o1.get("arrivalTime").compareTo(o2.get("arrivalTime"));
-            }
-        });
-        */
-        Collections.sort(propertiesToBeSorted, new Comparator<Map>() {
-            @Override
-            public int compare(Map m1, Map m2) {
-
-                if ( (Double)(m1.get("arrivalTime")) > (Double)(m2.get("arrivalTime"))){
-                    return +1;
-                }else if ((Double)(m1.get("arrivalTime")) < (Double)(m2.get("arrivalTime"))){
-                    return -1;
-                }else{
-                    return 0;
-                }
-            }
-        });
-
-        for ( HashMap m : propertiesToBeSorted) {
-            sortedArrivalFile.add(m.get("arrivalTime") + "");
-            sortedNodeList.add((MyNode) m.get("node"));
-            sortedOperationTypeList.add(m.get("operation") + "");
-        }
-    }
-
-
     // does the task of send the cloudlets and starting the simulation
     public static MyRunner performOperations(ArrayList<String> arrivalFile, ArrayList<String> dataFile,
                                            ArrayList<String> requiredFile, ArrayList<String> updateFile, ArrayList<String> deleteFile, ArrayList<MyNode>
-                                                   nodeList, MyRing myRing, MyRing stagingDiskRing, String pathToStartingFileList, boolean addstagingDisk) throws
+                                                   nodeList, MyRing myRing, MyRing stagingDiskRing, String pathToStartingFileList, boolean addstagingDisk,
+                                             ArrayList<String> operationTypeList)
+            throws
             Exception {
         Runnable monitor = new Runnable() {
             @Override
@@ -873,6 +792,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         FileUtils.writeStringToFile(new File("files/" + getData), "");
         FileUtils.writeStringToFile(new File("files/" + updateData), "");
         FileUtils.writeStringToFile(new File("files/" + deleteData), "");
+        FileUtils.writeStringToFile(new File("files/" + operationOrder), "");
 
         StringBuilder arrivalTimes = new StringBuilder();
         StringBuilder putOpData = new StringBuilder();
@@ -880,7 +800,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         StringBuilder updateOpData = new StringBuilder();
         StringBuilder deleteOpData = new StringBuilder();
         StringBuilder operationList = new StringBuilder();
-        /*
+
         for (int i = 0; i < arrivalFile.size(); i++) {
             if (i > 0)
                 arrivalTimes.append("\n");
@@ -890,7 +810,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
                 arrivalTimes = new StringBuilder();
             }
         }
-        */
+
 
         for (int i = 0; i < dataFile.size(); i++) {
             if (i > 0)
@@ -936,7 +856,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
             }
         }
 
-        // FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
+        FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
         FileUtils.writeStringToFile(new File("files/" + putData), putOpData.toString(),true);
         FileUtils.writeStringToFile(new File("files/" + getData), getOpData.toString(),true);
         FileUtils.writeStringToFile(new File("files/" + updateData), updateOpData.toString(),true);
@@ -952,41 +872,19 @@ public class FlushEntireStagingDiskContents implements Serializable{
         if(addstagingDisk)
             allNodes.addAll(stagingDiskRing.getAllNodes());
 
-        /*
-        MyRunner runner = new MyRunner(arrival, putData, getData, updateData, deleteData, nodeList, startingFilelist, myRing, allNodes);
-        return runner;
-        */
-        ArrayList<String> sortedArrivalFile = new ArrayList<>();
-        ArrayList<MyNode> sortedNodeList = new ArrayList<>();
-        ArrayList<String> sortedOperationTypeList = new ArrayList<>();
-
-        getChronologicallyOrderedOperations(arrivalFile, nodeList, sortedArrivalFile, sortedNodeList, sortedOperationTypeList, dataFile.size(), requiredFile
-                .size(), updateFile.size(), deleteFile.size());
-
-        for (int i = 0; i < sortedArrivalFile.size(); i++) {
-            if (i > 0)
-                arrivalTimes.append("\n");
-            arrivalTimes.append(sortedArrivalFile.get(i));
-            if(i%100000 == 0){
-                FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
-                arrivalTimes = new StringBuilder();
-            }
-        }
-
-        for (int i = 0; i < sortedOperationTypeList.size(); i++) {
+        for (int i = 0; i < operationTypeList.size(); i++) {
             if (i > 0)
                 operationList.append("\n");
-            operationList.append(sortedOperationTypeList.get(i));
+            operationList.append(operationTypeList.get(i));
             if(i%100000 == 0){
                 FileUtils.writeStringToFile(new File("files/" + operationOrder), operationList.toString(),true);
                 operationList = new StringBuilder();
             }
         }
 
-        FileUtils.writeStringToFile(new File("files/" + arrival), arrivalTimes.toString(),true);
         FileUtils.writeStringToFile(new File("files/" + operationOrder), operationList.toString(),true);
 
-        serializeObjects(sortedNodeList, "files/basic/operations/nodeList.json");
+        serializeObjects(nodeList, "files/basic/operations/nodeList.json");
         serializeObjects(myRing, "files/basic/operations/myRing.json");
         serializeObjects(allNodes, "files/basic/operations/allNodes.json");
 
@@ -1066,30 +964,24 @@ public class FlushEntireStagingDiskContents implements Serializable{
         if(scenario == 1){
             addStagingDisk = false;
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
-                    HDDType,
-                    SSDType,
-                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
 
         }
         else if(scenario == 2) {
             addStagingDisk = true;
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
-                    HDDType, SSDType,
-                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
 
         }
         else if(scenario == 3){
 
             addStagingDisk = false;
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
-                    HDDType,
-                    SSDType,
-                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
 
             addStagingDisk = true;
             MyRunner runnerSSD = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
-                    HDDType, SSDType,
-                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
 
         }
     }

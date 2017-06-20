@@ -1,5 +1,4 @@
 PUT,0.005,file5,500
-GET,0.004,file4,250
-GET,0.003,file3,250
-GET,0.001,file1,250
-GET,0.002,file2,250
+PUT,0.004,file4,500
+PUT,0.003,file3,500
+PUT,0.002,file2,500
