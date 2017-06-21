@@ -173,9 +173,10 @@ public class MyDatacenter extends DatacenterEX {
 			Iterator<File> iter = updateFiles.iterator();
 
 			while (iter.hasNext()) {
-				File tempFile = iter.next();
+				File fileName = iter.next();
 				curr = cl;
 
+				/*
 				for (MyPowerHarddriveStorage storage : this.<MyPowerHarddriveStorage> getStorageList()) {
 					Double res = storage.deleteFile(tempFile);
 				}
@@ -194,10 +195,48 @@ public class MyDatacenter extends DatacenterEX {
 							processOperationWithStorage(storage, tempFile, cl, "updated");
 						}
 					}
+				}
+
+
+				else if (answerTag == DataCloudTags.FILE_ADD_ERROR_EXIST_READ_ONLY) {
+					Log.printLine(tempFile.getName() + ".addFile(): Warning - This file named <" + tempFile.getName()
+							+ "> is already stored");
+				}
+				*/
+
+				MyPowerHarddriveStorage tmpStorage = csmap.get(curr);
+				File tempFile = tmpStorage.deleteFile(fileName.getName());
+
+				if (tempFile != null) {
+
+					// update HDD variables
+					processOperationWithStorage(tmpStorage, tempFile, cl, "deleted");
+					processOperationWithStorage(tmpStorage, tempFile, cl, "deleted");
+					break;
+				} else {
+					Log.printLine("Error while deleting " + fileName + "from : " + tmpStorage.getName() + ". File does not exist on this disk.");
+				}
+
+				int answerTag = this.addFile(tempFile);
+
+				// test if tempFile has been added
+				if (answerTag == DataCloudTags.FILE_ADD_SUCCESSFUL) {
+
+					// find where the file has been added
+					for (MyPowerHarddriveStorage storage : this.<MyPowerHarddriveStorage> getStorageList()) {
+
+						// test if the storage id EQUAL the file ResourceID
+						if (storage.getId() == tempFile.getResourceID()) {
+
+							// update HDD variables
+							processOperationWithStorage(storage, tempFile, cl, "added");
+						}
+					}
 				} else if (answerTag == DataCloudTags.FILE_ADD_ERROR_EXIST_READ_ONLY) {
 					Log.printLine(tempFile.getName() + ".addFile(): Warning - This file named <" + tempFile.getName()
 							+ "> is already stored");
 				}
+
 			}
 		}
 
@@ -221,6 +260,7 @@ public class MyDatacenter extends DatacenterEX {
                 MyPowerHarddriveStorage tempStorage = csmap.get(curr);
                 File tempFile = tempStorage.getFile(fileName);
                 if (tempFile != null) {
+					System.out.println("\nABC : "+tempStorage.getFileNameList());
 
                     /*
                     // find where the file has been added
@@ -276,7 +316,7 @@ public class MyDatacenter extends DatacenterEX {
 			while (iter.hasNext()){
 				String fileName = iter.next();
                 curr = cl;
-
+				/*
 				for (MyPowerHarddriveStorage storage : this.<MyPowerHarddriveStorage> getStorageList()) {
 					File tempFile = storage.deleteFile(fileName);
 
@@ -287,6 +327,19 @@ public class MyDatacenter extends DatacenterEX {
 						break;
 					}
 				}
+				*/
+				MyPowerHarddriveStorage storage = csmap.get(curr);
+				File tempFile = storage.deleteFile(fileName);
+
+				if (tempFile != null) {
+
+					// update HDD variables
+					processOperationWithStorage(storage, tempFile, cl, "deleted");
+					break;
+				} else {
+					Log.printLine("Error while deleting " + fileName + "from : " + storage.getName() + ". File does not exist on this disk.");
+				}
+
 
 			}
 		}
