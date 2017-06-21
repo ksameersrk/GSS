@@ -19,8 +19,7 @@ public class StorageModelSsdIntelDCS3500EnterpriseSC2BB800G401 extends StorageMo
             case 1:
                 return "SSDSC2BB800G401"; // Model Number
             case 2:
-                //return 800000; // capacity (MB)
-                return 1000; // capacity (MB)
+                return 800000; // capacity (MB)
             case 3:
                 return 0.0000001; // Average Rotation Latency (s)
             case 4:

@@ -76,10 +76,6 @@ public class FlushEntireStagingDiskContents implements Serializable{
             totalHddRingStorageCapacity = totalNoOfNodes * (HDDCapacities[HDDType%3]);
             totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
 
-            // for quick execution
-            totalStagingDiskCapacity = 100; // 5% capacity
-            avgSSDCapacity = 100;
-
             noOfStagingDisks = 1;
         }
 
@@ -160,7 +156,6 @@ public class FlushEntireStagingDiskContents implements Serializable{
             }
         }
 
-        Double totalEnergyConsumed = 0.0;
         // call performOperations() which performs all the CRUD operations as given in input and returns total power consumed
         MyRunner runner = performOperations(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, nodeList, myRing, stagingDiskRing,
                 pathToStartingFileList, addStagingDisk, operationTypeList);
@@ -947,7 +942,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         int percentageFlushTill = 40;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
-        String pathToWorkload = "files/basic/operations/workload_small.txt";
+        String pathToWorkload = "files/basic/operations/workload.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
 
         //String pathToInputLog = "files/basic/operations/idealInputLog.txt";
