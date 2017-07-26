@@ -215,6 +215,7 @@ public class MyDatacenter extends DatacenterEX {
 					break;
 				} else {
 					Log.printLine("Error while deleting " + fileName + "from : " + tmpStorage.getName() + ". File does not exist on this disk.");
+
 				}
 
 				int answerTag = this.addFile(tempFile);
@@ -260,7 +261,7 @@ public class MyDatacenter extends DatacenterEX {
                 MyPowerHarddriveStorage tempStorage = csmap.get(curr);
                 File tempFile = tempStorage.getFile(fileName);
                 if (tempFile != null) {
-					System.out.println("\nABC : "+tempStorage.getFileNameList());
+					//System.out.println("\nABC : "+tempStorage.getFileNameList());
 
                     /*
                     // find where the file has been added
@@ -285,7 +286,8 @@ public class MyDatacenter extends DatacenterEX {
                     processOperationWithStorage(tempStorage, tempFile, cl, "retrieved");
 
                 } else {
-                    Log.printLine("Error while retrieving " + fileName + "from : " + tempStorage.getName());
+                    Log.printLine("Error while retrieving " + fileName + " from : " + tempStorage.getName());
+					Log.printLine("The files on this disk are : " + tempStorage.getFileNameList());
                 }
 
                 /*

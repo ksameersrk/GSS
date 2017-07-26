@@ -54,6 +54,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
 
         if(generateInputLog == true) {
             StartingFileListGenerator startingFileListGenerator = new StartingFileListGenerator();
+            pathToWorkload = startingFileListGenerator.filterWorkload(pathToWorkload);
             startingFileListGenerator.generateStartingFile(pathToWorkload, pathToStartingFileList, pathToInputLog);
         }
 
@@ -390,6 +391,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
             }
         }
 
+        System.out.println("Staging disk memory used : " + stagingDiskMemoryUsed);
+
         // finally now that we hav all tmp op files, we send them and get the op files which can be passed to MyRunner
         createOperationFileList(arrivalFile, dataFile, requiredFile, updateFile, deleteFile, tmpdataFile, tmprequiredFile, tmpupdateFile, tmpdeleteFile);
     }
@@ -409,8 +412,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
             System.out.println(op);
             System.exit(1);
         }
-        if (data[0].equals("PUT") && data[3]!=null && stagingDiskMemoryUsed + Double.parseDouble(data[3]) > stagingDiskThresholdMemory) {
-            stagingDiskMemoryToBeAdded += freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDisk, tmpToBeDeletedList,
+        if (data[0].equals("PUT") && data[3]!=null && ((stagingDiskMemoryUsed + Double.parseDouble(data[3])) > stagingDiskThresholdMemory)) {
+            stagingDiskMemoryToBeAdded = stagingDiskMemoryToBeAdded - freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDisk, tmpToBeDeletedList,
                     stagingDiskFileList,
                     stagingDiskLowerThreshold, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring,
                     newOperationsSinceLastSpinDown, tmpRequiredFile, arrivalFile, operationTypeList);
@@ -420,7 +423,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         nodeList.add(stagingDisk);
         arrivalFile.add(data[1]);
         operationTypeList.add("PUT");
-        stagingDiskMemoryToBeAdded += Double.parseDouble(data[3]);
+        stagingDiskMemoryToBeAdded = stagingDiskMemoryToBeAdded + Double.parseDouble(data[3]);
 
         //stagingDiskFileList.put()
         // add to stagingDiskFileList
@@ -466,7 +469,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
                                               ArrayList<String> tmpdeleteFile, ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping,
                                               MyRing ring, ArrayList<String> newOperationsSinceLastSpinDown, ArrayList<String> tmpRequiredFile,
                                                  ArrayList<String> arrivalFile, ArrayList<String> operationTypeList) {
-        System.out.println("Flushing staging disk contents at time = " + data[1]);
+        System.out.println("Flushing staging disk contents of " + stagingDisk.getName() + " at time = " + data[1] );
         // WriteToLogFile.AddtoFile(String.format("%8sFlushing staging disk contents at time = %8s ", "", data[1]));
         // remove oldest unused files such after removing them only 60% of stagingDisk mem is occupied
         // before removing add them to respective spun down disks
@@ -474,7 +477,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         Double memoryToBeFreed = 0.0;
         for (String file : stagingDiskFileList.keySet()) {
             tmpToBeAddedToSpunDownFiles.put(file, stagingDiskFileList.get(file));
-            memoryToBeFreed += stagingDiskFileList.get(file);
+            memoryToBeFreed = memoryToBeFreed + stagingDiskFileList.get(file);
             if (stagingDiskMemoryUsed - memoryToBeFreed <= stagingDiskLowerThreshold) {
                 break;
             }
@@ -528,9 +531,11 @@ public class FlushEntireStagingDiskContents implements Serializable{
                 nodeToTaskMapping.put(stagingDisk, new Tasks(stagingDisk, "DELETE,"+data[1]+","+file));
             }
         }
+        /*
         // update stagingDiskMemoryUsed after removing old files
         Double stagingDiskMemoryToBeAdded = 0.0;
         stagingDiskMemoryToBeAdded -= memoryToBeFreed;
+        */
 
 
 /*
@@ -613,7 +618,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         }
         */
 
-        return stagingDiskMemoryToBeAdded;
+        return memoryToBeFreed;
 
     }
 
@@ -913,7 +918,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
 
     public static void main(String args[]) throws Exception{
 
-        String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+        // String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+        String base_directory = "/media/sai/New Volume/greenSwiftSimulation/GSS/";
         Gson jsonParser = new Gson();
 
         String filePathToJson = base_directory + "server/data/input_data.json";
@@ -942,7 +948,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         int percentageFlushTill = 40;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
-        String pathToWorkload = "files/basic/operations/workload.txt";
+        String pathToWorkload = "files/basic/operations/workload_small.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
 
         //String pathToInputLog = "files/basic/operations/idealInputLog.txt";
