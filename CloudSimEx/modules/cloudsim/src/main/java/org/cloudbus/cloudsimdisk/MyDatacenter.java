@@ -205,13 +205,12 @@ public class MyDatacenter extends DatacenterEX {
 				*/
 
 				MyPowerHarddriveStorage tmpStorage = csmap.get(curr);
-				File tempFile = tmpStorage.deleteFile(fileName.getName());
+				File tempFile = tmpStorage.updateFile(fileName.getName());
 
 				if (tempFile != null) {
 
 					// update HDD variables
-					processOperationWithStorage(tmpStorage, tempFile, cl, "deleted");
-					processOperationWithStorage(tmpStorage, tempFile, cl, "deleted");
+					processOperationWithStorage(tmpStorage, tempFile, cl, "updated");
 					break;
 				} else {
 					Log.printLine("Error while deleting " + fileName + "from : " + tmpStorage.getName() + ". File does not exist on this disk.");

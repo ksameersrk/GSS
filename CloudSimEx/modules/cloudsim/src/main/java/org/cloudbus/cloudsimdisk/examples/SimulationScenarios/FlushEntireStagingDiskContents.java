@@ -345,6 +345,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
                             tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk),
                             tmpupdateFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown,
                             tmprequiredFile, arrivalFile, operationTypeList);
+                    stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) + memToBeAdded);
                 } else if (data[0].equals("DELETE")) {
                     // delete everywhere
                     // if file in staging disk, then remove it and make note that it has been removed so that we can remove it from spun Down disk as well
@@ -412,17 +413,20 @@ public class FlushEntireStagingDiskContents implements Serializable{
             System.out.println(op);
             System.exit(1);
         }
-        if (data[0].equals("PUT") && data[3]!=null && ((stagingDiskMemoryUsed + Double.parseDouble(data[3])) > stagingDiskThresholdMemory)) {
-            stagingDiskMemoryToBeAdded = stagingDiskMemoryToBeAdded - freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDisk, tmpToBeDeletedList,
-                    stagingDiskFileList,
-                    stagingDiskLowerThreshold, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring,
-                    newOperationsSinceLastSpinDown, tmpRequiredFile, arrivalFile, operationTypeList);
+        if ((data[0].equals("PUT") || data[0].equals("UPDATE")) && data[3]!=null ) {
+            // System.out.println(data[0]+","+data[1]+","+data[2]+","+data[3]);
+            if ((stagingDiskMemoryUsed + Double.parseDouble(data[3])) > stagingDiskThresholdMemory) {
+                stagingDiskMemoryToBeAdded = stagingDiskMemoryToBeAdded - freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDisk, tmpToBeDeletedList,
+                        stagingDiskFileList,
+                        stagingDiskLowerThreshold, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring,
+                        newOperationsSinceLastSpinDown, tmpRequiredFile, arrivalFile, operationTypeList);
+            }
         }
         // enough space in staging disk now
         tmpOpFile.add(op);
         nodeList.add(stagingDisk);
         arrivalFile.add(data[1]);
-        operationTypeList.add("PUT");
+        operationTypeList.add(data[0]);
         stagingDiskMemoryToBeAdded = stagingDiskMemoryToBeAdded + Double.parseDouble(data[3]);
 
         //stagingDiskFileList.put()
@@ -445,7 +449,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
                 if(n.isSpunDown() == false){
                     tmpOpFile.add(op);
                     nodeList.add(n);
-                    operationTypeList.add("PUT");
+                    operationTypeList.add(data[0]);
                     arrivalFile.add(data[1]);
                     if (nodeToTaskMapping.containsKey(n)) {
                         nodeToTaskMapping.get(n).addTask(op);
@@ -721,8 +725,13 @@ public class FlushEntireStagingDiskContents implements Serializable{
                     if ((operation.equals("PUT") && data[0].equals("PUT")) || (operation.equals("UPDATE") && data[0].equals("UPDATE"))) {
                         for (int i = 0; i < noOfReplicas; i++)
                             arrivalFile.add(data[1]);
-                        for (int i = 0; i < noOfReplicas; i++)
-                            dataFile.add(data[2] + "," + data[3]);
+                        for (int i = 0; i < noOfReplicas; i++) {
+                            if (data[0].equals("PUT"))
+                                dataFile.add(data[2] + "," + data[3]);
+                            else if (data[0].equals("UPDATE"))
+                                updateFile.add(data[2] + "," + data[3]);
+
+                        }
                         for (MyNode n : ring.getPrimaryNodes(data[2])) {
                             nodeList.add(n);
                             operationTypeList.add(operation);
@@ -953,6 +962,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
 
         //String pathToInputLog = "files/basic/operations/idealInputLog.txt";
         String pathToInputLog = "";
+
         boolean generateInputLog = true;
 
         if(inputObject.getWorkloadType().equals("predefined_workload")) {

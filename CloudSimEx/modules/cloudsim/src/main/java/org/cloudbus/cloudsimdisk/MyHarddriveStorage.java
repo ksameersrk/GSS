@@ -660,6 +660,30 @@ public class MyHarddriveStorage implements Storage {
 		return result;
 	}
 
+
+	public File updateFile(String fileName) {
+		if (fileName == null || fileName.length() == 0) {
+			return null;
+		}
+
+		Iterator<File> it = fileList.iterator();
+		File file = null;
+		while (it.hasNext()) {
+			file = it.next();
+			String name = file.getName();
+
+			// if a file is found then delete
+			if (fileName.equals(name)) {
+				double result = updateFile(file);
+				file.setTransactionTime(result);
+				break;
+			} else {
+				file = null;
+			}
+		}
+		return file;
+	}
+
 	// to update file contents
 	public double updateFile(File file){
 		double result = 0.0;

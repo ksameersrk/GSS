@@ -56,6 +56,13 @@ public class StartingFileListGenerator {
                             addedFileList.add(data[2]);
                     }
                 }
+                else if (data[0].equals("UPDATE")) {
+                    if (deletedFileList.contains(data[2]) == false){
+                        filteredFileContents = filteredFileContents + line + "\n";
+                        if (addedFileList.contains(data[2]) == false)
+                            addedFileList.add(data[2]);
+                    }
+                }
                 else if (data[0].equals("DELETE")) {
                     if (deletedFileList.contains(data[2]) == false){
                         deletedFileList.add(data[2]);
@@ -103,7 +110,7 @@ public class StartingFileListGenerator {
                 else {
                     if(filesAdded.contains(data[2])){
                         // do nothing
-                    } else {
+                    } else if (data[0].equals("UPDATE")) {
                         startingFileList = startingFileList + data[2] + "," + data[3] + "\n";
                         filesAdded.add(data[2]);
                     }
