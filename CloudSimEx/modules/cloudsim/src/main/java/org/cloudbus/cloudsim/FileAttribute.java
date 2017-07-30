@@ -65,12 +65,12 @@ public class FileAttribute {
 	 */
 	public FileAttribute(String fileName, Double fileSize) throws ParameterException {
 		// check for errors in the input
-		if (fileName == null || fileName.length() == 0) {
+		if (fileName == null) {
 			throw new ParameterException("FileAttribute(): Error - invalid file name.");
 		}
 
-		if (fileSize <= 0) {
-			throw new ParameterException("FileAttribute(): Error - size <= 0.");
+		if (fileSize < 0) {
+			throw new ParameterException("FileAttribute(): Error - size < 0.");
 		}
 
 		size = fileSize;

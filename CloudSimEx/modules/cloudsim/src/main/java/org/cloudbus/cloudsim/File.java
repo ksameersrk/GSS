@@ -60,12 +60,12 @@ public class File {
 	 *             </ul>
 	 */
 	public File(String fileName, Double fileSize) throws ParameterException {
-		if (fileName == null || fileName.length() == 0) {
+		if (fileName == null ) {
 			throw new ParameterException("File(): Error - invalid file name.");
 		}
 
-		if (fileSize <= 0) {
-			throw new ParameterException("File(): Error - size <= 0.");
+		if (fileSize < 0) {
+			throw new ParameterException("File(): Error - size < 0.");
 		}
 
 		name = fileName;
