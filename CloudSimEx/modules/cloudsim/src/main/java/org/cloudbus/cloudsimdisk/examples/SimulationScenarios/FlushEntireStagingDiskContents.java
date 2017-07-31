@@ -2,21 +2,20 @@ package org.cloudbus.cloudsimdisk.examples.SimulationScenarios;
 
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 import org.cloudbus.cloudsimdisk.examples.MyRunner;
 import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownOptimalAlgorithm;
 import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.OptimalHelper;
-import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownRandomAlgorithm;
 import org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.StartingFileListGenerator;
 import org.cloudbus.cloudsimdisk.examples.Tasks;
 import org.cloudbus.cloudsimdisk.examples.UI.InputJSONObject;
-import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
-import java.util.Collections;
+
 import java.io.*;
 import java.util.*;
-import org.apache.commons.lang3.SerializationUtils;
+
 import static org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms.MySpinDownOptimalAlgorithm.*;
 
 /**
@@ -54,8 +53,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
 
         if(generateInputLog == true) {
             StartingFileListGenerator startingFileListGenerator = new StartingFileListGenerator();
-            pathToWorkload = startingFileListGenerator.filterWorkload(pathToWorkload);
-            startingFileListGenerator.generateStartingFile(pathToWorkload, pathToStartingFileList, pathToInputLog);
+            pathToWorkload = StartingFileListGenerator.filterWorkload(pathToWorkload);
+            StartingFileListGenerator.generateStartingFile(pathToWorkload, pathToStartingFileList, pathToInputLog);
         }
 
 
@@ -94,13 +93,13 @@ public class FlushEntireStagingDiskContents implements Serializable{
 
             MySpinDownOptimalAlgorithm spinDownOptimalAlgorithm = new MySpinDownOptimalAlgorithm();
             int numberOfPartition = (int)myRing.getNumberOfPartitions();
-            spinDownOptimalAlgorithm.displayNodeMap(myRing.getNodeToPartition());
-            Map<MyNode, List<Integer>> newMap = spinDownOptimalAlgorithm.getSortedNodeMap(myRing.getNodeToPartition(), numberOfPartition);
+            displayNodeMap(myRing.getNodeToPartition());
+            Map<MyNode, List<Integer>> newMap = getSortedNodeMap(myRing.getNodeToPartition(), numberOfPartition);
             OptimalHelper optimalHelper = new OptimalHelper();
             optimalHelper.setMaxNodes(0);
             optimalHelper.setNodes(new ArrayList<>());
             System.out.println("Results : ");
-            spinDownOptimalAlgorithm.findOptimalSolution(powerSet(newMap.keySet()), optimalHelper, newMap, numberOfPartition);
+            findOptimalSolution(powerSet(newMap.keySet()), optimalHelper, newMap, numberOfPartition);
             System.out.println("Spun Down Disks : " + optimalHelper);
 
             List<MyNode> spunDownNodes = optimalHelper.getNodes();
@@ -207,11 +206,11 @@ public class FlushEntireStagingDiskContents implements Serializable{
             stagingDiskMemoryUsed.put(n, 0.0);
             // initialise stagingDiskLowerThresholdMemory i.e during a flush we keep deleting files till we reach this lower threshold
             Double lowerThreshold = (percentageToFlushTill*1.0)/100;
-            stagingDiskLowerThresholdMemory.put(n, (Double) (n.getHddModel().getCapacity() * lowerThreshold));
+            stagingDiskLowerThresholdMemory.put(n, n.getHddModel().getCapacity() * lowerThreshold);
             // initialise stagingDiskUpperThresholdMemory i.e we start the flush when on adding the given file,
             // the storage capacity is going to exceed this upper threshold capacity
             Double upperThreshold = (percentageToFlushAt*1.0)/100;
-            stagingDiskUpperThresholdMemory.put(n, (Double) (n.getHddModel().getCapacity() * upperThreshold));
+            stagingDiskUpperThresholdMemory.put(n, n.getHddModel().getCapacity() * upperThreshold);
             stagingDiskFileList.put(n, new LinkedHashMap<String, Double>());
 
             //System.out.println("Flushing when upper threshold of " + upperThreshold.toString() + " is reached.");
@@ -928,7 +927,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
     public static void main(String args[]) throws Exception{
 
         // String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
-        String base_directory = "/media/sai/New Volume/greenSwiftSimulation/GSS/";
+        //String base_directory = "/media/sai/New Volume/greenSwiftSimulation/GSS/";
+        String base_directory = "/home/ksameersrk/Desktop/GSS/";
         Gson jsonParser = new Gson();
 
         String filePathToJson = base_directory + "server/data/input_data.json";

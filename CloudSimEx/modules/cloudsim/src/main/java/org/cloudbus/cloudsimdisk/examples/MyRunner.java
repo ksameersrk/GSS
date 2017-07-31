@@ -22,8 +22,6 @@ import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
-import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
-import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -142,6 +140,8 @@ public class MyRunner {
 		// WriteToLogFile.AddtoFile("Starting simulation \n");
 		//WriteToResultFile.init();
 
+        Helper.setNumberOfCloudlets(4);
+
 		//-----------------INIT-----------------//
 		helper.initCloudSim();
 		helper.createBroker("basic", arrivalFile);
@@ -164,7 +164,7 @@ public class MyRunner {
 		//helper.createCloudletList(nodeList);
 		MyDatacenter.myRunner = this;
 		helper.setMyNodeListOne(nodeList);
-		helper.createCloudletListOne();
+        helper.createCloudletListN();
 
 		// Logs
 		helper.printPersistenStorageDetails();

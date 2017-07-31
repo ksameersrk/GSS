@@ -14,9 +14,6 @@
 
 package org.cloudbus.cloudsimdisk;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Vm;
@@ -29,7 +26,10 @@ import org.cloudbus.cloudsim.lists.VmList;
 import org.cloudbus.cloudsim.power.PowerDatacenterBroker;
 import org.cloudbus.cloudsimdisk.distributions.MyBasicDistr;
 import org.cloudbus.cloudsimdisk.distributions.MyWikiDistr;
-import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
+import org.cloudbus.cloudsimdisk.examples.Helper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * My Broker used for storage examples.
@@ -129,11 +129,18 @@ public class MyPowerDatacenterBroker extends PowerDatacenterBroker {
 			getCloudletList().remove(cloudlet);
 		}
 		*/
-		submitOneCloudlets();
-	}
+        //submitOneCloudlets();
+        submitNCloudlets();
+    }
 
-	protected  void submitOneCloudlets() {
-		if(getCloudletList().size() > 0) {
+    protected void submitNCloudlets() {
+        for (int i = 0; i < Helper.getNumberOfCloudlets(); i++) {
+            submitOneCloudlets();
+        }
+    }
+
+    protected void submitOneCloudlets() {
+        if(getCloudletList().size() > 0) {
 			// Initialize local variable
 			int vmIndex = 0;
 			double tempArrivalTime = 0;

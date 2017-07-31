@@ -13,19 +13,7 @@
  *******************************************************************************/
 package org.cloudbus.cloudsimdisk;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import org.cloudbus.cloudsim.Cloudlet;
-import org.cloudbus.cloudsim.DataCloudTags;
-import org.cloudbus.cloudsim.Datacenter;
-import org.cloudbus.cloudsim.DatacenterCharacteristics;
-import org.cloudbus.cloudsim.File;
-import org.cloudbus.cloudsim.Log;
-import org.cloudbus.cloudsim.Storage;
-import org.cloudbus.cloudsim.VmAllocationPolicy;
+import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.ex.DatacenterEX;
@@ -33,12 +21,12 @@ import org.cloudbus.cloudsimdisk.core.MyCloudSimTags;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 import org.cloudbus.cloudsimdisk.examples.MyRunner;
-import org.cloudbus.cloudsimdisk.examples.Node;
-import org.cloudbus.cloudsimdisk.examples.Ring;
-import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.MyPowerHarddriveStorage;
-import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
-import org.cloudbus.cloudsimdisk.util.WriteToResultFile;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * My Datacenter extends Datacenter.java by overwriting some of its methods. The modifications are necessary for the new
@@ -53,6 +41,7 @@ public class MyDatacenter extends DatacenterEX {
 	public static Cloudlet curr = null;
 	public static MyPowerDatacenterBroker myPowerDatacenterBroker;
 	public static MyRunner myRunner;
+    public static Integer numberOfCloudlets;
 
 	/** Round Robin Algorithm temp variable */
 	private int	tempRR	= -1;
@@ -87,14 +76,18 @@ public class MyDatacenter extends DatacenterEX {
 		// Handle my new Tag Event.
 		if (ev.getTag() == MyCloudSimTags.CLOUDLET_FILE_DONE) {
 			if(myPowerDatacenterBroker != null) {
-				myRunner.helper.createCloudletListOne();
-				myPowerDatacenterBroker.submitOneCloudlets();
-			}
+                createAndScheduleNCloudlets();
+            }
 			processCloudletFilesDone(ev);
 		} else {
 			super.processEvent(ev);
 		}
 	}
+
+    public void createAndScheduleNCloudlets() {
+        myRunner.helper.createCloudletListN();
+        myPowerDatacenterBroker.submitNCloudlets();
+    }
 
 	@Override
 	protected void processCloudletSubmit(SimEvent ev, boolean ack) {
@@ -530,8 +523,8 @@ public class MyDatacenter extends DatacenterEX {
 				break;
 
 			case 3:
-				tempStorage = (Storage)csmap.get(curr);
-				if (tempStorage != null) {
+                tempStorage = csmap.get(curr);
+                if (tempStorage != null) {
                     if (tempStorage.getFreeSpace() >= file.getSize()) {
                         tempStorage.addFile(file);
                         msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
@@ -640,7 +633,7 @@ public class MyDatacenter extends DatacenterEX {
 				break;
 
             case 3:
-                tempStorage = (Storage)csmap.get(curr);
+                tempStorage = csmap.get(curr);
                 if (tempStorage.getFreeSpace() >= file.getSize()) {
                     tempStorage.addFile(file);
                     msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
