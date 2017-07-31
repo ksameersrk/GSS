@@ -1,10 +1,4 @@
-PUT,0.0,file11,200
-PUT,1.0,file12,150
-PUT,1.5,file13,70
-GET,2.5,file12
-PUT,2.0,file14,400
-PUT,3.0,file15,36
-PUT,2.7,file16,120
-PUT,5.4,file17,99
-GET,4.5,file16
-PUT,6.3,file18,180
+PUT,0.005,file5,500
+PUT,0.004,file4,500
+PUT,0.003,file3,500
+PUT,0.002,file2,500

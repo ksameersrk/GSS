@@ -13,11 +13,6 @@
  *******************************************************************************/
 package org.cloudbus.cloudsimdisk.examples;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
-
 import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.power.PowerHost;
@@ -34,7 +29,11 @@ import org.cloudbus.cloudsimdisk.models.hdd.StorageModelHdd;
 import org.cloudbus.cloudsimdisk.power.MyPowerDatacenter;
 import org.cloudbus.cloudsimdisk.power.MyPowerHarddriveStorage;
 import org.cloudbus.cloudsimdisk.power.models.hdd.PowerModelHdd;
-import org.cloudbus.cloudsimdisk.util.WriteToLogFile;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Helper for the CloudSim examples of cloudsim.examples.storage package.
@@ -540,6 +539,22 @@ public class Helper {
 			}
 		}
 	}
+
+    public static int numberOfCloudlets;
+
+    public static int getNumberOfCloudlets() {
+        return numberOfCloudlets;
+    }
+
+    public static void setNumberOfCloudlets(int numberOfCloudlets) {
+        Helper.numberOfCloudlets = numberOfCloudlets;
+    }
+
+    public void createCloudletListN() {
+        for (int i = 0; i < getNumberOfCloudlets(); i++) {
+            createCloudletListOne();
+        }
+    }
 
 	public void createCloudletListOne() {
 		//System.out.println("createCloudletListOne : "+cloudletNumber+" : "+myNodeListOne.size()+" : "+myNodeListOne.toString());
