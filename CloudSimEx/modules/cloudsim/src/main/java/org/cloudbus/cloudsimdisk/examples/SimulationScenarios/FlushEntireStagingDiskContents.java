@@ -265,7 +265,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
                     Double memToBeAdded = stagingDiskPutOperation(op, stagingDisk, false, data, stagingDiskMemoryUsed.get
                                     (stagingDisk),
                             stagingDiskUpperThresholdMemory.get(stagingDisk),
-                            tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), tmpdataFile,
+                            tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), tmpdataFile, tmpupdateFile,
                             tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown, tmprequiredFile, arrivalFile,
                             operationTypeList);
 
@@ -321,7 +321,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
                         Double memToBeAdded = stagingDiskPutOperation(putOp, stagingDisk, true, putOp.split(","), stagingDiskMemoryUsed.get
                                         (stagingDisk),
                                 stagingDiskUpperThresholdMemory.get(stagingDisk),
-                                tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), tmpdataFile,
+                                tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk), tmpdataFile, tmpupdateFile,
                                 tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown, tmprequiredFile,
                                 arrivalFile, operationTypeList);
 
@@ -343,7 +343,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
                             stagingDiskMemoryUsed.get(stagingDisk),
                             stagingDiskUpperThresholdMemory.get(stagingDisk),
                             tmpToBeDeletedList, stagingDiskFileList.get(stagingDisk), stagingDiskLowerThresholdMemory.get(stagingDisk),
-                            tmpupdateFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown,
+                            tmpdataFile, tmpupdateFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring, allFilesUploaded, newOperationsSinceLastSpinDown,
                             tmprequiredFile, arrivalFile, operationTypeList);
                     stagingDiskMemoryUsed.put(stagingDisk, stagingDiskMemoryUsed.get(stagingDisk) + memToBeAdded);
                 } else if (data[0].equals("DELETE")) {
@@ -402,7 +402,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
 
     public static Double stagingDiskPutOperation(String op, MyNode stagingDisk, boolean addTostagingDiskOnly, String data[], Double stagingDiskMemoryUsed,
                                                  Double stagingDiskThresholdMemory, Map<String, Double> tmpToBeDeletedList,
-                                              Map<String, Double> stagingDiskFileList, Double stagingDiskLowerThreshold, ArrayList<String> tmpOpFile, ArrayList<String> tmpdeleteFile,
+                                              Map<String, Double> stagingDiskFileList, Double stagingDiskLowerThreshold, ArrayList<String> tmpPutFile, ArrayList<String> tmpUpdateFile,  ArrayList<String> tmpdeleteFile,
                                               ArrayList<MyNode> nodeList, HashMap<MyNode, Tasks> nodeToTaskMapping, MyRing ring, Map<String, Double>
                                                       allFilesUploaded, ArrayList<String> newOperationsSinceLastSpinDown, ArrayList<String> tmpRequiredFile,
                                                  ArrayList<String> arrivalFile, ArrayList<String> operationTypeList)  {
@@ -418,12 +418,16 @@ public class FlushEntireStagingDiskContents implements Serializable{
             if ((stagingDiskMemoryUsed + Double.parseDouble(data[3])) > stagingDiskThresholdMemory) {
                 stagingDiskMemoryToBeAdded = stagingDiskMemoryToBeAdded - freeUpStagingDiskMemory(data, stagingDiskMemoryUsed, stagingDisk, tmpToBeDeletedList,
                         stagingDiskFileList,
-                        stagingDiskLowerThreshold, tmpOpFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring,
+                        stagingDiskLowerThreshold, tmpPutFile, tmpdeleteFile, nodeList, nodeToTaskMapping, ring,
                         newOperationsSinceLastSpinDown, tmpRequiredFile, arrivalFile, operationTypeList);
             }
         }
         // enough space in staging disk now
-        tmpOpFile.add(op);
+        if (data[0].equals("PUT"))
+            tmpPutFile.add(op);
+        else if (data[0].equals("UPDATE"))
+            tmpUpdateFile.add(op);
+
         nodeList.add(stagingDisk);
         arrivalFile.add(data[1]);
         operationTypeList.add(data[0]);
@@ -447,7 +451,12 @@ public class FlushEntireStagingDiskContents implements Serializable{
         if (addTostagingDiskOnly == false) {
             for (MyNode n : ring.getPrimaryNodes(data[2])) {
                 if(n.isSpunDown() == false){
-                    tmpOpFile.add(op);
+
+                    if (data[0].equals("PUT"))
+                        tmpPutFile.add(op);
+                    else if (data[0].equals("UPDATE"))
+                        tmpUpdateFile.add(op);
+
                     nodeList.add(n);
                     operationTypeList.add(data[0]);
                     arrivalFile.add(data[1]);
