@@ -140,7 +140,7 @@ public class MyRunner {
 		// WriteToLogFile.AddtoFile("Starting simulation \n");
 		//WriteToResultFile.init();
 
-        Helper.setNumberOfCloudlets(4);
+        Helper.setNumberOfCloudlets(500000);
 
 		//-----------------INIT-----------------//
 		helper.initCloudSim();

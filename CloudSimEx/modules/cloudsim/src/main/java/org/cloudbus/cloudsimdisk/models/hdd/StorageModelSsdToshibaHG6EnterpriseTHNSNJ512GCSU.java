@@ -19,9 +19,9 @@ public class StorageModelSsdToshibaHG6EnterpriseTHNSNJ512GCSU extends StorageMod
             case 1:
                 return "THNSNJ512GCSU"; // Model Number
             case 2:
-                //return 512000; // capacity (MB)
+                return 512000; // capacity (MB)
                 //return 3173332;
-                return 100;
+                //return 100;
 
 
             case 3:

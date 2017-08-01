@@ -52,7 +52,6 @@ public class FlushEntireStagingDiskContents implements Serializable{
         //int noOfActiveAlwaysDisks;
 
         if(generateInputLog == true) {
-            StartingFileListGenerator startingFileListGenerator = new StartingFileListGenerator();
             pathToWorkload = StartingFileListGenerator.filterWorkload(pathToWorkload);
             StartingFileListGenerator.generateStartingFile(pathToWorkload, pathToStartingFileList, pathToInputLog);
         }
@@ -936,8 +935,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
     public static void main(String args[]) throws Exception{
 
         // String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
-        //String base_directory = "/media/sai/New Volume/greenSwiftSimulation/GSS/";
-        String base_directory = "/home/ksameersrk/Desktop/GSS/";
+        String base_directory = "/media/sai/New Volume/greenSwiftSimulation/GSS/";
+        // String base_directory = "/home/ksameersrk/Desktop/GSS/";
         Gson jsonParser = new Gson();
 
         String filePathToJson = base_directory + "server/data/input_data.json";
@@ -966,7 +965,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         int percentageFlushTill = 40;
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
-        String pathToWorkload = "files/basic/operations/workload_small.txt";
+        String pathToWorkload = "files/basic/operations/gss_workload_case1_4.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
 
         //String pathToInputLog = "files/basic/operations/idealInputLog.txt";
