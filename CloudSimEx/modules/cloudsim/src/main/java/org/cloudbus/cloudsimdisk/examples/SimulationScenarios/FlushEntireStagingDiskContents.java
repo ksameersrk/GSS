@@ -63,7 +63,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
             int[] SSDCapacities = {512000, 480000, 800000};
 
             totalHddRingStorageCapacity = totalNoOfNodes * (HDDCapacities[HDDType%3]);
-            totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
+            totalStagingDiskCapacity = (int) (0.1 * totalHddRingStorageCapacity); // 5% capacity
             avgSSDCapacity = SSDCapacities[SSDType%3];
             noOfStagingDisks =  (int)Math.ceil((double)totalStagingDiskCapacity / avgSSDCapacity);
             //int noOfStagingDisks = 1;
@@ -421,14 +421,24 @@ public class FlushEntireStagingDiskContents implements Serializable{
             }
         }
         // enough space in staging disk now
-        if (data[0].equals("PUT"))
+        if (data[0].equals("PUT")) {
             tmpPutFile.add(op);
-        else if (data[0].equals("UPDATE"))
-            tmpUpdateFile.add(op);
+            operationTypeList.add(data[0]);
+        }
+        else if (data[0].equals("UPDATE")) {
+            if (stagingDiskFileList.containsKey(data[2])) {
+                tmpUpdateFile.add(op);
+                operationTypeList.add(data[0]);
+            }
+            else {
+                tmpPutFile.add("PUT," + data[1] + "," + data[2] + "," + data[3]);
+                operationTypeList.add("PUT");
+            }
+        }
 
         nodeList.add(stagingDisk);
         arrivalFile.add(data[1]);
-        operationTypeList.add(data[0]);
+
         stagingDiskMemoryToBeAdded = stagingDiskMemoryToBeAdded + Double.parseDouble(data[3]);
 
         //stagingDiskFileList.put()
@@ -934,8 +944,8 @@ public class FlushEntireStagingDiskContents implements Serializable{
 
     public static void main(String args[]) throws Exception{
 
-        // String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
-        String base_directory = "/media/sai/New Volume/greenSwiftSimulation/GSS/";
+        String base_directory = "/Users/spadigi/Desktop/greenSwiftSimulation/GSS/";
+        //String base_directory = "/media/sai/New Volume/greenSwiftSimulation/GSS/";
         // String base_directory = "/home/ksameersrk/Desktop/GSS/";
         Gson jsonParser = new Gson();
 
@@ -966,6 +976,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         boolean realisticSSD = true; // if true the capacity split across reqd no of SSDs, if false single SSD with full capacity
 
         String pathToWorkload = "files/basic/operations/gss_workload_case1_4.txt";
+        //String pathToWorkload = "files/basic/operations/test_sample.txt";
         String pathToStartingFileList = "files/basic/operations/startingFileList.txt";
 
         //String pathToInputLog = "files/basic/operations/idealInputLog.txt";
