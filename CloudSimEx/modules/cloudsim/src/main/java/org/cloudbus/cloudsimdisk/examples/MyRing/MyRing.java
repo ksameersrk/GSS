@@ -16,6 +16,7 @@ import java.nio.ByteOrder;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * Created by skulkarni9 on 2/26/17.
@@ -271,6 +272,16 @@ public class MyRing implements Serializable
 
     private int getIndexSelectedByWeight(List<Double> weights)
     {
+        int maxIndex = 0;
+        for (int i = 1; i < weights.size(); i++) {
+            Double newnumber = weights.get(i);
+            if (newnumber > weights.get(maxIndex)) {
+                maxIndex = i;
+            }
+        }
+
+        return maxIndex;
+        /*
         int lowIndex = 0;
         int highIndex = (int)weights.stream().mapToDouble(Double::doubleValue).sum();
         if(lowIndex == highIndex)
@@ -295,6 +306,7 @@ public class MyRing implements Serializable
             }
         }
         return index;
+        */
     }
 
     private void initialzePartitionToReplicaToNode()
@@ -404,6 +416,20 @@ public class MyRing implements Serializable
         return weight/this.myRegions.size();
     }
 
+    public boolean checkForRingValidity() {
+        Set<MyNode> myNodes = this.nodeToPartition.keySet();
+        for(MyNode myNode : myNodes) {
+            List<Integer> partitions = this.nodeToPartition.get(myNode);
+            System.out.println("checkForRingValidity : "+myNode.toString()+" : "+partitions);
+            for(int i=0; i<partitions.size()-1; i++) {
+                if(partitions.get(i) == partitions.get(i+1)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     @Override
     public String toString()
     {
@@ -443,10 +469,14 @@ public class MyRing implements Serializable
                 myRing.addRegion(myRegion);
             }
             myRing.createRing();
+            if(! myRing.checkForRingValidity()) {
+                throw new Exception("Ring is not valid");
+            }
         }
         catch (Exception e)
         {
-            new Exception("Main");
+            System.out.println("Partitions are not Distributed properly");
+            e.printStackTrace();
         }
         return myRing;
     }
@@ -514,6 +544,9 @@ public class MyRing implements Serializable
                 }
             }
             myRing.createRing();
+            if(! myRing.checkForRingValidity()) {
+                throw new Exception("Ring is not valid");
+            }
         }
         catch (Exception e)
         {
@@ -524,7 +557,7 @@ public class MyRing implements Serializable
 
     public static void main(String[] args)
     {
-        int nodeCount = 8;
+        int nodeCount = 4;
         int partitionPower = 4;
         int replicas = 3;
         double overloadPercent = 10.0;
