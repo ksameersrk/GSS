@@ -19,7 +19,7 @@ import java.util.*;
 public class MyNewRandomAlgorithm {
 
     public static void main(String args[]) {
-        int nodeCount = 16;
+        int nodeCount = 64;
         int partitionPower = 5;
         int replicas = 3;
         double overloadPercent = 10.0;
@@ -27,7 +27,7 @@ public class MyNewRandomAlgorithm {
         MyRing myRing = MyRing.buildRing(ringInputPath,
                 nodeCount, partitionPower, replicas, overloadPercent);
 
-        List<MyNode> spunDownNodes = getSpunDownNodesWithPercent(myRing, 20);
+        List<MyNode> spunDownNodes = getSpunDownNodesWithPercent(myRing, 25, 1000);
         System.out.println("These are the spunDown Nodes");
         for(MyNode myNode : spunDownNodes) {
             System.out.println(myNode);
@@ -42,10 +42,12 @@ public class MyNewRandomAlgorithm {
             spunDownNodes = getSpunDownNodes(myRing);
             currentPercent = (int) Math.ceil((spunDownNodes.size() * 100) / totalNumberOfNodes);
             maxTrials--;
+            if(currentPercent < minPercent) {
+                System.out.println("Not able to spinDown disks with given percentage : "+minPercent+", Achieved percentage : "+currentPercent + ".  Trying again!");
+            }
         }
-        if(currentPercent < minPercent) {
-            throw new RuntimeException("Not able to spunDown disks with given percentage : "+minPercent+", Acheived percentage : "+currentPercent);
-        }
+        System.out.println("Spin down successful!");
+        System.out.println("Achieved percentage : "+currentPercent);
         return spunDownNodes;
     }
 
@@ -60,7 +62,10 @@ public class MyNewRandomAlgorithm {
             maxTrials--;
         }
         if(currentPercent < minPercent) {
-            throw new RuntimeException("Not able to spunDown disks with given percentage : "+minPercent+", Acheived percentage : "+currentPercent);
+            // throw new RuntimeException("Not able to spunDown disks with given percentage : "+minPercent+", Acheived percentage : "+currentPercent);
+            System.out.println("Not able to spunDown disks with given percentage : "+minPercent+", Acheived percentage : "+currentPercent);
+            getSpunDownNodesWithPercent(myRing, minPercent);
+
         }
         return spunDownNodes;
     }

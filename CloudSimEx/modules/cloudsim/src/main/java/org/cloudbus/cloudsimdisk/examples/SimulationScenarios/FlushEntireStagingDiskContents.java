@@ -34,7 +34,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
     public static MyRunner startSimulation(int totalNoOfNodes, boolean addStagingDisk, int numberOfOperations, int predefindedWorkloadNumber, int noOfReplicas,
                                        String cachingMechanism, int HDDType, int SSDType,
                                        int percentageFlushAt, int percentageFlushTill, boolean realisticSSD, String pathToWorkload, String pathToStartingFileList,
-                                       String pathToInputLog, boolean generateInputLog) throws Exception{
+                                       String pathToInputLog, boolean generateInputLog, MyRing myRing, List<MyNode> spunDownNodesList) throws Exception{
 
         // ==================================================================================================
         // node properties
@@ -63,7 +63,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
             int[] SSDCapacities = {512000, 480000, 800000};
 
             totalHddRingStorageCapacity = totalNoOfNodes * (HDDCapacities[HDDType%3]);
-            totalStagingDiskCapacity = (int) (0.1 * totalHddRingStorageCapacity); // 5% capacity
+            totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
             avgSSDCapacity = SSDCapacities[SSDType%3];
             noOfStagingDisks =  (int)Math.ceil((double)totalStagingDiskCapacity / avgSSDCapacity);
             //int noOfStagingDisks = 1;
@@ -79,34 +79,23 @@ public class FlushEntireStagingDiskContents implements Serializable{
         }
 
         MyRing stagingDiskRing = MyRing.buildRing("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/stagingDiskRings.txt",
-                noOfStagingDisks
-                , 1, 1, 10.0, true, SSDType);
+                noOfStagingDisks, 1, 1, 10.0, true, SSDType);
 
         // WriteToLogFile.AddtoFile(String.format("%8sTotal no. of HDDs = %10d ", "", totalNoOfNodes));
         // ==================================================================================================
 
+        /*
         String ringInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/rings.txt";
         MyRing myRing = MyRing.buildRing(ringInputPath, totalNoOfNodes, partitionPower, replicas, overloadPercent, false, HDDType);
+        */
+
 
         if (addStagingDisk == true) {
-
-            MySpinDownOptimalAlgorithm spinDownOptimalAlgorithm = new MySpinDownOptimalAlgorithm();
-            int numberOfPartition = (int)myRing.getNumberOfPartitions();
-            displayNodeMap(myRing.getNodeToPartition());
-            Map<MyNode, List<Integer>> newMap = getSortedNodeMap(myRing.getNodeToPartition(), numberOfPartition);
-            OptimalHelper optimalHelper = new OptimalHelper();
-            optimalHelper.setMaxNodes(0);
-            optimalHelper.setNodes(new ArrayList<>());
-            System.out.println("Results : ");
-            findOptimalSolution(powerSet(newMap.keySet()), optimalHelper, newMap, numberOfPartition);
-            System.out.println("Spun Down Disks : " + optimalHelper);
-
-            List<MyNode> spunDownNodes = optimalHelper.getNodes();
-            //noOfSpunDownDisks = spunDownNodes.size();
-
+            // spin down the required disks
             for (MyNode n : myRing.getAllNodes()) {
-                if (spunDownNodes.contains(n)) {
+                if (spunDownNodesList.contains(n)) {
                     n.setSpunDown(true);
+                    System.out.println("Spinning down Disk " + n.getName() );
                 }
             }
         }
@@ -999,29 +988,53 @@ public class FlushEntireStagingDiskContents implements Serializable{
         System.out.println("starting file list : " + pathToStartingFileList);
         System.out.println("input log : " + pathToInputLog);
 
+        MyRing myRing = null;
+        ArrayList<MyNode> spunDownNodesList = new ArrayList<>();
+        try {
+
+            byte data[] = FileUtils.readFileToByteArray(new File("files/basic/operations/myRing.json"));
+            myRing = (MyRing) SerializationUtils.deserialize(data);
+
+            ArrayList<MyNode> defaultNodeList = (ArrayList<MyNode>) myRing.getAllNodes();
+            HashMap<String, MyNode> nodeNameToNodeMapping = new HashMap<>();
+            for(MyNode n : defaultNodeList)
+            {
+                nodeNameToNodeMapping.put(n.getName(), n);
+            }
+            ArrayList<MyNode> nodeList_dummy = new ArrayList<>();
+            byte data_1[] = FileUtils.readFileToByteArray(new File("files/basic/operations/spunDownNodesList.json"));
+            nodeList_dummy = (ArrayList<MyNode>) SerializationUtils.deserialize(data_1);
+
+            for(MyNode n : nodeList_dummy)
+            {
+                spunDownNodesList.add(nodeNameToNodeMapping.get(n.getName()));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
-        if(scenario == 1){
+            if(scenario == 1){
             addStagingDisk = false;
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
-                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog, myRing, spunDownNodesList);
 
         }
         else if(scenario == 2) {
             addStagingDisk = true;
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
-                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog, myRing, spunDownNodesList);
 
         }
         else if(scenario == 3){
 
             addStagingDisk = false;
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
-                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog, myRing, spunDownNodesList);
 
             addStagingDisk = true;
             MyRunner runnerSSD = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
-                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+                    HDDType, SSDType, percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog, myRing, spunDownNodesList);
 
         }
     }
