@@ -51,8 +51,9 @@ public class FlushEntireStagingDiskContentsTest {
     }
 
     public MyRunner getRunner() throws Exception{
-        return runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, HDDType, SSDType,
-                percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+        /* return runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism, HDDType, SSDType,
+                percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog );*/
+        return null;
     }
 
     @Before

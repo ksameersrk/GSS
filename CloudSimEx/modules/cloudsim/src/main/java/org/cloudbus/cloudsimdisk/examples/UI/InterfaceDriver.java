@@ -117,10 +117,12 @@ public class InterfaceDriver {
         System.out.println("input log : " + pathToInputLog);
         if(scenario == 1){
             addStagingDisk = false;
+            /*
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
                     HDDType,
                     SSDType,
-                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
+                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog); */
+            MyRunner runner = null;
 
             List<Map<String,Object>> diskStats = runner.getDiskStats();
             //System.out.println(diskStats.toString());
@@ -143,10 +145,12 @@ public class InterfaceDriver {
         }
         else if(scenario == 2) {
             addStagingDisk = true;
+             /*
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
-                    HDDType, SSDType,
-                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
-
+                    HDDType,
+                    SSDType,
+                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog); */
+            MyRunner runner = null;
             List<Map<String,Object>> diskStats = runner.getDiskStats();
             getSortedAndDiskNameChangedDiskStats(diskStats);
             //System.out.println(diskStats.toString());
@@ -168,21 +172,24 @@ public class InterfaceDriver {
         else if(scenario == 3){
 
             addStagingDisk = false;
+             /*
             MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
                     HDDType,
                     SSDType,
-                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
-
+                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog); */
+            MyRunner runner = null;
             List<Map<String,Object>> diskStats = runner.getDiskStats();
 
             //System.out.println(diskStats.toString());
             getSortedAndDiskNameChangedDiskStats(diskStats);
 
             addStagingDisk = true;
-            MyRunner runnerSSD = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
-                    HDDType, SSDType,
-                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog);
-
+            /*
+            MyRunner runner = startSimulation(totalNoOfNodes, addStagingDisk, numberOfOperations, predefindedWorkloadNumber, noOfReplicas, cachingMechanism,
+                    HDDType,
+                    SSDType,
+                    percentageFlushAt, percentageFlushTill, realisticSSD, pathToWorkload, pathToStartingFileList, pathToInputLog, generateInputLog); */
+            MyRunner runnerSSD = null;
             List<Map<String,Object>> diskStatsSSD = runnerSSD.getDiskStats();
             //System.out.println(diskStats.toString());
 
