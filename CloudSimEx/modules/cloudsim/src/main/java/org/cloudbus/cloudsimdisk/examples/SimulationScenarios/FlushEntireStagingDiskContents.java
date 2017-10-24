@@ -63,7 +63,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
             int[] SSDCapacities = {512000, 480000, 800000};
 
             totalHddRingStorageCapacity = totalNoOfNodes * (HDDCapacities[HDDType%3]);
-            totalStagingDiskCapacity = (int) (0.05 * totalHddRingStorageCapacity); // 5% capacity
+            totalStagingDiskCapacity = (int) (0.075 * totalHddRingStorageCapacity); // 10% capacity
             avgSSDCapacity = SSDCapacities[SSDType%3];
             noOfStagingDisks =  (int)Math.ceil((double)totalStagingDiskCapacity / avgSSDCapacity);
             //int noOfStagingDisks = 1;
@@ -79,7 +79,7 @@ public class FlushEntireStagingDiskContents implements Serializable{
         }
 
         MyRing stagingDiskRing = MyRing.buildRing("modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/MyRing/stagingDiskRings.txt",
-                noOfStagingDisks, 1, 1, 10.0, true, SSDType);
+                noOfStagingDisks, 4, 1, 10.0, true, SSDType);
 
         // WriteToLogFile.AddtoFile(String.format("%8sTotal no. of HDDs = %10d ", "", totalNoOfNodes));
         // ==================================================================================================

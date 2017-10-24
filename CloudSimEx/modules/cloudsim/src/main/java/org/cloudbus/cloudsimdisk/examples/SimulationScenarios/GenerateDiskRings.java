@@ -17,7 +17,7 @@ import java.util.List;
 
 public class GenerateDiskRings {
     public static  MyRing createRing(int noOfDisks, int diskType ){
-        int partitionPower = 5;
+        int partitionPower = 6;
         int replicas = 3;
         double overloadPercent = 10.0;
 
@@ -31,7 +31,7 @@ public class GenerateDiskRings {
     {
         List<MyNode> spunDownNodes = new ArrayList<>();
         MyNewRandomAlgorithm spinDownRandomAlgorithm = new MyNewRandomAlgorithm();
-        spunDownNodes = spinDownRandomAlgorithm.getSpunDownNodesWithPercent(myRing, 27, 10000);
+        spunDownNodes = spinDownRandomAlgorithm.getSpunDownNodesWithPercent(myRing, 27, 10000000);
         System.out.println("Out of "+ myRing.getAllNodes().size() + " disks, No. of disks spun down = " + spunDownNodes.size());
 
         return  spunDownNodes;

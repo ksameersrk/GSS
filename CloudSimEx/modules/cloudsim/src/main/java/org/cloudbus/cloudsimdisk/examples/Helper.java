@@ -795,13 +795,15 @@ public class Helper {
 		// during a flush, all the spunDown disks are spun up together and spun down together,
 		// hence the total duration of flush = max active time of all spunDown disks
 		double maxSpunDownDiskActiveTime = 0.0;
+
 		for(int i = 0; i < tempList.size(); i++)
 		{
-			if(tempList.get(i).getInActiveDuration() > maxSpunDownDiskActiveTime)
+			if((nodeList.get(i).isSpunDown() == true) && (tempList.get(i).getInActiveDuration() > maxSpunDownDiskActiveTime ))
 				maxSpunDownDiskActiveTime = tempList.get(i).getInActiveDuration();
 		}
 
 		totalSimulationTime = endTimeSimulation + maxSpunDownDiskActiveTime;
+		//totalSimulationTime = endTimeSimulation;
 		double TotalStorageEnergyConsumedBySpunDownDisks = 0.0;
 		double TotalStorageEnergyConsumedByActiveAlwaysDisks = 0.0;
 
