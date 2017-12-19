@@ -3,6 +3,7 @@ package org.cloudbus.cloudsimdisk.examples.SpinDownAlgorithms;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyNode;
 import org.cloudbus.cloudsimdisk.examples.MyRing.MyRing;
 
+import java.io.*;
 import java.util.*;
 
 /*
@@ -19,19 +20,69 @@ import java.util.*;
 public class MyNewRandomAlgorithm {
 
     public static void main(String args[]) {
-        int nodeCount = 64;
-        int partitionPower = 5;
+
+        int nodeCount = 1024;
+        int partitionPower = 12;
         int replicas = 3;
         double overloadPercent = 10.0;
-        String ringInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/SpinDownAlgorithms/smallRing.txt";
+        String ringInputPath = "modules/cloudsim/src/main/java/org/cloudbus/cloudsimdisk/examples/SpinDownAlgorithms/ring1024nodes.txt";
         MyRing myRing = MyRing.buildRing(ringInputPath,
                 nodeCount, partitionPower, replicas, overloadPercent);
 
-        List<MyNode> spunDownNodes = getSpunDownNodesWithPercent(myRing, 25, 1000);
-        System.out.println("These are the spunDown Nodes");
-        for(MyNode myNode : spunDownNodes) {
-            System.out.println(myNode);
+        List<MyNode> spunDownNodes = getNodesWithSimpleAlgo(myRing);
+        System.out.println("No. of Nodes spunDown = "+spunDownNodes.size());
+        /*
+        for(MyNode n : spunDownNodes) {
+            System.out.println(n.getName());
         }
+        */
+    }
+
+    public static void generateRingFile() {
+        StringBuilder stringBuilder = new StringBuilder();
+        int region = 0;
+        int zone = 0;
+        int node = 0;
+        int value = 1;
+        stringBuilder.append("Region0,Zone0,Node0,1\n");
+        for(int i=0; i<1023; i++) {
+            node++;
+            if(node % 4 == 0) {
+                zone++;
+            }
+            if(node % 16 == 0) {
+                region++;
+                zone = 0;
+            }
+            stringBuilder.append("Region"+region+",Zone"+zone+",Node"+node+","+value+"\n");
+        }
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream("ring1024nodes.txt"), "utf-8"))) {
+            writer.write(stringBuilder.toString().trim());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<MyNode> getNodesWithSimpleAlgo(MyRing myRing) {
+        Set<MyNode> spunDownNodesSet = new HashSet<>();
+        Set<Integer> partSet = new HashSet<>();
+        List<Integer> partitionsOfNode;
+        for(MyNode n : myRing.getAllNodes()) {
+            partitionsOfNode = myRing.getNodeToPartition().get(n);
+            boolean canNodeBeSpundown = true;
+            for(int partNo : partitionsOfNode) {
+                if(partSet.contains(partNo)) {
+                    canNodeBeSpundown = false;
+                    break;
+                }
+            }
+            if(canNodeBeSpundown) {
+                spunDownNodesSet.add(n);
+                partSet.addAll(partitionsOfNode);
+            }
+        }
+        return new ArrayList<>(spunDownNodesSet);
     }
 
     public static List<MyNode> getSpunDownNodesWithPercent(MyRing myRing, int minPercent, int maxTrials) {
