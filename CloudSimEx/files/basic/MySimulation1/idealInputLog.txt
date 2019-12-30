@@ -1,0 +1,12 @@
+PUT,10,Acct1/Container1/FileA,43
+PUT,10,Acct2/Container4/FileB,213
+PUT,20,Acct1/Container2/FileC,932
+PUT,30,Acct3/Container4/FileD,934
+PUT,40,Acct3/Container2/FileE,95
+PUT,50,Acct2/Container3/FileF,96
+PUT,60,Acct4/Container1/FileG,9
+PUT,60,Acct2/Container2/FileH,443
+PUT,70,Acct3/Container1/FileI,3
+PUT,80,Acct4/Container5/FileJ,356
+PUT,80,Acct1/Container1/FileK,576
+PUT,80,Acct3/Container4/FileL,978

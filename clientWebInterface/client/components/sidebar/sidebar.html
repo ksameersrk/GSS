@@ -1,0 +1,12 @@
+<nav ng-show="!loginFlag" id="homeSideBar" class="navbar-default navbar-static-side sidebarNav ng-scope" role="navigation" ng-controller="SidebarCtrl">
+        <div class="sidebar-collapse sidebar">
+            <ul class="nav" id="side-menu">
+                <li ng-click="selectTab(1)" ng-class="selectedTab === 1 ? 'active' : ''">
+                    <a href="/#/submitRequest" class="active">Realtime Simulation</a>
+                </li>
+                <li ng-click="selectTab(5)" ng-class="selectedTab === 2 ? 'active' : ''">
+                    <a href="/#/largeSavedSimulation" class="active">Large Saved Simulation</a>
+                </li>
+            </ul>
+        </div>
+    </nav>

@@ -28,7 +28,7 @@ public class DatacenterEX extends Datacenter {
     private IVMBootDelayDistribution delayDistribution = new ConstantVMBootDelay(0);
 
     public DatacenterEX(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
-            List<Storage> storageList, double schedulingInterval) throws Exception {
+            List<? extends Storage> storageList, double schedulingInterval) throws Exception {
         super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
     }
 

@@ -18,7 +18,8 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 
 /**
  * A simple example showing how to submit and destroy VMs and cloudlets with a delay.
- * Based on {@link DynamicCloudlets0}.
+ * Also add a cloudlet dynamically
+ * (this program is same as DelayExample1 except that we add a second cloudlet dynamically here)
  */
 public class DynamicCloudlets0{
 
@@ -138,7 +139,7 @@ public class DynamicCloudlets0{
 			cloudlet = list.get(i);
 			Log.print(indent + cloudlet.getCloudletId() + indent + indent);
 
-			if (cloudlet.getCloudletStatus() == Cloudlet.SUCCESS){
+			if (cloudlet.getStatus() == Cloudlet.SUCCESS){
 				Log.print("SUCCESS");
 
 				Log.printLine( indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() +

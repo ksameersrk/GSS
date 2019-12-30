@@ -1,0 +1,16 @@
+PUT,0.2,FileB,213
+PUT,0.3,FileC,932
+PUT,0.4,FileD,934
+PUT,0.5,FileE,95
+PUT,0.6,FileF,96
+PUT,0.7,FileG,9
+PUT,0.8,FileH,443
+PUT,0.9,FileI,3
+PUT,1.1,FileJ,356
+PUT,1.2,FileK,576
+PUT,1.3,FileL,978
+GET,1.5,FileG
+GET,1.6,FileD
+GET,1.7,FileI
+GET,1.8,FileH
+GET,1.9,FileJ

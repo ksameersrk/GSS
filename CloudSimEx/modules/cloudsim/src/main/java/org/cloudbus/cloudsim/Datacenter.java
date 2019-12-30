@@ -51,7 +51,7 @@ public class Datacenter extends SimEntity {
 	private double lastProcessTime;
 
 	/** The storage list. */
-	private List<Storage> storageList;
+	protected List<? extends Storage>	storageList;		// Type changed by Baptiste Louis
 
 	/** The vm list. */
 	private List<? extends Vm> vmList;
@@ -84,7 +84,7 @@ public class Datacenter extends SimEntity {
 			String name,
 			DatacenterCharacteristics characteristics,
 			VmAllocationPolicy vmAllocationPolicy,
-			List<Storage> storageList,
+			List<? extends Storage> storageList,
 			double schedulingInterval) throws Exception {
 		super(name);
 
@@ -429,11 +429,11 @@ public class Datacenter extends SimEntity {
 	/**
 	 * Process the event for an User/Broker who wants to create a VM in this Datacenter. This
 	 * Datacenter will then send the status back to the User/Broker.
-	 * 
+	 *
 	 * @param ev information about the event just happened
-	 * @param ack indicates if the event's sender expects to receive 
+	 * @param ack indicates if the event's sender expects to receive
          * an acknowledge message when the event finishes to be processed
-         * 
+         *
 	 * @pre ev != null
 	 * @post $none
 	 */
@@ -791,7 +791,7 @@ public class Datacenter extends SimEntity {
 				Storage tempStorage = getStorageList().get(i);
 				File tempFile = tempStorage.getFile(fileName);
 				if (tempFile != null) {
-					time += tempFile.getSize() / tempStorage.getMaxTransferRate();
+					time += tempFile.getSize() / tempStorage.getMaxInternalDataTransferRate();
 					break;
 				}
 			}
@@ -951,11 +951,11 @@ public class Datacenter extends SimEntity {
 		if (file == null) {
 			return DataCloudTags.FILE_ADD_ERROR_EMPTY;
 		}
-
+		/*
 		if (contains(file.getName())) {
 			return DataCloudTags.FILE_ADD_ERROR_EXIST_READ_ONLY;
 		}
-
+		*/
 		// check storage space first
 		if (getStorageList().size() <= 0) {
 			return DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
@@ -966,7 +966,7 @@ public class Datacenter extends SimEntity {
 
 		for (int i = 0; i < getStorageList().size(); i++) {
 			tempStorage = getStorageList().get(i);
-			if (tempStorage.getAvailableSpace() >= file.getSize()) {
+			if (tempStorage.getFreeSpace() >= file.getSize()) {
 				tempStorage.addFile(file);
 				msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
 				break;
@@ -1057,6 +1057,16 @@ public class Datacenter extends SimEntity {
 
 		// send the registration to CIS
 		sendNow(gisID, CloudSimTags.REGISTER_RESOURCE, getId());
+        // to create all pause events in beginning
+		if(CloudSim.pauseInterval > 0 && CloudSim.lifeLength > 0 ) {
+			int count =1;
+			while(CloudSim.pauseInterval*count <= CloudSim.lifeLength) {
+				send(gisID, CloudSim.pauseInterval * count, CloudSimTags.PAUSE_SIMULATION_EVENT);
+				count += 1;
+			}
+		}
+		/*// to create pause events periodically
+		send(gisID, CloudSim.pauseInterval, CloudSimTags.PAUSE_SIMULATION_EVENT);*/
 		// Below method is for a child class to override
 		registerOtherEntity();
 	}
@@ -1148,8 +1158,8 @@ public class Datacenter extends SimEntity {
 	 * 
 	 * @return the storage list
 	 */
-	protected List<Storage> getStorageList() {
-		return storageList;
+	public <T extends Storage> List<T> getStorageList() { // Type and Access Modifiers changed by Baptiste Louis
+		return (List<T>) storageList;
 	}
 
 	/**
@@ -1157,7 +1167,8 @@ public class Datacenter extends SimEntity {
 	 * 
 	 * @param storageList the new storage list
 	 */
-	protected void setStorageList(List<Storage> storageList) {
+	protected void setStorageList(List<? extends Storage> storageList) { // Type changed by Baptiste
+		// Louis
 		this.storageList = storageList;
 	}
 

@@ -59,13 +59,13 @@ public class File {
 	 *             <li>the file size is zero or negative numbers
 	 *             </ul>
 	 */
-	public File(String fileName, int fileSize) throws ParameterException {
-		if (fileName == null || fileName.length() == 0) {
+	public File(String fileName, Double fileSize) throws ParameterException {
+		if (fileName == null ) {
 			throw new ParameterException("File(): Error - invalid file name.");
 		}
 
-		if (fileSize <= 0) {
-			throw new ParameterException("File(): Error - size <= 0.");
+		if (fileSize < 0) {
+			throw new ParameterException("File(): Error - size < 0.");
 		}
 
 		name = fileName;
@@ -214,7 +214,7 @@ public class File {
 	 * 
 	 * @return the file size (in MBytes)
 	 */
-	public int getSize() {
+	public Double getSize() {
 		return attribute.getFileSize();
 	}
 
@@ -223,7 +223,7 @@ public class File {
 	 * 
 	 * @return the file size (in bytes)
 	 */
-	public int getSizeInByte() {
+	public Double getSizeInByte() {
 		return attribute.getFileSizeInByte();
 	}
 
@@ -233,7 +233,7 @@ public class File {
 	 * @param fileSize the file size (in MBytes)
 	 * @return <tt>true</tt> if successful, <tt>false</tt> otherwise
 	 */
-	public boolean setFileSize(int fileSize) {
+	public boolean setFileSize(Double fileSize) {
 		return attribute.setFileSize(fileSize);
 	}
 

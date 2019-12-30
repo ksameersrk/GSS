@@ -20,6 +20,8 @@ import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.lists.CloudletList;
 import org.cloudbus.cloudsim.lists.VmList;
+import org.cloudbus.cloudsimdisk.MyDatacenter;
+import org.cloudbus.cloudsimdisk.MyPowerDatacenterBroker;
 
 /**
  * DatacentreBroker represents a broker acting on behalf of a user. It hides VM management, as vm
@@ -151,26 +153,32 @@ public class DatacenterBroker extends SimEntity {
 		switch (ev.getTag()) {
 		// Resource characteristics request
 			case CloudSimTags.RESOURCE_CHARACTERISTICS_REQUEST:
+				System.out.println("RESOURCE_CHARACTERISTICS_REQUEST : "+ev.toString());
 				processResourceCharacteristicsRequest(ev);
 				break;
 			// Resource characteristics answer
 			case CloudSimTags.RESOURCE_CHARACTERISTICS:
+				System.out.println("RESOURCE_CHARACTERISTICS : "+ev.toString());
 				processResourceCharacteristics(ev);
 				break;
 			// VM Creation answer
 			case CloudSimTags.VM_CREATE_ACK:
+				System.out.println("VM_CREATE_ACK : "+ev.toString());
 				processVmCreate(ev);
 				break;
 			// A finished cloudlet returned
 			case CloudSimTags.CLOUDLET_RETURN:
+				System.out.println("CLOUDLET_RETURN : "+ev.toString());
 				processCloudletReturn(ev);
 				break;
 			// if the simulation finishes
 			case CloudSimTags.END_OF_SIMULATION:
+				System.out.println("END_OF_SIMULATION : "+ev.toString());
 				shutdownEntity();
 				break;
 			// other unknown tags are processed by this method
 			default:
+				System.out.println("DEFAULT : "+ev.toString());
 				processOtherEvent(ev);
 				break;
 		}
@@ -240,6 +248,8 @@ public class DatacenterBroker extends SimEntity {
 
 		// all the requested VMs have been created
 		if (getVmsCreatedList().size() == getVmList().size() - getVmsDestroyed()) {
+			System.out.println("DatacenterBroker : 249");
+			MyDatacenter.myPowerDatacenterBroker = (MyPowerDatacenterBroker) this;
 			submitCloudlets();
 		} else {
 			// all the acks received, but some VMs were not created
@@ -255,6 +265,7 @@ public class DatacenterBroker extends SimEntity {
 				// all datacenters already queried
 				if (getVmsCreatedList().size() > 0) { // if some vm were created
 					submitCloudlets();
+					System.out.println("DatacenterBroker : 265");
 				} else { // no vms created. abort
 					Log.printLine(CloudSim.clock() + ": " + getName()
 							+ ": none of the required VMs could be created. Aborting");
@@ -281,7 +292,12 @@ public class DatacenterBroker extends SimEntity {
 			Log.printConcatLine(CloudSim.clock(), ": ", getName(), ": All Cloudlets executed. Finishing...");
 			clearDatacenters();
 			finishExecution();
-		} else { // some cloudlets haven't finished yet
+		}
+		else if(getCloudletList().size() > 0) {
+			System.out.println("Cloudlets Remaining : "+getCloudletList().size());
+			submitCloudlets();
+		}
+		else { // some cloudlets haven't finished yet
 			if (getCloudletList().size() > 0 && cloudletsSubmitted == 0) {
 				// all the cloudlets sent finished. It means that some bount
 				// cloudlet is waiting its VM be created

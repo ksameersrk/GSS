@@ -35,7 +35,7 @@ public class FileAttribute {
         /** File type, for instance raw, reconstructed, etc. */
 	private int type;              
         /** File size in byte. */
-	private int size;              
+	private Double size;
         /** Check sum. */
 	private int checksum;          
         /** Last updated time (sec) - relative. */
@@ -63,14 +63,14 @@ public class FileAttribute {
 	 *             <li>the file size is zero or negative numbers
 	 *             </ul>
 	 */
-	public FileAttribute(String fileName, int fileSize) throws ParameterException {
+	public FileAttribute(String fileName, Double fileSize) throws ParameterException {
 		// check for errors in the input
-		if (fileName == null || fileName.length() == 0) {
+		if (fileName == null) {
 			throw new ParameterException("FileAttribute(): Error - invalid file name.");
 		}
 
-		if (fileSize <= 0) {
-			throw new ParameterException("FileAttribute(): Error - size <= 0.");
+		if (fileSize < 0) {
+			throw new ParameterException("FileAttribute(): Error - size < 0.");
 		}
 
 		size = fileSize;
@@ -220,7 +220,7 @@ public class FileAttribute {
 	 * @param fileSize the file size (in MBytes)
 	 * @return <tt>true</tt> if successful, <tt>false</tt> otherwise
 	 */
-	public boolean setFileSize(int fileSize) {
+	public boolean setFileSize(Double fileSize) {
 		if (fileSize < 0) {
 			return false;
 		}
@@ -234,7 +234,7 @@ public class FileAttribute {
 	 * 
 	 * @return the file size (in MBytes)
 	 */
-	public int getFileSize() {
+	public Double getFileSize() {
 		return size;
 	}
 
@@ -243,7 +243,7 @@ public class FileAttribute {
 	 * 
 	 * @return the file size (in bytes)
 	 */
-	public int getFileSizeInByte() {
+	public Double getFileSizeInByte() {
 		return size * Consts.MILLION;   // 1e6
 		// return size * 1048576; // 1e6 - more accurate
 	}

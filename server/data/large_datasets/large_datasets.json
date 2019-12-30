@@ -1,0 +1,57 @@
+[
+	{
+		"id":"1",
+		"title":"Sample 1",
+		"totalNumberOfNodes":"16",
+		"scenario":"2",
+		"noOfOperation":"10",
+		"noOfReplicas":"3",
+		"cachingMechanism":"LRU",
+		"sddType":"Some SSD type",
+		"hddType":"Some HDD type"
+	},
+	{
+		"id":"2",
+		"title":"Sample 2",
+		"totalNumberOfNodes":"16",
+		"scenario":"3",
+		"noOfOperation":"10",
+		"noOfReplicas":"3",
+		"cachingMechanism":"LRU",
+		"sddType":"Some SSD type",
+		"hddType":"Some HDD type"
+	},
+	{
+		"id":"5k_1",
+		"title":"5K Operations without Staging Disk",
+		"totalNumberOfNodes":"16",
+		"scenario":"1",
+		"noOfOperation":"5000",
+		"noOfReplicas":"3",
+		"cachingMechanism":"LRU",
+		"sddType":"HG6EnterpriseTHNSNJ512GCSU",
+		"hddType":"SeagateEnterpriseST6000VN0001"
+	},
+	{
+		"id":"5k_2",
+		"title":"5K Operations with Staging Disk",
+		"totalNumberOfNodes":"16",
+		"scenario":"2",
+		"noOfOperation":"5000",
+		"noOfReplicas":"3",
+		"cachingMechanism":"LRU",
+		"sddType":"HG6EnterpriseTHNSNJ512GCSU",
+		"hddType":"SeagateEnterpriseST6000VN0001"
+	},
+	{
+		"id":"5k_3",
+		"title":"5K Operations with and without Staging Disk",
+		"totalNumberOfNodes":"16",
+		"scenario":"3",
+		"noOfOperation":"5000",
+		"noOfReplicas":"3",
+		"cachingMechanism":"LRU",
+		"sddType":"HG6EnterpriseTHNSNJ512GCSU",
+		"hddType":"SeagateEnterpriseST6000VN0001"
+	}
+]
